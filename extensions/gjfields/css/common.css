@@ -1,0 +1,57 @@
+.blockquote {
+	border: 1px solid #EFEFEF;
+	margin: 4px 0;
+	padding: 4px;
+	box-shadow:1px 1px 3px rosybrown;
+	clear:both;
+}
+.blockquote ul {
+	clear:both;
+}
+.blockquote .title label  {
+	font-weight: bold;
+}
+.blockquote .title {
+	background: none repeat scroll 0 0 #EFEFEF;
+	color: black;
+	font-weight: bold;
+	padding: 2px;
+	margin:-4px -4px 5px -4px;
+	cursor:inherit !important;
+}
+.blockquote div.control-group {
+	margin-bottom:2px;
+}
+
+.no-box-shadow {
+	box-shadow:none;
+}
+.no-border {
+	border:none;
+}
+
+.margin-bottom-small {
+	margin-bottom:4px;
+}
+.margin-bottom-medium {
+	margin-bottom:10px;
+}
+
+.margin-bottom-large {
+	margin-bottom:16px;
+}
+.spacer-enhanced {
+    background: none repeat scroll 0 0 #EFEFEF;
+    display: block;
+    margin-left: -5px;
+    padding-left: 5px;
+    width: 200%;
+
+}
+.spacer-enhanced label {
+	font-weight: bold;
+}
+
+div.sliderContainer div.control-group > div.control-label {
+	margin-left:5px;
+}

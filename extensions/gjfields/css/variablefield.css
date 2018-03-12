@@ -1,0 +1,153 @@
+textarea.textarea {
+	height: 280px;
+    min-width: 236px;
+    clear:right;
+
+}
+.buttons_container {
+	display:inline;
+}
+.buttons_container > label {
+	width:auto;
+}
+.repeating_group .buttons_container1 {
+	float:left;width:100%;
+}
+.repeating_element {margin:2px 0}
+.repeating_element,
+.cleaner {	display:block; clear:both; }
+.panelform ul.adminformlist li {
+	float:left;
+	width:100%;
+}
+.variablefield_buttons {
+	padding:2px;
+	margin-top:3px;
+	display:block;
+	border:1px solid #cccccc;
+	background-color:#ffffff;
+	width:8px;
+	text-decoration:none;
+	float:left;
+	cursor:pointer;
+}
+.reset_current_slide {
+	background:orange;
+	margin-right: 10px;
+}
+.delete_current_slide {
+	margin-right:5px;
+}
+
+.repeating_group {
+     background: none repeat scroll 0% 0% #FAFAFA;
+     border: 1px solid #CCCCCC;
+     float: left;
+     width: 100%;
+     margin:2px 0;
+     position:relative;
+}
+.repeating_group div.sliderContainer {
+    float:left;
+    width:100%;
+    background:white;
+    border-top:1px solid #CCCCCC;
+    padding-top:5px;
+}
+.repeating_block {
+	float:left;
+}
+.sliderContainer label {
+	margin-left:3px;
+}
+
+label.groupSlider {
+	cursor: hand;
+	cursor: pointer;
+	padding-left: 20px !important;
+	color: #025A8D;
+	font-weight:bold;
+	min-width:auto !important;
+}
+
+.editGroupNameButton {
+	float:left;
+	font-size:16px;
+	padding:1px;
+	cursor:pointer;
+
+}
+
+label.groupSlider {	background: url("../images/j_arrow_down.png") no-repeat scroll 5px 50% transparent;
+    height: 23px;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 17px;
+    min-width:0 !important;
+}
+label.groupSlider.groupClosed {	background: url("../images/j_arrow.png") no-repeat scroll 5px 50% transparent;}
+
+/* J3.0 */
+.control-group label.groupSlider  {
+	float:left;
+}
+
+
+.variablefield_buttons ,
+.repeating_group {
+     border-radius:4px;
+}
+
+span.hdr-wrppr {
+	overflow:hidden;
+	display:block;
+	padding-left: 6px;
+	padding-right: 20px;
+}
+span.hdr-wrppr.inactive input.groupnameEditField,
+span.hdr-wrppr.inactive input.groupnameEditField:active,
+span.hdr-wrppr.inactive input.groupnameEditField:focus {
+	width:100%;
+	background:transparent;
+	border:none;
+	cursor: pointer;
+	box-shadow:none;
+}
+span.hdr-wrppr input.groupnameEditField,
+span.hdr-wrppr input.groupnameEditField:active,
+span.hdr-wrppr input.groupnameEditField:focus {
+	width:100%;
+}
+
+.form-horizontal .repeating_group div.control-group .control-group {
+	margin-bottom:0;
+}
+.form-horizontal .repeating_group div.control-group .blockquote{
+	margin-left:5px;
+	margin-right:5px;
+}
+.pane-slider fieldset.panelform {
+	margin:0;
+	padding:5px;
+}
+
+input[readonly="readonly"],input:focus[readonly="readonly"],input.readonlyGroupName:focus,input.readonlyGroupName
+{
+    cursor:pointer;
+    background:silver;
+    color:#000;
+}
+.control-group span.ruleUniqID, .control-group span.ruleUniqID input, .ruleUniqID {
+	padding:0;
+	margin:0;
+	border:0px solid;
+	font-size:9px;
+	float:right !important;
+	background:transparent;
+	text-align:right;
+   color:brown;
+   width:auto;
+   right: 2px;
+   cursor:inherit;
+   box-shadow:none;
+}

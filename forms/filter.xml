@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fields name="filter">
+		<fieldset
+			name="nasubscribe"
+			label="PLG_SYSTEM_NOTIFICATIONARY_SUBSCRIBE_SELECT_LABEL"
+			addfieldpath="/plugins/system/notificationary/fields"
+		>
+			<field
+				name="naruleUniqID"
+				type="na.rule"
+				label="PLG_SYSTEM_NOTIFICATIONARY_SUBSCRIBE_RULE"
+				onchange="this.form.submit();"
+			>
+				<option value="">PLG_SYSTEM_NOTIFICATIONARY_SELECT_NARULE</option>
+			</field>
+			<field
+				name="nacategory"
+				type="na.category"
+				label="JCATEGORY"
+				onchange="this.form.submit();"
+			>
+				<option value="">PLG_SYSTEM_NOTIFICATIONARY_SELECT_NACATEGORY</option>
+			</field>
+		</fieldset>
+	</fields>
+</form>
