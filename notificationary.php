@@ -1678,7 +1678,7 @@ if (!class_exists('NotificationAryHelper') )
 				{
 					$includeunsubscribelink = $this->rule->ausers_includeunsubscribelink;
 
-					if ($includeBackendEditLink)
+					if ($includeunsubscribelink)
 					{
 						if ($this->rule->emailformat == 'plaintext')
 						{
