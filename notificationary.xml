@@ -7,7 +7,7 @@
   <creationDate>2018-03-13</creationDate>
   <copyright>Copyright (C) 2004-2018 Gruz All rights reserved.</copyright>
   <license>GNU General Public License</license>
-  <version>0.2.15 dev build 16</version>
+  <version>0.2.15 dev build 17</version>
   <description>PLG_SYSTEM_NOTIFICATIONARY_FIELD_DESC</description>
   <files>
 
@@ -417,13 +417,15 @@
 						<option value="1">JYES</option>
 					</field>
 
-					<field basetype="list" name="ausers_includeunsubscribelink" default="1" label="PLG_SYSTEM_NOTIFICATIONARY_FIELD_INCLUDE_UNSUBSCRIBE_LINK" description="" maxrepeatlength="1" type="gjfields.variablefield">
-						<option value="0">JNO</option>
-						<option value="1">JYES</option>
-					</field>
-
 					<field name="{allow_subscribe_manage_link" maxrepeatlength="1" type="gjfields.variablefield" basetype="gjfields.toggler" param="allow_subscribe" value="1,2"/>
-						<field maxrepeatlength="1" type="gjfields.variablefield" basetype="text" name="manage_subscription_link" label="PLG_SYSTEM_NOTIFICATIONARY_FIELD_MANAGE_SUBSCRIPTION_LINK" description="PLG_SYSTEM_NOTIFICATIONARY_FIELD_MANAGE_SUBSCRIPTION_LINK_DESC" default="" hint="subscribe.html"/>
+						<field basetype="list" name="ausers_includeunsubscribelink" default="1" label="PLG_SYSTEM_NOTIFICATIONARY_FIELD_INCLUDE_UNSUBSCRIBE_LINK" description="" maxrepeatlength="1" type="gjfields.variablefield">
+							<option value="0">JNO</option>
+							<option value="1">JYES</option>
+						</field>
+
+						<field name="{ausers_includeunsubscribelink" maxrepeatlength="1" type="gjfields.variablefield" basetype="gjfields.toggler" param="ausers_includeunsubscribelink" value="1"/>
+							<field maxrepeatlength="1" type="gjfields.variablefield" basetype="text" name="manage_subscription_link" label="PLG_SYSTEM_NOTIFICATIONARY_FIELD_MANAGE_SUBSCRIPTION_LINK" description="PLG_SYSTEM_NOTIFICATIONARY_FIELD_MANAGE_SUBSCRIPTION_LINK_DESC" default="" hint="subscribe.html"/>
+						<field name="ausers_includeunsubscribelink}" maxrepeatlength="1" type="gjfields.variablefield" basetype="gjfields.toggler"/>
 					<field name="allow_subscribe_manage_link}" maxrepeatlength="1" type="gjfields.variablefield" basetype="gjfields.toggler"/>
 
 					<field name="messagebodysource_hardcoded}" maxrepeatlength="1" type="gjfields.variablefield" basetype="gjfields.toggler"/>

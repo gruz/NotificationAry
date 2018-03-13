@@ -145,6 +145,7 @@ if (!class_exists('NotificationAryHelper') )
 
 						// "com_categories.categorycom_content" => 'com_categories.category',
 						// "com_categories.categorycom_banners" => 'com_categories.category',
+						'com_categories.categories' => 'com_categories.category',
 					);
 
 		// Joomla article object differs from i.e. K2 object. Make them look the same for some variables
@@ -307,11 +308,10 @@ if (!class_exists('NotificationAryHelper') )
 						$this->prepare_previous_versions_flag[$v] = $v;
 					}
 				}
-
 				// Here we get the extension and the context to be notified. We use either a registred in Joomla extension (like DPCalendar or core Articles) or
 				if ($rule->context_or_contenttype == "content_type")
 				{
-					list($extension_info,$contentType) = $this->_getExtensionInfo($context = null, $id = $rule->content_type);
+					list($extension_info, $contentType) = $this->_getExtensionInfo($context = null, $id = $rule->content_type);
 					$this->pparams[$rule_number]->contenttype_title = $contentType->type_title;
 				}
 				else
@@ -601,15 +601,17 @@ if (!class_exists('NotificationAryHelper') )
 		 */
 		public function onContentChangeState($context, $pks, $value)
 		{
-// ~ dumpMessage('onContentChangeState');
+			// ~ dumpMessage('onContentChangeState');
 			$jinput = JFactory::getApplication()->input;
 
 			if ($jinput->get('option', null) == 'com_dump')
 			{
-				return;
+				return true;
 			}
 
 			$this->_prepareParams();
+
+
 			$context = $this->_contextAliasReplace($context);
 
 			if (!in_array($context, $this->allowed_contexts))
@@ -617,10 +619,14 @@ if (!class_exists('NotificationAryHelper') )
 				return true;
 			}
 
+			/* ##mygruz20180313030701 {  
 			if ($context == 'com_categories.category')
 			{
 				$context .= $jinput->get('extension', null);
 			}
+			It was:
+			It became: */
+			/* ##mygruz20180313030701 } */
 
 			$this->onContentChangeStateFired = true;
 
@@ -628,7 +634,7 @@ if (!class_exists('NotificationAryHelper') )
 
 			if (!$contentItem)
 			{
-				return;
+				return true;
 			}
 
 			foreach ($pks as $id)
@@ -1670,9 +1676,9 @@ if (!class_exists('NotificationAryHelper') )
 
 				if ($this->rule->messagebodysource == 'hardcoded')
 				{
-					$IncludeBackendEditLink = $this->rule->ausers_includebackendeditlink;
+					$includeunsubscribelink = $this->rule->ausers_includeunsubscribelink;
 
-					if ($IncludeBackendEditLink)
+					if ($includeBackendEditLink)
 					{
 						if ($this->rule->emailformat == 'plaintext')
 						{
@@ -6092,33 +6098,33 @@ if ($debug)
 		 */
 		public function _contentItemPrepare($contentItem)
 		{
-      $convertedFromArray = false;
+			$convertedFromArray = false;
 
-      if (is_array($contentItem))
-      {
-        $convertedFromArray = true;
-        $return = (object) $contentItem;
-      }
-      elseif(is_object($contentItem))
-      {
-        $return = clone $contentItem;
-      }
-      else
-      {
-        return $contentItem;
-      }
+			if (is_array($contentItem))
+			{
+				$convertedFromArray = true;
+				$return = (object) $contentItem;
+			}
+			elseif(is_object($contentItem))
+			{
+				$return = clone $contentItem;
+			}
+			else
+			{
+				return $contentItem;
+			}
 
-      if (isset($return->_contentItemPrepareAlreadyPrepared))
-      {
-        if ($convertedFromArray)
-        {
-          $return = (array) $return;
-        }
+			if (isset($return->_contentItemPrepareAlreadyPrepared))
+			{
+				if ($convertedFromArray)
+				{
+					$return = (array) $return;
+				}
 
-        return $return;
-      }
+				return $return;
+			}
 
-      $return->_contentItemPrepareAlreadyPrepared = true;
+      		$return->_contentItemPrepareAlreadyPrepared = true;
 
 			if (property_exists($return, 'state') && $return->state === null)
 			{
@@ -6127,7 +6133,7 @@ if ($debug)
 
 			if (property_exists($return, 'published') && (empty($return->state)))
 			{
-				$return->state = 0;
+				$return->state = $return->published;
 			}
 
 			foreach ($this->object_variables_to_replace as $array)
@@ -6148,21 +6154,21 @@ if ($debug)
 
 			if (!isset($return->id))
 			{
-        if (method_exists($contentItem, 'get'))
-        {
-          $tbl_key = $contentItem->get('_tbl_key');
+				if (method_exists($contentItem, 'get'))
+				{
+				$tbl_key = $contentItem->get('_tbl_key');
 
-          if (!empty($tbl_key))
-          {
-            $return->id = $contentItem->{$tbl_key};
-          }
-        }
+				if (!empty($tbl_key))
+				{
+					$return->id = $contentItem->{$tbl_key};
+				}
+				}
+					}
+
+			if ($convertedFromArray)
+			{
+				$return = (array) $return;
 			}
-
-      if ($convertedFromArray)
-      {
-        $return = (array) $return;
-      }
 
 			$session = JFactory::getSession();
 			$CustomReplacement = $session->get('CustomReplacement', null, $this->plg_name);

@@ -68,7 +68,7 @@ class NAFormFieldContenttypelimited extends JFormFieldList
 			/*##mygruz20160412235218 {
 			It was:
 			It became:*/
-			->where('type_alias NOT LIKE ' . $db->q('%.category'))
+			//->where('type_alias NOT LIKE ' . $db->q('%.category'))
 			->where('type_alias NOT LIKE ' . $db->q('com_users.note'))
 			/*##mygruz20160412235218 } */
 
