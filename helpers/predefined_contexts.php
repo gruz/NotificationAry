@@ -110,6 +110,20 @@ $predefined_context_templates = array(
 		// ~ 'onContentChangeState' => 'zoo/onStateChangedZooItem.php', // The extension uses own function with own parameters. Have to catch the parametes, rework them to the form accepted by the regural joomla event, and pass to the regular joomla event
 		'onContentPrepareForm' => 'zoo/onEditZooItem.php', // The extension uses own function with own parameters. Have to catch the parametes, rework them to the form accepted by the regural joomla event, and pass to the regular joomla event
 		),
+	'com_menus.item' => array(
+		'Title' => 'Joomla menu',
+		'Item table class' => 'MenusTableMenu',
+		// 'View link'=> 'index.php?option=com_zoo&task=item&item_id=##ID##',
+		// 'Frontend edit link'=> 'index.php?option=com_zoo&view=submission&layout=submission&submission_id=&type_id=article&item_id=##ID##&redirect=itemedit&submission_hash=##SUBMISSION_HASH##',
+		'Backend edit link'=> 'index.php?option=com_menus&task=item.edit&id=##ID##',
+		// 'Category table class' => 'plugins/system/notificationary/helpers/components/zoo/tables/:ZooTableCategory',
+		// ~ 'Category context' => 'com_jevents.category',
+		// ~ 'RouterClass::RouterMethod' => 'DPCalendarHelperRoute::getEventRoute',
+		// 'onContentAfterSave' => 'zoo/onAfterSaveZooItem.php', // The extension uses own function with own parameters. Have to catch the parametes, rework them to the form accepted by the regural joomla event, and pass to the regular joomla event
+		// 'onContentBeforeSave' => 'zoo/onBeforeSaveZooItem.php', // The extension uses own function with own parameters. Have to catch the parametes, rework them to the form accepted by the regural joomla event, and pass to the regular joomla event
+		// ~ 'onContentChangeState' => 'zoo/onStateChangedZooItem.php', // The extension uses own function with own parameters. Have to catch the parametes, rework them to the form accepted by the regural joomla event, and pass to the regular joomla event
+		// 'onContentPrepareForm' => 'zoo/onEditZooItem.php', // The extension uses own function with own parameters. Have to catch the parametes, rework them to the form accepted by the regural joomla event, and pass to the regular joomla event
+		),
 );
 
 ksort($predefined_context_templates);

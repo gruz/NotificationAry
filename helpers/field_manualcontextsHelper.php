@@ -109,6 +109,9 @@ if (!$app->get('css added ##mygruz20160408015751',false)) {
 	{
 		margin-left:221px;
 	}
+	.content_types_template .control-group .control-label {
+		width:auto;
+	}
 	';
 	$app    = JFactory::getApplication();
 	if ($app->getTemplate() == 'hathor') {
