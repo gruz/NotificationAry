@@ -3058,8 +3058,19 @@ if ($debug)
 					if ($link)
 					{
 						$this->link_itemid[$zone][$task][$lang] = NotificationAryHelper::getVarFromQuery($link, 'Itemid');
-						$link = $this->_makeSEF($link);
+
+						if(NotificationAryHelper::getVarFromQuery($link, 'option') === 'com_jevents' && NotificationAryHelper::getVarFromQuery($link, 'task') === 'icalevent.detail')
+						{
+							$jevents_params = JComponentHelper::getParams('com_jevents');
+							$jevents_itemid = $jevents_params->get('permatarget', 0);
+							$link .= '&Itemid=' . $jevents_itemid;
+							$link = JURI::ROOT() . JRoute::_($link);
+						}
+						else {
+						    $link = $this->_makeSEF($link);
+						}
 					}
+					
 					break;
 			}
 
@@ -5343,15 +5354,15 @@ exit;
 				$this->HTMLtype = 'li';
 			}
 
-			// JEvents compatibility\
+			// JEvents compatibility
 			if ($this->context['full'] == 'jevents.edit.icalevent')
 			{
 				$replacement = '
 				<div class="row">
-					<div class="span2">
+					<div class="span2 col-sm-2">
 						' . $replacement_label . '
 					</div>
-					<div class="span10">
+					<div class="span10 col-sm-10">
 						' . $replacement_fieldset . '
 					</div>
 				</div>

@@ -33,6 +33,7 @@ class GJFieldsFormField extends JFormField
 	public function __construct($form = null)
 	{
 		parent::__construct($form);
+		JHTML::_('jquery.framework');
 		JHTML::_('behavior.framework', true);
 		$app = JFactory::getApplication();
 
