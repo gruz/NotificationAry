@@ -11,9 +11,16 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-static function onBeforeSaveZooItem ($event)
+/**
+ * `static` before function name is a must
+ *
+ * @param   object $event Event object
+ *
+ * @return void
+ */
+static function onBeforeSaveZooItem($event)
 {
-// ~ dumpMessage('onBeforeSaveZooItem');
+	// ~ dumpMessage('onBeforeSaveZooItem');
 
 	$contentItem = $event->getSubject();
 
@@ -22,42 +29,40 @@ static function onBeforeSaveZooItem ($event)
 		return;
 	}
 
-// ~ dumpMessage('onBeforeSaveZooItem 1');
+	// ~ dumpMessage('onBeforeSaveZooItem 1');
 
 	$isNew = $event['new'];
 
-	$context = 'com_zoo.item';
-	$jinput = JFactory::getApplication()->input;
-	$custom_runnotificationary = $jinput->post->get('params', [], 'array')['config']['custom_runnotificationary'];
+	$context                   = 'com_zoo.item';
+	$jinput                    = JFactory::getApplication()->input;
+	$customRunNotificationAry  = $jinput->post->get('params', array(), 'array')['config']['custom_runnotificationary'];
 
 	$jinput = JFactory::getApplication()->input;
-	$jform = $jinput->get('jform', null, null);
+	$jform  = $jinput->get('jform', null, null);
 
 	if (empty($jform))
 	{
-		$jform = [];
+		$jform = array();
 	}
 
-	$jform['params']['runnotificationary'] = $custom_runnotificationary;
+	$jform['params']['runnotificationary'] = $customRunNotificationAry;
 	$jinput->set('jform', $jform);
 
-	$contentItem->params->{'config.custom_runnotificationary'} = $custom_runnotificationary;
+	$contentItem->params->{'config.custom_runnotificationary'} = $customRunNotificationAry;
 
-	$session = JFactory::getSession();
-	$CustomReplacement = $session->get('CustomReplacement', null, 'notificationary');
+	$session           = JFactory::getSession();
+	$customReplacement = $session->get('CustomReplacement', null, 'notificationary');
 
-	if (!empty($CustomReplacement))
+	if (!empty($customReplacement))
 	{
-
 	}
 
 	JDispatcher::getInstance()->trigger(
-			'onContentBeforeSave',
-			array(
+		'onContentBeforeSave',
+		array(
 				$context,
 				$contentItem,
-				$isNew
+				$isNew,
 			)
-		);
-
+	);
 }

@@ -11,14 +11,14 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-function onBeforeSaveEvent ($vevent, $dryrun)
+function onBeforeSaveEvent($vevent, $dryrun)
 {
 	if ($dryrun)
 	{
 		return;
 	}
 
-// ~ dump ('onBeforeSaveEvent');
+	// ~ dump ('onBeforeSaveEvent');
 	$dataModel = new JEventsDataModel;
 
 	foreach ($vevent as $k => $v)
@@ -27,14 +27,14 @@ function onBeforeSaveEvent ($vevent, $dryrun)
 	}
 
 	$dataModel->id = $dataModel->evid;
-	$contentItem = $dataModel;
+	$contentItem   = $dataModel;
 
 	$context = 'jevents.edit.icalevent';
-	$jinput = JFactory::getApplication()->input;
-	$evid = $jinput->post->get('evid');
-	$isNew = true;
+	$jinput  = JFactory::getApplication()->input;
+	$evid    = $jinput->post->get('evid');
+	$isNew   = true;
 
-	if ($evid > 0 )
+	if ($evid > 0)
 	{
 		$isNew = false;
 	}

@@ -11,10 +11,15 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-static function onAfterSaveZooItem ($event)
-	{
-// ~ dumpMessage('onAfterSaveZooItem');
-
+/**
+ * `static` before function name is a must
+ *
+ * @param   object $event Event object
+ *
+ * @return void
+ */
+static function onAfterSaveZooItem($event)
+{
 	$contentItem = $event->getSubject();
 
 	if (!NotificationAryHelper::isZooEditPage($contentItem))
@@ -22,48 +27,42 @@ static function onAfterSaveZooItem ($event)
 		return;
 	}
 
-		$isNew = $event['new'];
-		$context = 'com_zoo.item';
-
-// ~ dump($contentItem,'$contentItem AFTER');
+	$isNew = $event['new'];
+	$context = 'com_zoo.item';
 
 	JDispatcher::getInstance()->trigger(
-			'onContentAfterSave',
-			array(
-				$context,
-				$contentItem,
-				$isNew
-			)
-		);
+		'onContentAfterSave',
+		array(
+			$context,
+			$contentItem,
+			$isNew
+		)
+	);
 
+	/**
+	if (!empty($rules))
+	{
+		$this->shouldShowSwitchCheckFlag = true;
 
-
-
-return;
-		/*
-		if (!empty($rules))
+		if (!empty($vevent->data['custom_runnotificationary']))
 		{
-			$this->shouldShowSwitchCheckFlag = true;
-
-			if (!empty($vevent->data['custom_runnotificationary']))
-			{
-				$jform['params']['runnotificationary'] = $vevent->data['custom_runnotificationary'];
-				$jinput = JFactory::getApplication()->input;
-				$jform = $jinput->set('jform', $jform);
-				$jform = $jinput->get('jform', null, null);
-			}
+			$jform['params']['runnotificationary'] = $vevent->data['custom_runnotificationary'];
+			$jinput = JFactory::getApplication()->input;
+			$jform = $jinput->set('jform', $jform);
+			$jform = $jinput->get('jform', null, null);
 		}
-
-		if (!empty($contentItem->data['SUMMARY']))
-		{
-			$contentItem->title = $contentItem->data['SUMMARY'];
-		}
-
-		if (!empty($contentItem->data['DESCRIPTION']))
-		{
-			$contentItem->fulltext = $contentItem->data['DESCRIPTION'];
-		}
-		*/
-
-		return $this->onContentAfterSave($context, $contentItem, $isNew);
 	}
+
+	if (!empty($contentItem->data['SUMMARY']))
+	{
+		$contentItem->title = $contentItem->data['SUMMARY'];
+	}
+
+	if (!empty($contentItem->data['DESCRIPTION']))
+	{
+		$contentItem->fulltext = $contentItem->data['DESCRIPTION'];
+	}
+	return $this->onContentAfterSave($context, $contentItem, $isNew);
+	*/
+	return;
+}

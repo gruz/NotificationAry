@@ -17,8 +17,8 @@ jimport('gjfields.gjfields');
 jimport('gjfields.helper.plugin');
 jimport('joomla.filesystem.folder');
 
-$latest_gjfields_needed_version = '1.2.0';
-$error_msg = 'Install the latest GJFields plugin version <span style="color:black;">'
+$latestGjfieldsNeededVersion = '1.2.0';
+$errorMsg = 'Install the latest GJFields plugin version <span style="color:black;">'
 	. __FILE__ . '</span>: <a href="http://www.gruz.org.ua/en/extensions/gjfields-sefl-reproducing-joomla-jform-fields.html">GJFields</a>';
 
 $isOk = true;
@@ -29,17 +29,17 @@ while (true)
 
 	if (!class_exists('JPluginGJFields'))
 	{
-		$error_msg = 'Strange, but missing GJFields library for <span style="color:black;">'
+		$errorMsg = 'Strange, but missing GJFields library for <span style="color:black;">'
 			. __FILE__ . '</span><br> The library should be installed together with the extension... Anyway, reinstall it:
 			<a href="http://www.gruz.org.ua/en/extensions/gjfields-sefl-reproducing-joomla-jform-fields.html">GJFields</a>';
 		break;
 	}
 
-	$gjfields_version = file_get_contents(JPATH_ROOT . '/libraries/gjfields/gjfields.xml');
-	preg_match('~<version>(.*)</version>~Ui', $gjfields_version, $gjfields_version);
-	$gjfields_version = $gjfields_version[1];
+	$gjfieldsVersion = file_get_contents(JPATH_ROOT . '/libraries/gjfields/gjfields.xml');
+	preg_match('~<version>(.*)</version>~Ui', $gjfieldsVersion, $gjfieldsVersion);
+	$gjfieldsVersion = $gjfieldsVersion[1];
 
-	if (version_compare($gjfields_version, $latest_gjfields_needed_version, '<'))
+	if (version_compare($gjfieldsVersion, $latestGjfieldsNeededVersion, '<'))
 	{
 		break;
 	}
@@ -50,31 +50,31 @@ while (true)
 
 if (!$isOk)
 {
-	JFactory::getApplication()->enqueueMessage($error_msg, 'error');
+	JFactory::getApplication()->enqueueMessage($errorMsg, 'error');
 }
 else
 {
-jimport('joomla.plugin.plugin');
-jimport('joomla.filesystem.file');
+	jimport('joomla.plugin.plugin');
+	jimport('joomla.filesystem.file');
 
-$com_path = JPATH_SITE . '/components/com_content/';
+	$comPath = JPATH_SITE . '/components/com_content/';
 
-// ~ require_once $com_path.'router.php';
-if (!class_exists('ContentRouter') )
-{
-	require_once $com_path . 'router.php';
-}
+	// ~ require_once $comPath.'router.php';
+	if (!class_exists('ContentRouter'))
+	{
+		require_once $comPath . 'router.php';
+	}
 
-// ~ require_once $com_path.'helpers/route.php';
-if (!class_exists('ContentHelperRoute') )
-{
-	require_once $com_path . 'helpers/route.php';
-}
+	// ~ require_once $comPath.'helpers/route.php';
+	if (!class_exists('ContentHelperRoute'))
+	{
+		require_once $comPath . 'helpers/route.php';
+	}
 
-if (!class_exists('NotificationAryHelper') )
-{
-	require_once dirname(__FILE__) . '/helpers/helper.php';
-}
+	if (!class_exists('NotificationAryHelper'))
+	{
+		require_once dirname(__FILE__) . '/helpers/helper.php';
+	}
 
 
 	/**
@@ -84,46 +84,104 @@ if (!class_exists('NotificationAryHelper') )
 	 * @since   0.0.1
 	 */
 	class PlgSystemNotificationaryCore extends JPluginGJFields
-				{
-		// Enable this variable to load local non-minified JS and CSS
+	{
+		/**
+		 * Enable this variable to load local non-minified JS and CSS
+		 *
+		 * @var boolean
+		 */
 		static public $debug = false;
 
-		protected $previous_state;
+		/**
+		 * Stores previous content object state
+		 *
+		 * @var string
+		 */
+		protected $previousState;
 
+		/**
+		 * TODO Comment
+		 *
+		 * @var boolean
+		 */
 		protected $onContentChangeStateFired = false;
 
+		/**
+		 * Stores content item object
+		 *
+		 * @var object
+		 */
 		protected $contentItem;
 
+		/**
+		 * Sitename
+		 *
+		 * @var string
+		 */
 		protected $sitename;
 
-		protected $plg_type;
-
-		protected $plg_name;
-
-		protected $plg_full_name;
-
+		/**
+		 * Language short code
+		 *
+		 * @var string
+		 */
 		protected $langShortCode;
 
-		protected $availableDIFFTypes = array ('Text/Unified','Text/Context','Html/SideBySide','Html/Inline');
+		/**
+		 * Lits of available diff types
+		 *
+		 * @var array
+		 */
+		protected $availableDIFFTypes = array('Text/Unified','Text/Context','Html/SideBySide','Html/Inline');
 
-		// Here will be stored which previos article versions need to be attached
-		protected $prepare_previous_versions_flag = array();
+		/**
+		 * Here will be stored which previos article versions need to be attached
+		 *
+		 * @var array
+		 */
+		protected $preparePreviousVersionsFlag = array();
 
-		// This flag is used to determine if DIFF info is needed at least once. Otherwise, DIFF library is not loaded.
+		/**
+		 * This flag is used to determine if DIFF info is needed at least once. Otherwise, DIFF library is not loaded.
+		 *
+		 * @var boolean
+		 */
 		protected $includeDiffInBody = false;
 
-		// Flag to know what diffs should be prepared gloablly.
+		/**
+		 * Flag to know what diffs should be prepared gloablly.
+		 *
+		 * @var array
+		 */
 		protected $DIFFsToBePreparedGlobally = array();
 
-		protected $broken_sends = array();
+		/**
+		 * Broken email sends
+		 *
+		 * @var array
+		 */
+		protected $brokenSends = array();
 
-		// Article is New
+		/**
+		 * Article is New
+		 *
+		 * @var boolean
+		 */
 		protected $isNew = false;
 
-		protected $publish_state_change = 'not determined';
+		/**
+		 * TODO comment
+		 *
+		 * @var string
+		 */
+		protected $publishStateChange = 'not determined';
 
-		// Contains all contexts to run the plugin at
-		protected $allowed_contexts = array();
+		/**
+		 * Contains all contexts to run the plugin at
+		 *
+		 * @var array
+		 */
+		protected $allowedContexts = array();
 
 		// Contains all components to run the plugin at
 		protected $allowed_components = array();
@@ -305,7 +363,7 @@ if (!class_exists('NotificationAryHelper') )
 
 					foreach ($this->pparams[$rule_number]->attachpreviousversion as $k => $v)
 					{
-						$this->prepare_previous_versions_flag[$v] = $v;
+						$this->preparePreviousVersionsFlag[$v] = $v;
 					}
 				}
 				// Here we get the extension and the context to be notified. We use either a registred in Joomla extension (like DPCalendar or core Articles) or
@@ -317,6 +375,7 @@ if (!class_exists('NotificationAryHelper') )
 				else
 				{
 					$templateRows = array_map('trim', explode(PHP_EOL, $this->pparams[$rule_number]->context));
+
 					$context = trim($templateRows[0]);
 
 					if (empty($context))
@@ -327,9 +386,9 @@ if (!class_exists('NotificationAryHelper') )
 							)
 							. ' (line ' . __LINE__ . '): '
 							. JText::sprintf(
-									'PLG_SYSTEM_NOTIFICATIONARY_NO_EXTENSION_SELECTED',
-									$this->pparams[$rule_number]->{'{notificationgroup'}[0],
-									$this->pparams[$rule_number]->__ruleUniqID
+								'PLG_SYSTEM_NOTIFICATIONARY_NO_EXTENSION_SELECTED',
+								$this->pparams[$rule_number]->{'{notificationgroup'}[0],
+								$this->pparams[$rule_number]->__ruleUniqID
 							),
 							'warning'
 						);
@@ -347,7 +406,14 @@ if (!class_exists('NotificationAryHelper') )
 
 					foreach ($extension_info as $key => $value)
 					{
-						$extension_info_merged[$key] = $templateRows[$i];
+						if (empty($templateRows[$i]))
+						{
+							$extension_info_merged[$key] = '';
+						}
+						else
+						{
+							$extension_info_merged[$key] = $templateRows[$i];
+						}
 						$i++;
 					}
 
@@ -363,7 +429,7 @@ if (!class_exists('NotificationAryHelper') )
 
 					foreach ($contextAliases as $ka => $va)
 					{
-						$this->allowed_contexts[] = $va;
+						$this->allowedContexts[] = $va;
 						$this->context_aliases[$va] = $extension_info['Context'];
 					}
 				}
@@ -374,8 +440,8 @@ if (!class_exists('NotificationAryHelper') )
 
 				unset($extension_info);
 
-				// $this->allowed_contexts[] = $rule->context;
-				$this->allowed_contexts[] = $this->pparams[$rule_number]->context;
+				// $this->allowedContexts[] = $rule->context;
+				$this->allowedContexts[] = $this->pparams[$rule_number]->context;
 
 				$component = explode('.', $this->pparams[$rule_number]->context);
 				$this->allowed_components[] = $component[0];
@@ -443,7 +509,7 @@ if (!class_exists('NotificationAryHelper') )
 				$this->pparams[$rule_number]->ausers_additionalmailadresses = implode(PHP_EOL, $additionalmailadresses);
 			}
 
-			$this->allowed_contexts = array_unique($this->allowed_contexts);
+			$this->allowedContexts = array_unique($this->allowedContexts);
 			$this->allowed_components = array_unique($this->allowed_components);
 		}
 
@@ -581,7 +647,7 @@ if (!class_exists('NotificationAryHelper') )
 
 			if (!empty($context))
 			{
-				if (in_array($context, $this->allowed_contexts))
+				if (in_array($context, $this->allowedContexts))
 				{
 					return true;
 				}
@@ -614,12 +680,12 @@ if (!class_exists('NotificationAryHelper') )
 
 			$context = $this->_contextAliasReplace($context);
 
-			if (!in_array($context, $this->allowed_contexts))
+			if (!in_array($context, $this->allowedContexts))
 			{
 				return true;
 			}
 
-			/* ##mygruz20180313030701 {  
+			/* ##mygruz20180313030701 {
 			if ($context == 'com_categories.category')
 			{
 				$context .= $jinput->get('extension', null);
@@ -640,8 +706,8 @@ if (!class_exists('NotificationAryHelper') )
 			foreach ($pks as $id)
 			{
 				$contentItem->load($id);
-				$contentItem->modified_by = JFactory::getUser()->id;
-				$this->previous_state = 'not determined';
+				$contentItem->{'modified_by'} = JFactory::getUser()->id;
+				$this->previousState = 'not determined';
 				$this->onContentAfterSave($context, $contentItem, false);
 			}
 
@@ -851,56 +917,56 @@ if (!class_exists('NotificationAryHelper') )
 			switch ($context)
 			{
 				case $CustomReplacement['context']:
-					$this->previous_article = $CustomReplacement['previous_item'];
-					$this->previous_state = $CustomReplacement['previous_state'];
+					$this->previousArticle = $CustomReplacement['previous_item'];
+					$this->previousState = $CustomReplacement['previous_state'];
 					break;
 				case 'jevents.edit.icalevent':
 					$dataModel = new JEventsDataModel;
-					$this->previous_article = $dataModel;
+					$this->previousArticle = $dataModel;
 					$jevent = $dataModel->queryModel->getEventById(intval($this->contentItem->id), 1, "icaldb");
 
 					if (!empty($jevent))
 					{
-						$this->previous_article = $jevent;
+						$this->previousArticle = $jevent;
 					}
 
 					break;
 				default :
 
-					// $this->previous_article = JTable::getInstance('content');
-					// $this->previous_article = $this->_getContentItemTable($context);
-					$this->previous_article = clone $contentItem;
-					$this->previous_article->reset();
-					$this->previous_article->load($contentItem->id);
-					$this->previous_state = $this->previous_article->state;
+					// $this->previousArticle = JTable::getInstance('content');
+					// $this->previousArticle = $this->_getContentItemTable($context);
+					$this->previousArticle = clone $contentItem;
+					$this->previousArticle->reset();
+					$this->previousArticle->load($contentItem->id);
+					$this->previousState = $this->previousArticle->state;
 
 					break;
 			}
 
-			$this->previous_article = $this->_contentItemPrepare($this->previous_article);
+			$this->previousArticle = $this->_contentItemPrepare($this->previousArticle);
 
 			$confObject = JFactory::getApplication();
 			$tmpPath = $confObject->getCfg('tmp_path');
 
-			foreach ($this->prepare_previous_versions_flag as $k => $v)
+			foreach ($this->preparePreviousVersionsFlag as $k => $v)
 			{
-				$this->attachments[$v] = $tmpPath . '/prev_version_id_' . $this->previous_article->id . '_' . uniqid() . '.' . $v;
+				$this->attachments[$v] = $tmpPath . '/prev_version_id_' . $this->previousArticle->id . '_' . uniqid() . '.' . $v;
 
 				switch ($v)
 				{
 					case 'html':
 					case 'txt':
 						$text = '';
-						$text .= '<h1>' . $this->previous_article->title . '</h1>' . PHP_EOL;
+						$text .= '<h1>' . $this->previousArticle->title . '</h1>' . PHP_EOL;
 
-						if (!empty($this->previous_article->introtext))
+						if (!empty($this->previousArticle->introtext))
 						{
-							$text .= '<br />' . $this->previous_article->introtext . PHP_EOL;
+							$text .= '<br />' . $this->previousArticle->introtext . PHP_EOL;
 						}
 
-						if (!empty($this->previous_article->fulltext))
+						if (!empty($this->previousArticle->fulltext))
 						{
-							$text .= '<hr id="system-readmore" />' . PHP_EOL . PHP_EOL . $this->previous_article->fulltext;
+							$text .= '<hr id="system-readmore" />' . PHP_EOL . PHP_EOL . $this->previousArticle->fulltext;
 						}
 
 						if ($v == 'txt')
@@ -924,7 +990,7 @@ if (!class_exists('NotificationAryHelper') )
 						break;
 					case 'sql':
 						$db = JFactory::getDBO();
-						$empty_contentItem = clone $this->previous_article;
+						$empty_contentItem = clone $this->previousArticle;
 						$empty_contentItem->reset();
 
 						// $empty_contentItem = $this->_getContentItemTable($context);
@@ -932,7 +998,7 @@ if (!class_exists('NotificationAryHelper') )
 						$text = 'UPDATE ' . $tablename . ' SET ';
 						$parts = array();
 
-						foreach ($this->previous_article as $field => $value)
+						foreach ($this->previousArticle as $field => $value)
 						{
 							if (is_string($value) && property_exists($empty_contentItem, $field) )
 							{
@@ -941,7 +1007,7 @@ if (!class_exists('NotificationAryHelper') )
 						}
 
 						$text .= implode(',', $parts);
-						$text .= ' WHERE ' . $db->quoteName('id') . '=' . $db->quote($this->previous_article->id);
+						$text .= ' WHERE ' . $db->quoteName('id') . '=' . $db->quote($this->previousArticle->id);
 						break;
 					default :
 						$this->attachments[$v] = null;
@@ -1011,14 +1077,14 @@ if (!class_exists('NotificationAryHelper') )
 				);
 
 				$old = array();
-				$old[] = '<h1>' . $this->previous_article->title . '</h1>';
-				$introtext = preg_split("/\r\n|\n|\r/", JString::trim($this->previous_article->introtext));
+				$old[] = '<h1>' . $this->previousArticle->title . '</h1>';
+				$introtext = preg_split("/\r\n|\n|\r/", JString::trim($this->previousArticle->introtext));
 				$old = array_merge($old, $introtext);
 
-				if (!empty($this->previous_article->fulltext))
+				if (!empty($this->previousArticle->fulltext))
 				{
 					$old[] = '<hr id="system-readmore" />';
-					$fulltext = preg_split("/\r\n|\n|\r/", JString::trim($this->previous_article->fulltext));
+					$fulltext = preg_split("/\r\n|\n|\r/", JString::trim($this->previousArticle->fulltext));
 					$old = array_merge($old, $fulltext);
 				}
 
@@ -1040,7 +1106,7 @@ if (!class_exists('NotificationAryHelper') )
 				$css = JFile::read(dirname(__FILE__) . '/helpers/Diff/styles.css');
 			}
 
-			$path = $tmpPath . '/diff_id_' . $this->previous_article->id . '_' . uniqid();
+			$path = $tmpPath . '/diff_id_' . $this->previousArticle->id . '_' . uniqid();
 
 			foreach ($this->DIFFsToBePreparedGlobally as $k => $v)
 			{
@@ -1407,25 +1473,25 @@ if (!class_exists('NotificationAryHelper') )
 
 			// Determine actions which has been perfomed
 			// Must use the modified $this->contentItem
-			if (isset($this->previous_state) && $this->previous_state == $this->contentItem->state)
+			if (isset($this->previousState) && $this->previousState == $this->contentItem->state)
 			{
-				$this->publish_state_change = 'nochange';
+				$this->publishStateChange = 'nochange';
 			}
-			elseif (isset($this->previous_state) && $this->previous_state != $this->contentItem->state)
+			elseif (isset($this->previousState) && $this->previousState != $this->contentItem->state)
 			{
 				switch ($this->contentItem->state)
 				{
 					case '1':
-						$this->publish_state_change = 'publish';
+						$this->publishStateChange = 'publish';
 						break;
 					case '0':
-						$this->publish_state_change = 'unpublish';
+						$this->publishStateChange = 'unpublish';
 						break;
 					case '2':
-						$this->publish_state_change = 'archive';
+						$this->publishStateChange = 'archive';
 						break;
 					case '-2':
-						$this->publish_state_change = 'trash';
+						$this->publishStateChange = 'trash';
 						break;
 				}
 			}
@@ -1433,9 +1499,9 @@ if (!class_exists('NotificationAryHelper') )
 			// ~ $this->author = JFactory::getUser( $contentItem->created_by );
 			$this->author = NotificationAryHelper::getUser($this->contentItem->created_by);
 
-			if ($this->contentItem->modified_by > 0 )
+			if ($this->contentItem->{'modified_by'} > 0 )
 			{
-				$this->modifier = NotificationAryHelper::getUser($this->contentItem->modified_by);
+				$this->modifier = NotificationAryHelper::getUser($this->contentItem->{'modified_by'});
 			}
 			else
 			{
@@ -1493,12 +1559,22 @@ if (!class_exists('NotificationAryHelper') )
 				{
 					$canLoginBackend = $user->authorise('core.login.admin');
 
-					if (!empty ($this->broken_sends) && !empty($this->ErrorMessage))
+					/**
+					 * Broken email sends
+					 *
+					 * @var array
+					 */
+					if (!empty ($this->brokenSends) && !empty($this->ErrorMessage))
 					{
 						// User has back-end access
 						if ($canLoginBackend )
 						{
-							$email = " " . JText::_('PLG_SYSTEM_NOTIFICATIONARY_EMAILS') . implode(" , ", $this->broken_sends);
+							/**
+							 * Broken email sends
+							 *
+							 * @var array
+							 */
+							$email = " " . JText::_('PLG_SYSTEM_NOTIFICATIONARY_EMAILS') . implode(" , ", $this->brokenSends);
 						}
 
 						$app->enqueueMessage(
@@ -1506,7 +1582,12 @@ if (!class_exists('NotificationAryHelper') )
 							'error'
 						);
 					}
-					elseif (empty ($this->broken_sends) && !empty($this->SuccessMessage) )
+					/**
+					 * Broken email sends
+					 *
+					 * @var array
+					 */
+					elseif (empty ($this->brokenSends) && !empty($this->SuccessMessage) )
 					{
 						if (!empty($Users_to_send) )
 						{
@@ -1716,7 +1797,12 @@ if (!class_exists('NotificationAryHelper') )
 
 				if ($send !== true)
 				{
-					$this->broken_sends[] = $mail['email'];
+					/**
+					 * Broken email sends
+					 *
+					 * @var array
+					 */
+					$this->brokenSends[] = $mail['email'];
 				}
 			}
 
@@ -1790,18 +1876,18 @@ if ($debug)
 
 				/*
 				* // Possible status changes (action)
-				$this->publish_state_change = 'nochange';
-				$this->publish_state_change = 'not determined';
-				$this->publish_state_change = 'publish';
-				$this->publish_state_change = 'unpublish';
-				$this->publish_state_change = 'archive';
-				$this->publish_state_change = 'trash';
+				$this->publishStateChange = 'nochange';
+				$this->publishStateChange = 'not determined';
+				$this->publishStateChange = 'publish';
+				$this->publishStateChange = 'unpublish';
+				$this->publishStateChange = 'archive';
+				$this->publishStateChange = 'trash';
 				*/
 
 if ($debug)
 {
 	dump($status_action_to_notify, '$status_action_to_notify');
-	dump($this->publish_state_change, '$this->publish_state_change');
+	dump($this->publishStateChange, '$this->publishStateChange');
 	dump($this->contentItem->state, '$this->contentItem->state');
 }
 
@@ -1824,12 +1910,12 @@ if ($debug)
 				if (!empty($intersect))
 				{
 					// Then we check the action happened to the content item
-					if ($this->publish_state_change == 'nochange' || $this->publish_state_change == 'not determined')
+					if ($this->publishStateChange == 'nochange' || $this->publishStateChange == 'not determined')
 					{
 						// Do nothing, means returning empty array.
 						// So if we want a notification on an action but the action cannot be determined, then noone has to be notified
 					}
-					elseif (in_array($this->publish_state_change, $status_action_to_notify))
+					elseif (in_array($this->publishStateChange, $status_action_to_notify))
 					{
 						break;
 					}
@@ -1840,8 +1926,8 @@ if ($debug)
 	dump(
 		$status_action_to_notify,
 		'Content item status or action is now among allowed options. $this->contentItem->state ='
-			. $this->contentItem->state . ' | $this->publish_state_change ='
-			. $this->publish_state_change . ' | Allowed options '
+			. $this->contentItem->state . ' | $this->publishStateChange ='
+			. $this->publishStateChange . ' | Allowed options '
 	);
 }
 
@@ -2012,9 +2098,9 @@ if ($debug)
 			$query->where('block = 0');
 			$query->where($db->quoteName('id') . " <> " . $db->Quote($this->contentItem->created_by));
 
-			if (!empty($this->contentItem->modified_by) && $this->contentItem->modified_by != $this->contentItem->created_by)
+			if (!empty($this->contentItem->{'modified_by'}) && $this->contentItem->{'modified_by'} != $this->contentItem->created_by)
 			{
-				$query->where(" id <> " . $db->Quote($this->contentItem->modified_by));
+				$query->where(" id <> " . $db->Quote($this->contentItem->{'modified_by'}));
 			}
 
 			if (!empty($GroupLevels))
@@ -2272,13 +2358,13 @@ if ($debug)
 
 				// If notify on `publish only` or on `unpublish only`, but the state was not changed
 				if (($nauthor == '1' || $nauthor == '2')
-					&& ($this->publish_state_change == 'nochange' || $this->publish_state_change == 'not determined'))
+					&& ($this->publishStateChange == 'nochange' || $this->publishStateChange == 'not determined'))
 				{
 					break;
 				}
 
 				// If notify on `publish or on unpublish` , but the state was not changed
-				if ($nauthor == '6'  && ($this->publish_state_change == 'nochange' || $this->publish_state_change == 'not determined'))
+				if ($nauthor == '6'  && ($this->publishStateChange == 'nochange' || $this->publishStateChange == 'not determined'))
 				{
 					break;
 				}
@@ -2296,19 +2382,19 @@ if ($debug)
 				}
 
 				// If notify on `on publish or unpublish`, but the acion is not neiher published or unpublished
-				if ($nauthor == '6' && !($this->publish_state_change == 'unpublish' || $this->publish_state_change == 'publish'))
+				if ($nauthor == '6' && !($this->publishStateChange == 'unpublish' || $this->publishStateChange == 'publish'))
 				{
 					break;
 				}
 
 				// If notify on `on publish only`, but the acion is not published
-				if ($nauthor == '1' && !($this->publish_state_change == 'publish'))
+				if ($nauthor == '1' && !($this->publishStateChange == 'publish'))
 				{
 					break;
 				}
 
 				// If notify on `on unpublish only`, but the acion is not unpublished
-				if ($nauthor == '2' && !($this->publish_state_change == 'unpublish'))
+				if ($nauthor == '2' && !($this->publishStateChange == 'unpublish'))
 				{
 					break;
 				}
@@ -3070,7 +3156,7 @@ if ($debug)
 						    $link = $this->_makeSEF($link);
 						}
 					}
-					
+
 					break;
 			}
 
@@ -3461,7 +3547,7 @@ if ($debug)
 
 				if ($user->id == $this->contentItem->created_by)
 				{
-					if ($this->contentItem->created_by != $this->contentItem->modified_by)
+					if ($this->contentItem->created_by != $this->contentItem->{'modified_by'})
 					{
 						$place_holders_subject['%ACTION%'] = $this->modifier->username . ' '
 							. JText::_('PLG_SYSTEM_NOTIFICATIONARY_HAS_ADDED_A_CONTENT_ITEM_WITH_YOU_SET_AS_AUTHOR');
@@ -3472,7 +3558,7 @@ if ($debug)
 					}
 				}
 				// Current user is not the article's author, but the article's author is set to anoter user
-				elseif ($user->id == $this->contentItem->modified_by)
+				elseif ($user->id == $this->contentItem->{'modified_by'})
 				{
 					$place_holders_subject['%ACTION%'] = JText::sprintf(
 																								'PLG_SYSTEM_NOTIFICATIONARY_YOU_HAVE_JUST_ADDED_A_CONTENT_ITEM_WITH_AUTHOR',
@@ -3483,15 +3569,15 @@ if ($debug)
 			// Article not new
 			else
 			{
-				if ($this->publish_state_change == 'publish')
+				if ($this->publishStateChange == 'publish')
 				{
 					// Current user have changed article state
-					if ($user->id == $this->contentItem->modified_by)
+					if ($user->id == $this->contentItem->{'modified_by'})
 					{
 						$place_holders_subject['%ACTION%'] = JText::_('PLG_SYSTEM_NOTIFICATIONARY_YOU_HAVE_JUST_PUBLISHED_A_CONTENT_ITEM');
 					}
 					// The article was not modifed by the user, but the user is the article's author
-					elseif ($user->id == $this->contentItem->created_by && $user->id != $this->contentItem->modified_by)
+					elseif ($user->id == $this->contentItem->created_by && $user->id != $this->contentItem->{'modified_by'})
 					{
 						$place_holders_subject['%ACTION%'] = JText::_('PLG_SYSTEM_NOTIFICATIONARY_YOUR_CONTENT_ITEM_HAS_BEEN_PUBLISHED');
 						$place_holders_body['%ACTION%'] = $this->modifier->username . ' ' . JText::_('PLG_SYSTEM_NOTIFICATIONARY_HAS_PUBLISHED_YOUR_CONTENT_ITEM');
@@ -3502,15 +3588,15 @@ if ($debug)
 						$place_holders_subject['%ACTION%'] = JText::_('PLG_SYSTEM_NOTIFICATIONARY_A_CONTENT_ITEM_HAS_BEEN_PUBLISHED');
 					}
 				}
-				elseif ($this->publish_state_change == 'unpublish')
+				elseif ($this->publishStateChange == 'unpublish')
 				{
 					// Current user have changed article state
-					if ($user->id == $this->contentItem->modified_by)
+					if ($user->id == $this->contentItem->{'modified_by'})
 					{
 						$place_holders_subject['%ACTION%'] = JText::_('PLG_SYSTEM_NOTIFICATIONARY_YOU_HAVE_JUST_UNPUBLISHED_A_CONTENT_ITEM');
 					}
 					// The article was not modifed by the user, but the user is the article's author
-					elseif ($user->id == $this->contentItem->created_by && $user->id != $this->contentItem->modified_by)
+					elseif ($user->id == $this->contentItem->created_by && $user->id != $this->contentItem->{'modified_by'})
 					{
 							$place_holders_subject['%ACTION%'] = JText::_('PLG_SYSTEM_NOTIFICATIONARY_YOUR_CONTENT_ITEM_HAS_BEEN_UNPUBLISHED');
 							$place_holders_body['%ACTION%'] = $this->modifier->username . ' ' . JText::_('PLG_SYSTEM_NOTIFICATIONARY_HAS_UNPUBLISHED_YOUR_CONTENT_ITEM');
@@ -3523,11 +3609,11 @@ if ($debug)
 				}
 				else
 				{
-					if ($user->id == $this->contentItem->modified_by)
+					if ($user->id == $this->contentItem->{'modified_by'})
 					{
 						$place_holders_subject['%ACTION%'] = JText::_('PLG_SYSTEM_NOTIFICATIONARY_YOU_HAVE_JUST_UPDATED_A_CONTENT_ITEM');
 					}
-					elseif ($user->id == $this->contentItem->created_by && $user->id != $this->contentItem->modified_by)
+					elseif ($user->id == $this->contentItem->created_by && $user->id != $this->contentItem->{'modified_by'})
 					{
 							$place_holders_subject['%ACTION%'] = JText::_('PLG_SYSTEM_NOTIFICATIONARY_YOUR_CONTENT_ITEM_HAS_BEEN_MODIFIED');
 							$place_holders_body['%ACTION%'] = $this->modifier->username . ' ' . JText::_('PLG_SYSTEM_NOTIFICATIONARY_HAS_MODIFIED_YOUR_CONTENT_ITEM');
@@ -3569,7 +3655,7 @@ if ($debug)
 					$isAuthor = true;
 					$include = 'author';
 				}
-				elseif ($user->id == $this->contentItem->modified_by)
+				elseif ($user->id == $this->contentItem->{'modified_by'})
 				{
 					$isModifier = true;
 					$include = 'modifier';
@@ -5158,7 +5244,7 @@ exit;
 				// Prepare to imitate onContentPrepareForm {
 				$this->_prepareParams();
 				$context = 'com_k2.item';
-				$this->allowed_contexts[] = $context;
+				$this->allowedContexts[] = $context;
 				$this->_setContext($context);
 
 				$this->shouldShowSwitchCheckFlag = false;

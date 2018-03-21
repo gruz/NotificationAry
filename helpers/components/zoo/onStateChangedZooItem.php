@@ -4,36 +4,44 @@
  *
  * @package		NotificationAry
  * @author Gruz <arygroup@gmail.com>
- * @copyright	Copyleft - All rights reversed
+ * @copyright	0000 opyleft - All rights reversed
  * @license GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 
 // No direct access
-defined( '_JEXEC' ) or die( 'Restricted access' );
+defined('_JEXEC') or die('Restricted access');
 
 function onStateChangedZooItem($event)
 {
-// ~ dumpMessage('onStateChangedZooItem');
-// ~ dumpMessage('onEditZooItem');
+	// ~ dumpMessage('onStateChangedZooItem');
+	// ~ dumpMessage('onEditZooItem');
 	$contentItem = $event->getSubject();
 
-// ~ dump($contentItem, '$contentItem ZOO change state');
-return;
-	$jinput =  JFactory::getApplication()->input; if ($jinput->get('option',null) == 'com_dump') { return; }
+	// ~ dump($contentItem, '$contentItem ZOO change state');
+	return;
+	$jinput = JFactory::getApplication()->input;
+
+	if ($jinput->get('option', null) == 'com_dump')
+	{
+		return;
+	}
 
 	$this->_prepareParams();
 
 	$context = 'com_zoo.item';
 
-	if (!in_array($context, $this->allowed_contexts)) { return true; }
+	if (!in_array($context, $this->allowedContexts))
+	{
+		return true;
+	}
 
 	$contentItem = $event->getSubject();
-	$isNew = $event['new'];
+	$isNew       = $event['new'];
 	$this->isNew = $isNew;
 
 	$this->onContentChangeStateFired = true;
 
-	/*
+	/**
 	foreach ($pks as $id) {
 		$dataModel = new JEventsDataModel();
 		$contentItem = $dataModel->queryModel->getEventById(intval($id), 1, "icaldb");
@@ -54,7 +62,7 @@ return;
 		 }
 		$contentItem  = $this->_contentItemPrepare($contentItem);
 
-		$this->previous_state = 'not determined';
+		$this->previousState = 'not determined';
 		$this->onContentAfterSave($context, $contentItem, false);
 
 	}
