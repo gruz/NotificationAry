@@ -3,19 +3,34 @@
  * A plugin which sends notifications when an article is added or modified at a Joomla web-site
  *
  * @package     NotificationAry
- * @subpackage  com_teaching
  *
  * @author      Gruz <arygroup@gmail.com>
  * @copyright   Copyleft (є) 2016 - All rights reversed
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 
+namespace NotificationAry;
+
 // No direct access
 defined('_JEXEC') or die;
 
+use JLoader;
+JLoader::registerNamespace('NotificationAry', __DIR__, false, false, 'psr4');
+
+use JRegistry;
+use JPluginHelper;
+use JFactory;
+use JTable;
+use JText;
+use NotificationAry\Helpers\NotificationAryHelper;
+use NotificationAry\Helpers\Traits;
+
 jimport('gjfields.gjfields');
 jimport('gjfields.helper.plugin');
-jimport('joomla.filesystem.folder');
+// jimport('joomla.filesystem.folder');
+// jimport('joomla.plugin.plugin');
+// jimport('joomla.filesystem.file');
+
 
 $latestGjfieldsNeededVersion = '1.2.0';
 $errorMsg = 'Install the latest GJFields plugin version <span style="color:black;">'
@@ -27,7 +42,7 @@ while (true)
 {
 	$isOk = false;
 
-	if (!class_exists('JPluginGJFields'))
+	if (!class_exists('\JPluginGJFields'))
 	{
 		$errorMsg = 'Strange, but missing GJFields library for <span style="color:black;">'
 			. __FILE__ . '</span><br> The library should be installed together with the extension... Anyway, reinstall it:
@@ -50,32 +65,21 @@ while (true)
 
 if (!$isOk)
 {
-	JFactory::getApplication()->enqueueMessage($errorMsg, 'error');
+	\JFactory::getApplication()->enqueueMessage($errorMsg, 'error');
 }
 else
 {
-	jimport('joomla.plugin.plugin');
-	jimport('joomla.filesystem.file');
-
 	$comPath = JPATH_SITE . '/components/com_content/';
 
-	// ~ require_once $comPath.'router.php';
-	if (!class_exists('ContentRouter'))
+	if (!class_exists('ContentRouter') )
 	{
 		require_once $comPath . 'router.php';
 	}
 
-	// ~ require_once $comPath.'helpers/route.php';
-	if (!class_exists('ContentHelperRoute'))
+	if (!class_exists('ContentHelperRoute') )
 	{
 		require_once $comPath . 'helpers/route.php';
 	}
-
-	if (!class_exists('NotificationAryHelper'))
-	{
-		require_once dirname(__FILE__) . '/helpers/helper.php';
-	}
-
 
 	/**
 	 * Plugin code
@@ -83,8 +87,11 @@ else
 	 * @author  Gruz <arygroup@gmail.com>
 	 * @since   0.0.1
 	 */
-	class PlgSystemNotificationaryCore extends JPluginGJFields
+	class PlgSystemNotificationaryCore extends \JPluginGJFields
 	{
+		//use NotificationAry;
+		use Traits\SmallFunctions;
+
 		/**
 		 * Enable this variable to load local non-minified JS and CSS
 		 *
@@ -183,14 +190,24 @@ else
 		 */
 		protected $allowedContexts = array();
 
-		// Contains all components to run the plugin at
-		protected $allowed_components = array();
+		/**
+		 * Contains all components to run the plugin at
+		 *
+		 * @var array
+		 */
+		protected $allowedComponents = array();
 
 		// Contains context=>jtableclass (manually entered) ties
-		// ~ protected $jtable_classes = array();
+		// ~ protected $jtableClasses = array();
 
-		// A variable to pass current context between functions. Currenlty used to determine if to show a notification switch.
-		// Is set in onContentPrepareForm to and used in onAfterRender to know if onAfterRender should run
+		/**
+		 * A variable to pass current context between functions.
+		 *
+		 * Currenlty used to determine if to show a notification switch.
+		 * Is set in onContentPrepareForm to and used in onAfterRender to know if onAfterRender should run
+		 *
+		 * @var array
+		 */
 		protected $context = array();
 
 		protected $shouldShowSwitchCheckFlag = false;
@@ -206,7 +223,11 @@ else
 						'com_categories.categories' => 'com_categories.category',
 					);
 
-		// Joomla article object differs from i.e. K2 object. Make them look the same for some variables
+		/**
+		 * Joomla article object differs from i.e. K2 object. Make them look the same for some variables
+		 *
+		 * @var array
+		 */
 		protected $object_variables_to_replace = array (
 				// State in com_contact means not status, but a state (region), so use everywhere published
 				array ('published','state'),
@@ -444,7 +465,7 @@ else
 				$this->allowedContexts[] = $this->pparams[$rule_number]->context;
 
 				$component = explode('.', $this->pparams[$rule_number]->context);
-				$this->allowed_components[] = $component[0];
+				$this->allowedComponents[] = $component[0];
 
 				// Prepare options for author and editor mailbody
 				$includes = array('author','modifier');
@@ -510,7 +531,7 @@ else
 			}
 
 			$this->allowedContexts = array_unique($this->allowedContexts);
-			$this->allowed_components = array_unique($this->allowed_components);
+			$this->allowedComponents = array_unique($this->allowedComponents);
 		}
 
 		/**
@@ -547,7 +568,7 @@ else
 			{
 				if (!isset($predefined_context_templates))
 				{
-					include dirname(__FILE__) . '/helpers/predefined_contexts.php';
+					include dirname(__FILE__) . '/Helpers/predefined_contexts.php';
 				}
 
 				$extension_info = array_flip($rows);
@@ -973,7 +994,7 @@ else
 						{
 							if (!class_exists('Html2Text') )
 							{
-								require_once dirname(__FILE__) . '/helpers/Html2Text.php';
+								require_once dirname(__FILE__) . '/Helpers/Html2Text.php';
 							}
 
 							// Instantiate a new instance of the class. Passing the string
@@ -1065,7 +1086,7 @@ else
 			{
 				if (!class_exists('Diff') )
 				{
-					require_once dirname(__FILE__) . '/helpers/Diff.php';
+					require_once dirname(__FILE__) . '/Helpers/Diff.php';
 				}
 
 				$options = array(
@@ -1103,7 +1124,7 @@ else
 
 				// Initialize the diff class
 				$diff = new Diff($old, $new, $options);
-				$css = JFile::read(dirname(__FILE__) . '/helpers/Diff/styles.css');
+				$css = JFile::read(dirname(__FILE__) . '/Helpers/Diff/styles.css');
 			}
 
 			$path = $tmpPath . '/diff_id_' . $this->previousArticle->id . '_' . uniqid();
@@ -1134,7 +1155,7 @@ else
 
 				if (!class_exists($className))
 				{
-					require_once dirname(__FILE__) . '/helpers/Diff/Renderer/' . $v . '.php';
+					require_once dirname(__FILE__) . '/Helpers/Diff/Renderer/' . $v . '.php';
 				}
 
 				// Generate a side by side diff
@@ -1549,7 +1570,7 @@ else
 				{
 					if (!class_exists('fakeMailerClass'))
 					{
-						require_once dirname(__FILE__) . '/helpers/fakeMailerClass.php';
+						require_once dirname(__FILE__) . '/Helpers/fakeMailerClass.php';
 					}
 				}
 
@@ -2921,9 +2942,9 @@ if ($debug)
 									$link = str_replace('##ID##', $this->contentItem->id, $this->rule->extension_info['Frontend edit link']);
 
 									/* For ZOO frontend edit link
-									 * Check /administrator/components/com_zoo/helpers/route.php line 394
-									 * /administrator/components/com_zoo/helpers/submission.php line 62
-									 * /administrator/components/com_zoo/framework/helpers/system.php line 56
+									 * Check /administrator/components/com_zoo/Helpers/route.php line 394
+									 * /administrator/components/com_zoo/Helpers/submission.php line 62
+									 * /administrator/components/com_zoo/framework/Helpers/system.php line 56
 									 */
 									if (strpos($this->rule->extension_info['Frontend edit link'], '##SUBMISSION_HASH##') !== false)
 									{
@@ -3965,7 +3986,7 @@ if ($debug)
 			{
 				if (!class_exists('Html2Text') )
 				{
-					require_once dirname(__FILE__) . '/helpers/Html2Text.php';
+					require_once dirname(__FILE__) . '/Helpers/Html2Text.php';
 				}
 			}
 
@@ -5033,7 +5054,7 @@ exit;
 
 				if (!class_exists('fakeMailerClass') )
 				{
-					require_once dirname(__FILE__) . '/helpers/fakeMailerClass.php';
+					require_once dirname(__FILE__) . '/Helpers/fakeMailerClass.php';
 				}
 
 				$mailer_temp = unserialize(base64_decode(file_get_contents($file)));
@@ -5879,6 +5900,7 @@ if ($debug)
 		{
 // ~ dump('onContentPrepareForm','onContentPrepareForm');
 // ~ dumpTrace();
+
 			$this->_userProfileFormHandle($form, $contentItem);
 
 $debug = true;
@@ -5905,7 +5927,9 @@ if ($debug)
 			}
 
 			// Check we are manipulating a valid form.
-			if (!($form instanceof JForm))
+			
+			
+			if ($this->checkIsForm($form))
 			{
 				$this->_subject->setError('JERROR_NOT_A_FORM');
 
@@ -6157,7 +6181,7 @@ if ($debug)
 
 			if (!$placeholders_loaded)
 			{
-				require JPATH_SITE . '/plugins/system/notificationary/helpers/field_mailbodyHelper.php';
+				require JPATH_SITE . '/plugins/system/notificationary/Helpers/field_mailbodyHelper.php';
 
 				foreach ($ph_body as $k => $v)
 				{
@@ -6471,7 +6495,7 @@ if ($debug)
 		 */
 		public function _userProfileFormHandle($form, $data)
 		{
-			if (!($form instanceof JForm))
+			if ($this->checkIsForm($form))
 			{
 				$this->_subject->setError('JERROR_NOT_A_FORM');
 
@@ -6604,7 +6628,7 @@ if ($debug)
 
 		if (!isset($predefined_context_templates))
 		{
-			include dirname(__FILE__) . '/helpers/predefined_contexts.php';
+			include dirname(__FILE__) . '/Helpers/predefined_contexts.php';
 		}
 	}
 
@@ -6641,7 +6665,7 @@ if ($debug)
 	}
 
 	$class_dynamic = '
-	class plgSystemNotificationary extends plgSystemNotificationaryCore {
+	class plgSystemNotificationary extends NotificationAry\plgSystemNotificationaryCore {
 		public function __construct(& $subject, $config) {
 			parent::__construct($subject, $config);
 		}

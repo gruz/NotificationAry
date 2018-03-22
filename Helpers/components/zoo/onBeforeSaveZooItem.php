@@ -11,6 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use NotificationAry\Helpers\NotificationAryHelper;
 /**
  * `static` before function name is a must
  *

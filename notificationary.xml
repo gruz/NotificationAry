@@ -4,15 +4,15 @@
   <author>Gruz</author>
   <authorEmail>arygroup@gmail.com</authorEmail>
   <authorUrl>http://gruz.ml/extensions/notificationary.html</authorUrl>
-  <creationDate>2018-03-21</creationDate>
+  <creationDate>2018-03-22</creationDate>
   <copyright>Copyright (C) 2004-2018 Gruz All rights reserved.</copyright>
   <license>GNU General Public License</license>
-  <version>0.2.17 dev build 3</version>
+  <version>0.2.17 dev build 4</version>
   <description>PLG_SYSTEM_NOTIFICATIONARY_FIELD_DESC</description>
   <files>
 
 
-  <folder>code</folder><folder>css</folder><folder>extensions</folder><folder>fields</folder><folder>forms</folder><folder>helpers</folder><folder>images</folder><folder>js</folder><folder>language</folder><folder>layouts</folder><filename>README.md</filename><filename>index.html</filename><filename plugin="notificationary">notificationary.php</filename><filename>scriptary.php</filename><filename>scriptfile.php</filename></files>
+  <folder>Helpers</folder><folder>code</folder><folder>css</folder><folder>extensions</folder><folder>fields</folder><folder>forms</folder><folder>images</folder><folder>js</folder><folder>language</folder><folder>layouts</folder><filename>README.md</filename><filename>index.html</filename><filename plugin="notificationary">notificationary.php</filename><filename>scriptary.php</filename><filename>scriptfile.php</filename></files>
 
 	<media destination="plg_system_notificationary" folder=".">
 		<folder>css</folder>
@@ -38,7 +38,7 @@
 				<option value="0">JNO</option>
 			</field>
 
-			<field maxrepeatlength="1" type="gjfields.variablefield" basetype="gjfields.textareafixed" name="use_json_template" label="PLG_SYSTEM_NOTIFICATIONARY_FIELD_RULE_TEMPLATE_HASH" rows="2" cols="30" description="PLG_SYSTEM_NOTIFICATIONARY_FIELD_RULE_TEMPLATE_HASH_DESC" inputAddition="/plugins/system/notificationary/helpers/field_jsonTemplateHelper.php;$output" class="pull-left" hint="PLG_SYSTEM_NOTIFICATIONARY_FIELD_RULE_TEMPLATE_HASH_PASTE"/>
+			<field maxrepeatlength="1" type="gjfields.variablefield" basetype="gjfields.textareafixed" name="use_json_template" label="PLG_SYSTEM_NOTIFICATIONARY_FIELD_RULE_TEMPLATE_HASH" rows="2" cols="30" description="PLG_SYSTEM_NOTIFICATIONARY_FIELD_RULE_TEMPLATE_HASH_DESC" inputAddition="/plugins/system/notificationary/Helpers/field_jsonTemplateHelper.php;$output" class="pull-left" hint="PLG_SYSTEM_NOTIFICATIONARY_FIELD_RULE_TEMPLATE_HASH_PASTE"/>
 
 
 			<field name="{rule_enabled" maxrepeatlength="1" type="gjfields.variablefield" basetype="gjfields.toggler" param="isenabled" value="1"/>
@@ -88,7 +88,7 @@
 					</field>
 
 					<field name="{context" maxrepeatlength="1" type="gjfields.variablefield" basetype="gjfields.toggler" param="context_or_contenttype" value="context" class="content_types_template"/>
-						<field name="context" basetype="na.textareawithpreload" labelAddition="/plugins/system/notificationary/helpers/field_manualcontextsHelper.php;$output_label" preloadTemplatesAddition="/plugins/system/notificationary/helpers/field_manualcontextsHelper.php;$output_templates" rows="4" cols="60" default="" label="PLG_SYSTEM_NOTIFICATIONARY_FIELD_MANUAL_CONTEXTS" description="" maxrepeatlength="1" type="gjfields.variablefield" class="textareainbunch span8"/>
+						<field name="context" basetype="na.textareawithpreload" labelAddition="/plugins/system/notificationary/Helpers/field_manualcontextsHelper.php;$output_label" preloadTemplatesAddition="/plugins/system/notificationary/Helpers/field_manualcontextsHelper.php;$output_templates" rows="4" cols="60" default="" label="PLG_SYSTEM_NOTIFICATIONARY_FIELD_MANUAL_CONTEXTS" description="" maxrepeatlength="1" type="gjfields.variablefield" class="textareainbunch span8"/>
 						<field type="gjfields.variablefield" basetype="gjfields.notefixed" name="custom_context" class="" description="PLG_SYSTEM_NOTIFICATIONARY_FIELD_MANUAL_CONTEXTS_DESC" maxrepeatlength="1"/>
 
 					<field name="context}" maxrepeatlength="1" type="gjfields.variablefield" basetype="gjfields.toggler"/>
@@ -431,8 +431,8 @@
 					<field name="messagebodysource_hardcoded}" maxrepeatlength="1" type="gjfields.variablefield" basetype="gjfields.toggler"/>
 					<field name="{messagebodysource_custom" maxrepeatlength="1" type="gjfields.variablefield" basetype="gjfields.toggler" param="messagebodysource" value="custom"/>
 						<field type="gjfields.variablefield" basetype="gjfields.notefixed" name="note_php" class="alert alert-info span8 offset2" label="PLG_SYSTEM_NOTIFICATIONARY_FIELD_EVAL_NOTE" maxrepeatlength="1" heading="span"/>
-						<field name="messagesubjectcustom" class="span8" basetype="gjfields.textareafixed" labelAddition="/plugins/system/notificationary/helpers/field_mailbodyHelper.php;$place_holders_subject_label" rows="4" cols="60" default="PLG_SYSTEM_NOTIFICATIONARY_FIELD_MESSAGE_SUBJECT_PLACEHOLDERS_DEFAULT" label="PLG_SYSTEM_NOTIFICATIONARY_FIELD_MESSAGE_SUBJECT_PLACEHOLDERS" description="" maxrepeatlength="1" type="gjfields.variablefield"/>
-						<field name="messagebodycustom" type="gjfields.variablefield" class="span8" basetype="gjfields.textareafixed" maxrepeatlength="1" label="PLG_SYSTEM_NOTIFICATIONARY_FIELD_MESSAGE_BODY_PLACEHOLDERS" description="PLG_SYSTEM_NOTIFICATIONARY_FIELD_MESSAGE_BODY_PLACEHOLDERS_DESC" source_parameter="context_or_contenttype,content_type,context" target_parameter="context_or_contenttype,content_type,context" labelAddition="/plugins/system/notificationary/helpers/field_mailbodyHelper.php;$place_holders_body_label" rows="16" cols="60" defaultAddition="/plugins/system/notificationary/helpers/field_mailbodyHelper.php;$default_body" inputAddition="/plugins/system/notificationary/helpers/field_mailbodyHelper.php;$place_holders_body_input"/>
+						<field name="messagesubjectcustom" class="span8" basetype="gjfields.textareafixed" labelAddition="/plugins/system/notificationary/Helpers/field_mailbodyHelper.php;$place_holders_subject_label" rows="4" cols="60" default="PLG_SYSTEM_NOTIFICATIONARY_FIELD_MESSAGE_SUBJECT_PLACEHOLDERS_DEFAULT" label="PLG_SYSTEM_NOTIFICATIONARY_FIELD_MESSAGE_SUBJECT_PLACEHOLDERS" description="" maxrepeatlength="1" type="gjfields.variablefield"/>
+						<field name="messagebodycustom" type="gjfields.variablefield" class="span8" basetype="gjfields.textareafixed" maxrepeatlength="1" label="PLG_SYSTEM_NOTIFICATIONARY_FIELD_MESSAGE_BODY_PLACEHOLDERS" description="PLG_SYSTEM_NOTIFICATIONARY_FIELD_MESSAGE_BODY_PLACEHOLDERS_DESC" source_parameter="context_or_contenttype,content_type,context" target_parameter="context_or_contenttype,content_type,context" labelAddition="/plugins/system/notificationary/Helpers/field_mailbodyHelper.php;$place_holders_body_label" rows="16" cols="60" defaultAddition="/plugins/system/notificationary/Helpers/field_mailbodyHelper.php;$default_body" inputAddition="/plugins/system/notificationary/Helpers/field_mailbodyHelper.php;$place_holders_body_input"/>
 					<field name="messagebodysource_custom}" maxrepeatlength="1" type="gjfields.variablefield" basetype="gjfields.toggler"/>
 				<field name="message_settings}" maxrepeatlength="1" type="gjfields.variablefield" basetype="gjfields.blockquote"/>
 				<!--  message body } -->

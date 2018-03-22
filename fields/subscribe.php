@@ -8,6 +8,8 @@
 
 defined('JPATH_PLATFORM') or die;
 
+use NotificationAry\Helpers\NotificationAryHelper;
+
 if (!class_exists('GJFieldsFormField'))
 {
 	include JPATH_ROOT . '/libraries/gjfields/gjfields.php';

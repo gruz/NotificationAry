@@ -12,6 +12,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use NotificationAry\Helpers\NotificationAryHelper;
+
 // Available placeholder for mails
 	$ph_subject = array(
 		'%SITENAME%',

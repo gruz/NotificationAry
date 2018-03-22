@@ -9,8 +9,12 @@
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 
+namespace NotificationAry\Helpers;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use JFactory;
 
 /**
  * Helper class
@@ -112,7 +116,7 @@ class NotificationAryHelper
 	 *
 	 * @param   string  $context_template  Manual extension template field contents
 	 *
-	 * @return  mixed  String and to nothing if a one-row context is passed, or an array according to the template defined in /helpers/predefined_contexts.php
+	 * @return  mixed  String and to nothing if a one-row context is passed, or an array according to the template defined in /Helpers/predefined_contexts.php
 	 */
 	static public function _parseManualContextTemplate ($context_template)
 	{

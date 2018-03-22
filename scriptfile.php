@@ -441,7 +441,7 @@ exit;
 	{
 		if(!class_exists('paramsHelper'))
 		{
-			include __DIR__.'/helpers/paramsHelper.php';
+			include __DIR__.'/Helpers/paramsHelper.php';
 		}
 
 		$helper = new paramsHelper($element = 'notificationary', $type = 'plugin', $groupname, $manifest);
