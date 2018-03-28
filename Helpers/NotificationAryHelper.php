@@ -15,6 +15,8 @@ namespace NotificationAry\Helpers;
 defined('_JEXEC') or die('Restricted access');
 
 use JFactory;
+use JFolder;
+use JFile;
 
 /**
  * Helper class

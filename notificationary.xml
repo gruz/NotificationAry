@@ -4,15 +4,15 @@
   <author>Gruz</author>
   <authorEmail>arygroup@gmail.com</authorEmail>
   <authorUrl>http://gruz.ml/extensions/notificationary.html</authorUrl>
-  <creationDate>2018-03-22</creationDate>
+  <creationDate>2018-03-21</creationDate>
   <copyright>Copyright (C) 2004-2018 Gruz All rights reserved.</copyright>
   <license>GNU General Public License</license>
-  <version>0.2.17 dev build 4</version>
+  <version>0.2.17 dev build 3</version>
   <description>PLG_SYSTEM_NOTIFICATIONARY_FIELD_DESC</description>
   <files>
 
 
-  <folder>Helpers</folder><folder>code</folder><folder>css</folder><folder>extensions</folder><folder>fields</folder><folder>forms</folder><folder>images</folder><folder>js</folder><folder>language</folder><folder>layouts</folder><filename>README.md</filename><filename>index.html</filename><filename plugin="notificationary">notificationary.php</filename><filename>scriptary.php</filename><filename>scriptfile.php</filename></files>
+  <folder>code</folder><folder>css</folder><folder>extensions</folder><folder>fields</folder><folder>forms</folder><folder>helpers</folder><folder>images</folder><folder>js</folder><folder>language</folder><folder>layouts</folder><filename>README.md</filename><filename>index.html</filename><filename plugin="notificationary">notificationary.php</filename><filename>scriptary.php</filename><filename>scriptfile.php</filename></files>
 
 	<media destination="plg_system_notificationary" folder=".">
 		<folder>css</folder>
