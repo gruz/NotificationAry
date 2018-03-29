@@ -14,9 +14,13 @@ namespace NotificationAry\Helpers;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use JFactory;
-use JFolder;
-use JFile;
+// phpcs:disable
+use JFactory,
+	JFolder,
+	JFile,
+	JModelLegacy
+	;
+// phpcs:enable
 
 /**
  * Helper class
