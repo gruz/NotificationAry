@@ -12,8 +12,6 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use NotificationAry\Helpers\NotificationAryHelper;
-
 // Available placeholder for mails
 	$ph_subject = array(
 		'%SITENAME%',
@@ -167,9 +165,9 @@ use NotificationAry\Helpers\NotificationAryHelper;
 						<pre style="clear:both;float:left;width:46%;margin-right:1%;"><b>----'
 							. get_class($contentObject) . '----</b><br/>';
 
-			JLoader::register('NotificationAryHelper', dirname(__FILE__) . '/helper.php');
+			// JLoader::register('NotificationAry', dirname(__FILE__) . '/helper.php');
 
-			NotificationAryHelper::buildExampleObject($contentObject, $place_holders_body_input);
+			NotificationAry\PlgSystemNotificationaryCore::buildExampleObject($contentObject, $place_holders_body_input);
 
 			// Free some memory
 			unset($contentObject);
@@ -177,7 +175,7 @@ use NotificationAry\Helpers\NotificationAryHelper;
 			$user = JFactory::getUser();
 			$place_holders_body_input[] = '</pre>';
 			$place_holders_body_input[] = '<pre style="float:left;width:46%;"><b>----' . get_class($user) . '----</b><br/>';
-			NotificationAryHelper::buildExampleUser($user, $place_holders_body_input);
+			NotificationAry\PlgSystemNotificationaryCore::buildExampleUser($user, $place_holders_body_input);
 
 			// Free some memory
 			unset($user);

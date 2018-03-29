@@ -11,7 +11,13 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use NotificationAry\Helpers\NotificationAryHelper;
+use NotificationAry,
+	JDispatcher,
+	JForm,
+	JFactory,
+	JTable,
+	JText,
+	JPluginHelper;
 /**
  * `static` before function name is a must
  *
@@ -23,7 +29,7 @@ static function onEditZooItem($event)
 {
 	$contentItem = $event->getSubject();
 
-	if (!NotificationAryHelper::isZooEditPage($contentItem))
+	if (!NotificationAry\PlgSystemNotificationaryCore::isZooEditPage($contentItem))
 	{
 		return;
 	}

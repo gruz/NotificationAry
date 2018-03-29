@@ -10,7 +10,7 @@
 defined('_JEXEC') or die;
 
 use Joomla\Utilities\ArrayHelper;
-use NotificationAry\Helpers\NotificationAryHelper;
+use NotificationAry;
 
 /**
  * Methods supporting a list of user records.
@@ -271,7 +271,7 @@ class UsersModelUsers extends UsersModelUsersDefault
 
 		foreach ($includeEmails as $k => $v)
 		{
-			$user = NotificationAryHelper::getUserByEmail($v);
+			$user = NotificationAry::getUserByEmail($v);
 			if ($user->id != 0)
 			{
 				$userIdsToInclude[] = $user->id;
@@ -280,7 +280,7 @@ class UsersModelUsers extends UsersModelUsersDefault
 
 		foreach ($excludeEmails as $k => $v)
 		{
-			$user = NotificationAryHelper::getUserByEmail($v);
+			$user = NotificationAry::getUserByEmail($v);
 			if ($user->id != 0)
 			{
 				$userIdsToExclude[] = $user->id;

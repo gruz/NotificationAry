@@ -1,6 +1,6 @@
 <?php
 /**
- * Bridge to tie NotificationAry and JEvents
+ * Bridge to tie NotificationAry and Zoo
  *
  * @package    NotificationAry
  * @author     Gruz <arygroup@gmail.com>
@@ -11,7 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use NotificationAry\Helpers\NotificationAryHelper;
+use NotificationAry, JFactory, JDispatcher;
 /**
  * `static` before function name is a must
  *
@@ -25,7 +25,7 @@ static function onBeforeSaveZooItem($event)
 
 	$contentItem = $event->getSubject();
 
-	if (!NotificationAryHelper::isZooEditPage($contentItem))
+	if (!NotificationAry\PlgSystemNotificationaryCore::isZooEditPage($contentItem))
 	{
 		return;
 	}

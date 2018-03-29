@@ -8,7 +8,7 @@
 
 defined('JPATH_PLATFORM') or die;
 
-use NotificationAry\Helpers\NotificationAryHelper;
+use NotificationAry;
 
 if (!class_exists('GJFieldsFormField'))
 {
@@ -146,7 +146,7 @@ class NAFormFieldSubscribe extends GJFieldsFormField
 
 				// Per rule subscribe
 				case '2':
-					$allowedCategories = NotificationAryHelper::getProfileData($user->id, $rule->__ruleUniqID);
+					$allowedCategories = NotificationAry::getProfileData($user->id, $rule->__ruleUniqID);
 
 					if (empty($allowedCategories))
 					{

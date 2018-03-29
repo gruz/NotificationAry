@@ -1,6 +1,6 @@
 <?php
 /**
- * Bridge to tie NotificationAry and JEvents
+ * Bridge to tie NotificationAry and Zoo
  *
  * @package    NotificationAry
  * @author     Gruz <arygroup@gmail.com>
@@ -11,7 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use NotificationAry\Helpers\NotificationAryHelper;
+use NotificationAry;
 /**
  * `static` before function name is a must
  *
@@ -23,7 +23,7 @@ static function onAfterSaveZooItem($event)
 {
 	$contentItem = $event->getSubject();
 
-	if (!NotificationAryHelper::isZooEditPage($contentItem))
+	if (!NotificationAry\PlgSystemNotificationaryCore::isZooEditPage($contentItem))
 	{
 		return;
 	}
@@ -31,7 +31,7 @@ static function onAfterSaveZooItem($event)
 	$isNew = $event['new'];
 	$context = 'com_zoo.item';
 
-	JDispatcher::getInstance()->trigger(
+	\JDispatcher::getInstance()->trigger(
 		'onContentAfterSave',
 		array(
 			$context,
