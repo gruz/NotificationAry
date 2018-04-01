@@ -42,19 +42,19 @@ class JPluginGJFields extends JPlugin
 		}
 
 		// Load languge for frontend
-		$this->plg_name = $config['name'];
-		$this->plg_type = $config['type'];
-		$this->plg_full_name = 'plg_' . $config['type'] . '_' . $config['name'];
-		$this->plg_path_relative = '/plugins/' . $this->plg_type . '/' . $this->plg_name . '/';
-		$this->plg_path = JPATH_PLUGINS . '/' . $this->plg_type . '/' . $this->plg_name . '/';
+		$this->plgName = $config['name'];
+		$this->plgType = $config['type'];
+		$this->plgFullName = 'plg_' . $config['type'] . '_' . $config['name'];
+		$this->plgPath_relative = '/plugins/' . $this->plgType . '/' . $this->plgName . '/';
+		$this->plgPath = JPATH_PLUGINS . '/' . $this->plgType . '/' . $this->plgName . '/';
 
 		// Is used for building joomfish links
 		$this->langShortCode = null;
 		$this->default_lang = JComponentHelper::getParams('com_languages')->get('site');
 		$language = JFactory::getLanguage();
 
-		$language->load($this->plg_full_name, $this->plg_path, 'en-GB', true);
-		$language->load($this->plg_full_name, $this->plg_path, $this->default_lang, true);
+		$language->load($this->plgFullName, $this->plgPath, 'en-GB', true);
+		$language->load($this->plgFullName, $this->plgPath, $this->default_lang, true);
 	}
 
 	/**
@@ -94,24 +94,24 @@ class JPluginGJFields extends JPlugin
 			$session = JFactory::getSession();
 			$jform = $jinput->post->get('jform', null, 'array');
 
-			if (isset($jform['element']) && $jform['element'] == $this->plg_name && isset($jform['folder']) && $jform['folder'] == $this->plg_type)
+			if (isset($jform['element']) && $jform['element'] == $this->plgName && isset($jform['folder']) && $jform['folder'] == $this->plgType)
 			{
 				if ($jform['enabled'] == '0')
 				{
-					$session->clear($this->plg_full_name);
+					$session->clear($this->plgFullName);
 				}
 				else
 				{
 					$data = new stdClass;
 					$data->runPlugin = true;
-					$session->set($this->plg_full_name, $data);
+					$session->set($this->plgFullName, $data);
 				}
 			}
 		}
 		else
 		{
-			$sessionInfo = $session->get($this->plg_full_name, array());
-			$session->clear($this->plg_full_name);
+			$sessionInfo = $session->get($this->plgFullName, array());
+			$session->clear($this->plgFullName);
 
 			// If we do not have to run plugin - joomla is not saving the plugin
 			if (empty($sessionInfo) || empty($sessionInfo->runPlugin))
@@ -171,9 +171,9 @@ class JPluginGJFields extends JPlugin
 			return;
 		}
 
-		if (!isset($GLOBALS[$this->plg_name]['variable_group_name'][$group_name]))
+		if (!isset($GLOBALS[$this->plgName]['variable_group_name'][$group_name]))
 		{
-			$GLOBALS[$this->plg_name]['variable_group_name'][$group_name] = true;
+			$GLOBALS[$this->plgName]['variable_group_name'][$group_name] = true;
 		}
 		else
 		{
@@ -183,7 +183,7 @@ class JPluginGJFields extends JPlugin
 		// Get defauls values from XML {
 		$group_name_start = $group_name;
 		$group_name_end = str_replace('{', '', $group_name) . '}';
-		$xmlfile = $this->plg_path . '/' . $this->plg_name . '.xml';
+		$xmlfile = $this->plgPath . '/' . $this->plgName . '.xml';
 		$xml = simplexml_load_file($xmlfile);
 
 		$field = 'field';
@@ -346,7 +346,7 @@ class JPluginGJFields extends JPlugin
 		if (empty($params) || empty($params[$name]))
 		{
 			// $xmlfile = dirname(__FILE__).'/'.basename(__FILE__,'.php').'.xml';
-			$xmlfile = $this->plg_path . '/' . $this->plg_name . '.xml';
+			$xmlfile = $this->plgPath . '/' . $this->plgName . '.xml';
 
 			$this->_parseXMLForDefautlValues($xmlfile);
 		}
@@ -436,8 +436,8 @@ class JPluginGJFields extends JPlugin
 			$db = JFactory::getDBO();
 			$db->setQuery('SELECT extension_id FROM #__extensions WHERE type ='
 				. $db->quote('plugin') . ' AND element = '
-				. $db->quote($this->plg_name)
-				. ' AND folder = ' . $db->quote($this->plg_type)
+				. $db->quote($this->plgName)
+				. ' AND folder = ' . $db->quote($this->plgType)
 			);
 			$extension_id = $db->loadResult();
 

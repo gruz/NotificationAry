@@ -9,7 +9,6 @@
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 
-
 namespace NotificationAry\Traits;
 
 /**
@@ -30,7 +29,7 @@ trait Ajax
 	 */
 	public function onAjaxNotificationAryGetFEURl()
 	{
-		$app	= \JFactory::getApplication();
+		$app	 = \JFactory::getApplication();
 
 		// Has to work as a FE called function
 		if ($app->isAdmin())
@@ -67,8 +66,8 @@ trait Ajax
 			// Get the session data from the database table.
 			$query = $db->getQuery(true)
 				->select($db->quoteName('session_id'))
-			->from($db->quoteName('#__session'))
-			->where($db->quoteName('session_id') . ' = ' . $db->quote($sid));
+				->from($db->quoteName('#__session'))
+				->where($db->quoteName('session_id') . ' = ' . $db->quote($sid));
 
 			$db->setQuery($query);
 			$rows = $db->loadRowList();
@@ -83,7 +82,7 @@ trait Ajax
 			return;
 		}
 
-		$user	= \JFactory::getUser();
+		$user	 = \JFactory::getUser();
 
 		if ($user->id == $userId)
 		{
@@ -111,19 +110,18 @@ trait Ajax
 		*/
 		$session = \JFactory::getSession();
 
-
 		// Set a temporary password for the user
-		$temp_pass = JApplicationHelper::getHash(JUserHelper::genRandomPassword());
+		$tempPass = JApplicationHelper::getHash(JUserHelper::genRandomPassword());
 
 		$query = $db->getQuery(true);
 		$query->update('#__users');
-		$query->set('password = ' . $db->Quote(md5($temp_pass)));
+		$query->set('password = ' . $db->Quote(md5($tempPass)));
 		$query->where('id=' . $db->Quote($userId));
 		$db->setquery($query);
 		$db->execute();
 
-		$credentials = array ('username' => $instance->username, 'password' => $temp_pass);
-		$result = $app->login($credentials);
+		$credentials = array('username' => $instance->username, 'password' => $tempPass);
+		$result      = $app->login($credentials);
 
 		$url = JRoute::_($url);
 		echo $url;
@@ -132,7 +130,6 @@ trait Ajax
 
 		die();
 	}
-
 
 	/**
 	 * Unsubscribes a user passed via an unsubscribe link
@@ -145,12 +142,12 @@ trait Ajax
 	public function _unsubscribe($uniq, $serialize)
 	{
 		$user = $serialize['unsubscribe'];
-		$md5 = $serialize['md5'];
+		$md5  = $serialize['md5'];
 
 		$userObject = self::getUserByEmail($user);
 
 		// $user->load(array('email'=>$email));
-		if ($userObject->id > 0 )
+		if ($userObject->id > 0)
 		{
 			if ($md5 != md5($userObject->id . $uniq))
 			{
@@ -163,13 +160,13 @@ trait Ajax
 		$excludeUsers = self::getRuleOption('ausers_excludeusers', $uniq);
 		$excludeUsers = explode(PHP_EOL, $excludeUsers);
 		$excludeUsers = array_map('trim', $excludeUsers);
-		$msg = '';
+		$msg          = '';
 
 		if (!in_array($user, $excludeUsers))
 		{
 			$excludeUsers[] = $user;
-			$excludeUsers = array_filter($excludeUsers);
-			$excludeUsers = implode(PHP_EOL, $excludeUsers);
+			$excludeUsers   = array_filter($excludeUsers);
+			$excludeUsers   = implode(PHP_EOL, $excludeUsers);
 
 			if (!self::updateRuleOption('ausers_excludeusers', $excludeUsers, $uniq))
 			{
@@ -182,20 +179,20 @@ trait Ajax
 		}
 		else
 		{
-				$msg = '<b style="color:blue">' . \JText::sprintf('PLG_SYSTEM_NOTIFICATIONARY_NOT_SUBSCRIBED', $user) . '</b>';
+			$msg = '<b style="color:blue">' . \JText::sprintf('PLG_SYSTEM_NOTIFICATIONARY_NOT_SUBSCRIBED', $user) . '</b>';
 		}
 
 		// Mark the rule as unsubscribed in the profile as well
-		$db = \JFactory::getDbo();
-			$query = $db->getQuery(true)
-				->delete($db->quoteName('#__user_profiles'))
-				->where($db->quoteName('user_id') . ' = ' . (int) $userObject->id)
-				->where($db->quoteName('profile_key') . ' LIKE ' . $db->quote('notificationary.' . $uniq . '.all'));
-			$db->setQuery($query);
-			$db->execute();
+		$db    = \JFactory::getDbo();
+		$query = $db->getQuery(true)
+			->delete($db->quoteName('#__user_profiles'))
+			->where($db->quoteName('user_id') . ' = ' . (int) $userObject->id)
+			->where($db->quoteName('profile_key') . ' LIKE ' . $db->quote('notificationary.' . $uniq . '.all'));
+		$db->setQuery($query);
+		$db->execute();
 
 		$tuples = array();
-		$order = 1;
+		$order  = 1;
 
 		$tuples[] = '('
 			. $userObject->id . ', '
@@ -209,8 +206,6 @@ trait Ajax
 		echo $msg;
 	}
 
-
-
 	/**
 	 * Ajax entry point to update subscription
 	 *
@@ -221,7 +216,7 @@ trait Ajax
 		$resposne = array('success' => false);
 
 		$jinput = \JFactory::getApplication()->input;
-		$token = JSession::getFormToken();
+		$token  = JSession::getFormToken();
 
 		if (!JSession::checkToken())
 		{
@@ -253,11 +248,11 @@ trait Ajax
 			}
 		}
 
-		$user = \JFactory::getUser($userid);
+		$user       = \JFactory::getUser($userid);
 		$ruleUniqID = $jinput->post->get('ruleUniqID');
 
 		$categoriesToBeStored = $jinput->post->get('categoriesToSubscribe_' . $ruleUniqID, array(), 'array');
-		$subscribeToAll = $jinput->post->get('subscribetoall_' . $ruleUniqID, 'selected');
+		$subscribeToAll       = $jinput->post->get('subscribetoall_' . $ruleUniqID, 'selected');
 
 		$excludeUsers = self::getRuleOption('ausers_excludeusers', $ruleUniqID);
 		$excludeUsers = explode(PHP_EOL, $excludeUsers);
@@ -277,7 +272,7 @@ trait Ajax
 
 		try
 		{
-			$db = \JFactory::getDbo();
+			$db    = \JFactory::getDbo();
 			$query = $db->getQuery(true)
 				->delete($db->quoteName('#__user_profiles'))
 				->where($db->quoteName('user_id') . ' = ' . (int) $user->id)
@@ -286,7 +281,7 @@ trait Ajax
 			$db->execute();
 
 			$tuples = array();
-			$order = 1;
+			$order  = 1;
 
 			if ($subscribeToAll == 'all')
 			{
@@ -332,7 +327,6 @@ trait Ajax
 		return json_encode($resposne);
 	}
 
-
 	/**
 	 * Entry point for Ajax data passed via AJAX plugin
 	 *
@@ -364,27 +358,27 @@ trait Ajax
 
 		$hash = $serialize['ajaxHash'];
 
-		$counter = $session->get('AjaxHashCounter' . $hash, -1, $this->plg_name);
+		$counter = $session->get('AjaxHashCounter' . $hash, -1, $this->plgName);
 
-		$files = JFolder::files(\JFactory::getApplication()->getCfg('tmp_path'), $this->plg_name . '_' . $hash . '_*', false, true);
+		$files = JFolder::files(\JFactory::getApplication()->getCfg('tmp_path'), $this->plgName . '_' . $hash . '_*', false, true);
 
 		if (empty($files))
 		{
 			$this->_cleanAttachments();
-			$session->clear('AjaxHashCounter' . $hash, $this->plg_name);
+			$session->clear('AjaxHashCounter' . $hash, $this->plgName);
 
 			// ~ $counter = $counter-1;
 			if ($serialize['showNumberOfUsers'])
 			{
-				$numberSentTotal = $session->get('AjaxHashCounterTotal' . $hash, -1, $this->plg_name);
-				$numberSentFailed = $session->get('AjaxHashCounterFailed' . $hash, 0, $this->plg_name);
-				$numberSent = $numberSentTotal - $numberSentFailed;
+				$numberSentTotal  = $session->get('AjaxHashCounterTotal' . $hash, -1, $this->plgName);
+				$numberSentFailed = $session->get('AjaxHashCounterFailed' . $hash, 0, $this->plgName);
+				$numberSent       = $numberSentTotal - $numberSentFailed;
 
-				$return = array ('message' => $numberSent, 'finished' => true);
+				$return = array('message' => $numberSent, 'finished' => true);
 			}
 			else
 			{
-				$return = array ('message' => '', 'finished' => true);
+				$return = array('message' => '', 'finished' => true);
 			}
 
 			return json_encode($return);
@@ -400,7 +394,7 @@ trait Ajax
 			}
 
 			$counter = 0;
-			$session->set('AjaxHashCounterTotal' . $hash, count($files), $this->plg_name);
+			$session->set('AjaxHashCounterTotal' . $hash, count($files), $this->plgName);
 		}
 
 		// Number or mails sent per iteration
@@ -415,9 +409,9 @@ trait Ajax
 			$counter++;
 			$file = $files[$i];
 
-			if (!class_exists('fakeMailerClass') )
+			if (!class_exists('fakeMailerClass'))
 			{
-				require_once self::$helpersFolder. '/fakeMailerClass.php';
+				require_once self::$helpersFolder . '/fakeMailerClass.php';
 			}
 
 			$mailer_temp = unserialize(base64_decode(file_get_contents($file)));
@@ -447,12 +441,12 @@ trait Ajax
 
 			if ($serialize['verbose'])
 			{
-				$toName = $mailer->getToAddresses();
-				$toName = $toName[0][1] . ' &lt;' . self::obfuscate_email($toName[0][0]) . '&gt; ';
+				$toName     = $mailer->getToAddresses();
+				$toName     = $toName[0][1] . ' &lt;' . self::obfuscateEmail($toName[0][0]) . '&gt; ';
 				$messages[] = $counter . ' ';
 			}
 
-			$session->set('AjaxHashCounter' . $hash, $counter, $this->plg_name);
+			$session->set('AjaxHashCounter' . $hash, $counter, $this->plgName);
 
 			if (!$serialize['debug'])
 			{
@@ -463,21 +457,21 @@ trait Ajax
 				$send = 'debug';
 			}
 
-			if ( $send === 'debug' )
+			if ($send === 'debug')
 			{
 				if ($serialize['verbose'])
 				{
 					$messages[] = $toName . ' SEND IMITATION OK';
 				}
 			}
-			elseif ( $send !== true )
+			elseif ($send !== true)
 			{
 				if ($serialize['verbose'])
 				{
-					$messages[] = $toName . ' ..... <i class="icon-remove"  style="color:red"></i>';
-					$numberSentFailed = $session->get('AjaxHashCounterFailed' . $hash, 0, $this->plg_name);
+					$messages[]       = $toName . ' ..... <i class="icon-remove"  style="color:red"></i>';
+					$numberSentFailed = $session->get('AjaxHashCounterFailed' . $hash, 0, $this->plgName);
 					$numberSentFailed++;
-					$session->set('AjaxHashCounterFailed' . $hash, $numberSentFailed, $this->plg_name);
+					$session->set('AjaxHashCounterFailed' . $hash, $numberSentFailed, $this->plgName);
 				}
 
 				$messages[] = '<br/>Error sending email: ' . $send->__toString();
@@ -499,9 +493,8 @@ trait Ajax
 			}
 		}
 
-		$return = array ('message' => implode(PHP_EOL, $messages), 'finished' => false);
+		$return = array('message' => implode(PHP_EOL, $messages), 'finished' => false);
 
 		return json_encode($return);
 	}
-
 }

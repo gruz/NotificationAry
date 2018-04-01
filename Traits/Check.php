@@ -348,7 +348,7 @@ trait Check
 				}
 	
 				\JFactory::getApplication()->enqueueMessage(
-					\JText::_(ucfirst($this->plg_name))
+					\JText::_(ucfirst($this->plgName))
 						. ' (line ' . __LINE__ . '): '
 						. ' _checkAllowed method cannot be run with an empty object<br/>' . $msg,
 					'error'

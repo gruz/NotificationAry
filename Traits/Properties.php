@@ -21,7 +21,7 @@ trait Properties {
 
 	public static $helpersFolder = __DIR__ . '/../Helpers/';
 	public static $predefinedContentsFile = __DIR__ . '/../Helpers/predefined_contexts.php';
-	public static $componentBridgesFoled = __DIR__ . '/../Helpers/components/';
+	public static $componentBridgesFolder = __DIR__ . '/../Helpers/components/';
 
 	/**
 	 * Enable this variable to load local non-minified JS and CSS

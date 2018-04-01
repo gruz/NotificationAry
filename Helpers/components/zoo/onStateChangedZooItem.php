@@ -26,7 +26,7 @@ function onStateChangedZooItem($event)
 		return;
 	}
 
-	$this->_prepareParams();
+	$this->prepareParams();
 
 	$context = 'com_zoo.item';
 

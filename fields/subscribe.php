@@ -326,7 +326,7 @@ class NAFormFieldSubscribe extends GJFieldsFormField
 											// It's a must part
 		$url_ajax_plugin = JURI::base() . '?option=com_ajax&format=raw'
 
-				// $this->plg_type should contain your plugin group (system, content etc.),
+				// $this->plgType should contain your plugin group (system, content etc.),
 				// E.g. for a system plugin plg_system_menuary it should be system
 				. '&group=' . 'system'
 

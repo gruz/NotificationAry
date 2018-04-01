@@ -7,68 +7,91 @@
  * @copyright	Copyleft - All rights reversed
  * @license GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
-defined( '_JEXEC' ) or die( 'Restricted access' );
+defined('_JEXEC') or die('Restricted access');
 
-if (!isset($predefined_context_templates)) { include 'predefined_contexts.php';}
+if (!isset($predefinedContextTemplates))
+{
+	include 'predefined_contexts.php';
+}
 
-$output = array();
-$output[] = '<option data-template="" >'.JText::_('JNONE').'</option>';
+$output   = array();
+$output[] = '<option data-template="" >' . JText::_('JNONE') . '</option>';
 
-foreach ($predefined_context_templates as $context=>$array) {
-	$tmp = array();
+foreach ($predefinedContextTemplates as $context => $array)
+{
+	$tmp   = array();
 	$tmp[] = $context;
 
 	$first = true;
-	foreach ($rows as $template_item) {
-		if ($first) {$first = false; continue; }
-		if (!isset($array[$template_item])) {
+
+	foreach ($rows as $template_item)
+	{
+		if ($first)
+		{
+			$first = false;
+
+			continue;
+		}
+
+		if (!isset($array[$template_item]))
+		{
 			$item = '';
 		}
-		elseif ($array[$template_item] === false) {
+		elseif ($array[$template_item] === false)
+		{
 			$item = 'false';
 		}
-		else {
+		else
+		{
 			$item = $array[$template_item];
 		}
 		$tmp[] = $item;
 	}
-	$component = explode('.',$context);
-	$component = explode('_',$component[0]);
+	$component = explode('.', $context);
+	$component = explode('_', $component[0]);
 
-	if ($component[0] == 'com') {
+	if ($component[0] == 'com')
+	{
 		$option = $component[1];
-	} else {
+	}
+	else
+	{
 		$option = $component[0];
 	}
 
-	$option_style='';
-	$option_text = $array['Title'];
+	$option_style = '';
+	$option_text  = $array['Title'];
 
 	// Check if component is installed
 	//~ if (!JComponentHelper::getComponent($component[0], true)->enabled){
-	$file = JPATH_ADMINISTRATOR . '/components/com_'.$option.'/'.$option.'.php';
-	if (file_exists($file) && JComponentHelper::isEnabled('com_'.$option, true)) {
-	} else {
-		$option_style=' style="color:gray" ';
-		$option_text = JText::sprintf('LIB_GJFIELDS_NOT_INSTALLED',$array['Title'].' :: ');
+	$file = JPATH_ADMINISTRATOR . '/components/com_' . $option . '/' . $option . '.php';
+
+	if (file_exists($file) && JComponentHelper::isEnabled('com_' . $option, true))
+	{
+	}
+	else
+	{
+		$option_style = ' style="color:gray" ';
+		$option_text  = JText::sprintf('LIB_GJFIELDS_NOT_INSTALLED', $array['Title'] . ' :: ');
 	}
 
-	$output[] = '<option data-template="'.implode(PHP_EOL,$tmp).'" '.$option_style.'>'.$option_text.'</option>';
+	$output[] = '<option data-template="' . implode(PHP_EOL, $tmp) . '" ' . $option_style . '>' . $option_text . '</option>';
 }
-$output_templates = '<div class="select_templates">'.JText::_('PLG_SYSTEM_NOTIFICATIONARY_PREDEFINED_MANUAL_CONTEXT')." <select >" .implode('',$output).'</select> </div>';
+$output_templates = '<div class="select_templates">' . JText::_('PLG_SYSTEM_NOTIFICATIONARY_PREDEFINED_MANUAL_CONTEXT') . " <select >" . implode('', $output) . '</select> </div>';
 
 $output_label = "<br/>
-<textarea class='helpertextarea' readonly >".
-implode(PHP_EOL,$rows)
-."</textarea>";
+<textarea class='helpertextarea' readonly >" .
+implode(PHP_EOL, $rows)
+. "</textarea>";
 
-
-$height = (count($rows)+1)*18;
+$height = (count($rows) + 1) * 18;
 
 $app = JFactory::getApplication();
 
-$app->get('css added ##mygruz20160408015751',false);
-if (!$app->get('css added ##mygruz20160408015751',false)) {
+$app->get('css added ##mygruz20160408015751', false);
+
+if (!$app->get('css added ##mygruz20160408015751', false))
+{
 	$css = '.textareainbunch {
 		border-radius: 0;
 		float: left;
@@ -79,7 +102,7 @@ if (!$app->get('css added ##mygruz20160408015751',false)) {
 		resize: horizontal;
 		white-space: pre;
 		/* width: auto !important; */
-		height:'.$height.'px;
+		height:' . $height . 'px;
 		margin:0 0 0 -5px !important;
 		font-family:monospace;
 		font-size:11px;
@@ -89,7 +112,7 @@ if (!$app->get('css added ##mygruz20160408015751',false)) {
 		background: #efefef none repeat scroll 0 0;
 		border: 1px solid #efefef;
 		box-shadow: none;
-		height: '.$height.'px;
+		height: ' . $height . 'px;
 		margin: 5px 0 0;
 		overflow: hidden;
 		padding: 0;
@@ -114,7 +137,9 @@ if (!$app->get('css added ##mygruz20160408015751',false)) {
 	}
 	';
 	$app    = JFactory::getApplication();
-	if ($app->getTemplate() == 'hathor') {
+
+	if ($app->getTemplate() == 'hathor')
+	{
 		$css .= '
 		/* Special for hathor */
 		a.modal img {
@@ -171,6 +196,5 @@ if (!$app->get('css added ##mygruz20160408015751',false)) {
 	$document = JFactory::getDocument();
 	$document->addStyleDeclaration($css);
 	$document->addScriptDeclaration($js);
-	$app->set('css added ##mygruz20160408015751',true);
-
+	$app->set('css added ##mygruz20160408015751', true);
 }

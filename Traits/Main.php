@@ -14,12 +14,10 @@ namespace NotificationAry\Traits;
 // No direct access
 defined('_JEXEC') or die;
 
-
 /**
  * Main trait to contain non-core Joomla plugin functions logic
  *
  * @since 0.2.17
- *
  */
 trait Main
 {
@@ -53,7 +51,7 @@ trait Main
 		}
 
 		// Pass the plugin object to be available in the field to have plugin params parsed there
-		$app->set($this->plg_full_name, $this);
+		$app->set($this->plgFullName, $this);
 
 		if ($name == "com_users.users.default.filter")
 		{
@@ -61,7 +59,7 @@ trait Main
 			$form->loadFile('filter', false);
 
 			$items_model = \JModelLegacy::getInstance('Users', 'UsersModel');
-			$ruleUniqID = $items_model->getState('filter.naruleUniqID');
+			$ruleUniqID  = $items_model->getState('filter.naruleUniqID');
 			/* // ##mygruz20170214152631 DO NOT DELETE.
 				* I tried to make the filters be opened upong a page load
 				* but this didn't work. Not to invest
@@ -85,7 +83,7 @@ trait Main
 		$form->setFieldAttribute('subscribe', 'isProfile', true, 'nasubscribe');
 
 		$doc = \JFactory::getDocument();
-		$js = '
+		$js  = '
 			jQuery(document).ready(function($){
 				var label = $(".nasubscribe").closest("div.control-group").find(".control-label:first").text().trim();
 				if (label.length === 0)
@@ -101,87 +99,60 @@ trait Main
 	/**
 	 * Parses textarea multiline template into an assosiative array
 	 *
-	 * @param   string  $context_template  Manual extension template field contents
+	 * @param   string  $extension  Manual extension template field contents
 	 *
-	 * @return  mixed  String and to nothing if a one-row context is passed, or an array according to the template defined in /Helpers/predefined_contexts.php
+	 * @return  mixed  String and to nothing if a one-row context is passed, or an array
+	 *                 according to the template defined in /Helpers/predefined_contexts.php
 	 */
-	static public function _parseManualContextTemplate ($context_template)
+	public static function parseManualContextTemplate($extension)
 	{
-		$tmp = explode(PHP_EOL,$context_template);
-		// If (count($tmp)==1) { return $context_template; }
-		$tmp = array_map('trim', $tmp);
-		$context = $tmp[0];
-		$extension = array();
+		$extension = explode(PHP_EOL, $extension);
+		$extension = array_map('trim', $extension);
 
-		if (!isset($predefined_context_templates))
+		if (!isset($predefinedContextTemplates))
 		{
 			include static::$predefinedContentsFile;
 		}
 
-		if (!isset($predefined_context_templates[$context]))
+		if (count($extension) < count($rows) )
 		{
-			return $context_template;
-		}
-
-		if (count($tmp)==1)
-		{
-			$tmp = array_flip($rows);
-
-			foreach ($tmp as $k => $v)
+			for ($i = count($extension); $i < count($rows); $i++)
 			{
-				$tmp[$k] = null;
+				$extension[$i] = null;
 			}
 		}
 
 		// $rows is defined in predefined_contexts.php
-		foreach ($rows as $row_number=>$row_name)
-		{
-			if (isset($tmp[$row_number]) && trim($tmp[$row_number]) != '')
-			{
-				if ($tmp[$row_number] == 'false')
-				{
-					$tmp[$row_number] = false;
-				}
+		$extension = array_combine($rows, $extension);
 
-				$extension[$row_name] = $tmp[$row_number];
-			}
-			else
-			{
-				if (isset($predefined_context_templates[$context][$row_name]))
-				{
-					$extension[$row_name] = $predefined_context_templates[$context][$row_name];
-				}
-				else
-				{
-					$extension[$row_name] = '';
-				}
-			}
-		}
+		$extension = array_map(
+			function ($v) { return ('false' === $v) ? false : $v; }, // phpcs:ignore
+			$extension
+		);
 
 		foreach ($extension as $k => $v)
 		{
-			$key = '.inc';
-
-			if(!preg_match('#^function#',trim($v)))
+			if (!preg_match('#^function#', trim($v)))
 			{
-				$function_file = self::$componentBridgesFoled . '/components/' . $v;
+				$functionFile = self::$componentBridgesFolder . '/components/' . $v;
 
-				if (is_file($function_file))
+				if (is_file($functionFile))
 				{
-					$extension[$k] = file_get_contents($function_file);
-					$explodes = array (
+					$extension[$k] = file_get_contents($functionFile);
+					$explodes      = array(
 						"defined('_JEXEC') or die('Restricted access');",
 						"defined( '_JEXEC' ) or die( 'Restricted access' );",
-						"defined( '_JEXEC' ) or die"
+						"defined( '_JEXEC' ) or die",
 					);
 
 					foreach ($explodes as $explode)
 					{
-						$tmp = explode($explode,$extension[$k]);
+						$tmp = explode($explode, $extension[$k]);
 
 						if (isset($tmp[1]))
 						{
 							$extension[$k] = $tmp[1];
+
 							break;
 						}
 					}
@@ -192,7 +163,6 @@ trait Main
 		return $extension;
 	}
 
-
 	/**
 	 * A helper function to parse HTML to get an element by an attribute
 	 *
@@ -201,20 +171,20 @@ trait Main
 	 *
 	 * @author Gruz <arygroup@gmail.com>
 	 * @param	string	$html					String of HTML code to be parsed
-	 * @param	string	$attibuteValue		Attribute value to be found, i.e. element id value
+	 * @param	string	$attributeValue		Attribute value to be found, i.e. element id value
 	 * @param	string	$tagname				Tag to be found. I.e. div, span, p
 	 * @param	string	$attributeName		Which attribute to look for. I.e. id, for, class
 	 * @return	string							Returns HTML of the element found in $html
 	 */
-	static public function getHTMLElementById($html,$attributeValue,$tagname = 'div', $attributeName = 'id')
+	public static function getHTMLElementById($html, $attributeValue, $tagname = 'div', $attributeName = 'id')
 	{
 		$attributeValue = str_replace(' ', '\s', $attributeValue);
-		$re = '% # Match a DIV element having id="content".
-			 <' . $tagname.'\b             # Start of outer DIV start tag.
+		$re             = '% # Match a DIV element having id="content".
+			 <' . $tagname . '\b             # Start of outer DIV start tag.
 			 [^>]*?             # Lazily match up to id attrib.
-			 \b' . $attributeName.'\s*+=\s*+      # id attribute name and =
+			 \b' . $attributeName . '\s*+=\s*+      # id attribute name and =
 			 ([\'"]?+)          # $1: Optional quote delimiter.
-			 \b' . $attributeValue.'\b        # specific ID to be matched.
+			 \b' . $attributeValue . '\b        # specific ID to be matched.
 			 (?(1)\1)           # If open quote, match same closing quote
 			 [^>]*+>            # remaining outer DIV start tag.
 			 (                  # $2: DIV contents. (may be called recursively!)
@@ -224,31 +194,30 @@ trait Main
 				# DIV contents option 2: Start of a non-DIV tag...
 				| <            # Match a "<", but only if it
 					(?!          # is not the beginning of either
-					 /?' . $tagname.'\b    # a DIV start or end tag,
+					 /?' . $tagname . '\b    # a DIV start or end tag,
 					| !--        # or an HTML comment.
 					)            # Ok, that < was not a DIV or comment.
 				# DIV contents Option 3: an HTML comment.
 				| <!--.*?-->     # A non-SGML compliant HTML comment.
 				# DIV contents Option 4: a nested DIV element!
-				| <' . $tagname.'\b[^>]*+>  # Inner DIV element start tag.
+				| <' . $tagname . '\b[^>]*+>  # Inner DIV element start tag.
 					(?2)           # Recurse group 2 as a nested subroutine.
-					</' . $tagname.'\s*>      # Inner DIV element end tag.
+					</' . $tagname . '\s*>      # Inner DIV element end tag.
 				)*+              # Zero or more of these contents alternatives.
 			 )                  # End 2$: DIV contents.
-			 </' . $tagname.'\s*>          # Outer DIV end tag.
+			 </' . $tagname . '\s*>          # Outer DIV end tag.
 			 %isx';
 
-		if (preg_match($re,$html, $matches))
+		if (preg_match($re, $html, $matches))
 		{
 			return $matches[0];
-			 //printf("Match found:\n%s\n", $matches[0]);
+			//printf("Match found:\n%s\n", $matches[0]);
 		}
 
-		return null;
+		return;
 	}
 
-
-		/**
+	/**
 	 * Get rule option key to reference
 	 *
 	 * The key is needed to get  proper value in huge,
@@ -272,30 +241,31 @@ trait Main
 		// Load my plugin params.
 		$plgParams->loadString($extensionTable->params, 'JSON');
 
-		$params = $plgParams->get('{notificationgroup');
+		$params      = $plgParams->get('{notificationgroup');
 		$ruleUniqIds = $params->__ruleUniqID;
-		$key = -1;
+		$key         = -1;
 
 		foreach ($ruleUniqIds as $k => $v)
 		{
 			if ($v == $ruleUniqId)
 			{
 				$key = $k;
+
 				break;
 			}
 		}
 
 		$return = array(
-			'key' => $key,
-			'params' => $params,
-			'plgParams' => $plgParams,
+			'key'            => $key,
+			'params'         => $params,
+			'plgParams'      => $plgParams,
 			'extensionTable' => $extensionTable,
 		);
 
 		return $return;
 	}
 
-		/**
+	/**
 	 * Get an option from a certain rule
 	 *
 	 * @param   string  $optionName  Option name (field name)
@@ -320,7 +290,7 @@ trait Main
 		return $option;
 	}
 
-		/**
+	/**
 	 * Update an option from a certain rule and save it to DB
 	 *
 	 * @param   string  $optionName  Option name (field name)
@@ -358,7 +328,6 @@ trait Main
 		return true;
 	}
 
-
 	/**
 	 * Autooverride (based on plg_system_mvcoverride but changed a little)
 	 *
@@ -366,186 +335,187 @@ trait Main
 	 */
 	public static function _autoOverride($pluginObject)
 	{
-			$jinput = \JFactory::getApplication()->input;
+		$jinput = \JFactory::getApplication()->input;
 
-			if ($jinput->get('option', null) == 'com_dump')
+		if ($jinput->get('option', null) == 'com_dump')
+		{
+			return;
+		}
+
+		$app = \JFactory::getApplication();
+
+		$parsed = $jinput->getArray();
+
+		if (isset($parsed['mvcoverride_disable']) && $parsed['mvcoverride_disable'] == '1')
+		{
+			return;
+		}
+
+		// Add compatibility with Ajax Module Loader
+		if (isset($parsed['option']) && $parsed['option'] == 'com_users'
+			&&	isset($parsed['view']) && $parsed['view'] == 'users'
+		)
+		{
+			// Do nothing here and override core classes below
+		}
+		else
+		{
+			// Do not override - not our case
+			return;
+		}
+
+		jimport('joomla.filesystem.file');
+		jimport('joomla.filesystem.folder');
+
+		$codefolder        = __DIR__ . '/../code/';
+		$files             = str_replace($codefolder, '', \JFolder::files($codefolder, '.php', true, true));
+		$files             = array_fill_keys($files, $codefolder);
+		$files_to_override = $files;
+
+		if (empty($files_to_override))
+		{
+			return;
+		}
+
+		// Check scope condition
+		$scope = '';
+
+		if (\JFactory::getApplication()->isAdmin())
+		{
+			$scope = 'administrator';
+		}
+
+		// Do not override wrong scope for components
+		foreach ($files_to_override as $fileToOverride => $overriderFolder)
+		{
+			if (\JFactory::getApplication()->isAdmin())
 			{
-				return;
-			}
+				if (strpos($fileToOverride, '/com_') === 0)
+				{
+					unset($files_to_override[$fileToOverride]);
+				}
 
-			$app = \JFactory::getApplication();
-
-			$parsed = $jinput->getArray();
-
-			if (isset($parsed['mvcoverride_disable']) && $parsed['mvcoverride_disable'] == '1' )
-			{
-				return;
-			}
-
-			// Add compatibility with Ajax Module Loader
-			if (isset($parsed['option']) && $parsed['option'] == 'com_users'
-				&&	isset($parsed['view']) && $parsed['view'] == 'users')
-			{
-				// Do nothing here and override core classes below
+				if (strpos($fileToOverride, '/components/com_') === 0)
+				{
+					unset($files_to_override[$fileToOverride]);
+				}
 			}
 			else
 			{
-				// Do not override - not our case
-				return;
-			}
-
-			jimport('joomla.filesystem.file');
-			jimport('joomla.filesystem.folder');
-
-			$codefolder = __DIR__ . '/../code/';
-			$files = str_replace($codefolder, '', JFolder::files($codefolder, '.php', true, true));
-			$files = array_fill_keys($files, $codefolder);
-			$files_to_override = $files;
-
-			if (empty($files_to_override))
-			{
-				return;
-			}
-
-			// Check scope condition
-			$scope = '';
-
-			if (\JFactory::getApplication()->isAdmin())
-			{
-				$scope = 'administrator';
-			}
-
-			// Do not override wrong scope for components
-			foreach ($files_to_override as $fileToOverride => $overriderFolder)
-			{
-				if (\JFactory::getApplication()->isAdmin())
+				if (strpos($fileToOverride, '/administrator/com_') === 0)
 				{
-					if (strpos($fileToOverride, '/com_') === 0)
-					{
-						unset($files_to_override[$fileToOverride]);
-					}
-
-					if (strpos($fileToOverride, '/components/com_') === 0)
-					{
-						unset($files_to_override[$fileToOverride]);
-					}
+					unset($files_to_override[$fileToOverride]);
 				}
-				else
-				{
-					if (strpos($fileToOverride, '/administrator/com_') === 0)
-					{
-						unset($files_to_override[$fileToOverride]);
-					}
 
-					if (strpos($fileToOverride, '/administrator/components/com_') === 0)
-					{
-						unset($files_to_override[$fileToOverride]);
-					}
+				if (strpos($fileToOverride, '/administrator/components/com_') === 0)
+				{
+					unset($files_to_override[$fileToOverride]);
 				}
 			}
+		}
 
-			$overridden = false;
+		$overridden = false;
 
-			// Loading override files
-			foreach ($files_to_override as $fileToOverride => $overriderFolder)
+		// Loading override files
+		foreach ($files_to_override as $fileToOverride => $overriderFolder)
+		{
+			if (JFile::exists(JPATH_ROOT . $fileToOverride))
 			{
-				if (JFile::exists(JPATH_ROOT . $fileToOverride))
-				{
-					$originalFilePath = JPATH_ROOT . $fileToOverride;
-				}
-				elseif (strpos($fileToOverride, '/com_') === 0 && JFile::exists(JPATH_ROOT . '/components' . $fileToOverride))
-				{
-					$originalFilePath = JPATH_ROOT . '/components' . $fileToOverride;
-				}
-				else
-				{
-					JLog::add("Can see an overrider file ($overriderFolder" . "$fileToOverride) , but cannot find what to override", JLog::INFO, 'notificationary');
-					continue;
-				}
+				$originalFilePath = JPATH_ROOT . $fileToOverride;
+			}
+			elseif (strpos($fileToOverride, '/com_') === 0 && JFile::exists(JPATH_ROOT . '/components' . $fileToOverride))
+			{
+				$originalFilePath = JPATH_ROOT . '/components' . $fileToOverride;
+			}
+			else
+			{
+				JLog::add("Can see an overrider file ($overriderFolder" . "$fileToOverride) , but cannot find what to override", JLog::INFO, 'notificationary');
 
-				preg_match('~.*/(com_[^/]*)/.*~Ui', $originalFilePath, $matches);
+				continue;
+			}
 
-				$option = '';
+			preg_match('~.*/(com_[^/]*)/.*~Ui', $originalFilePath, $matches);
 
-				if (isset($matches[1]))
-				{
-					$option = $matches[1];
-				}
+			$option = '';
 
-				// ~ $uniqid = uniqid();
+			if (isset($matches[1]))
+			{
+				$option = $matches[1];
+			}
 
-				$uniqid = strtoupper($option) . '_';
+			// ~ $uniqid = uniqid();
 
-				if (!defined($uniqid . 'JPATH_SOURCE_COMPONENT'))
-				{
-					// Constants to replace JPATH_COMPONENT, JPATH_COMPONENT_SITE and JPATH_COMPONENT_ADMINISTRATOR
-					define($uniqid . 'JPATH_SOURCE_COMPONENT', JPATH_BASE . '/components/' . $option);
-					define($uniqid . 'JPATH_SOURCE_COMPONENT_SITE', JPATH_SITE . '/components/' . $option);
-					define($uniqid . 'JPATH_SOURCE_COMPONENT_ADMINISTRATOR', JPATH_ADMINISTRATOR . '/components/' . $option);
-				}
+			$uniqid = strtoupper($option) . '_';
 
-				// Include the original code and replace class name add a Default on
-				$bufferFile = file_get_contents($originalFilePath);
+			if (!defined($uniqid . 'JPATH_SOURCE_COMPONENT'))
+			{
+				// Constants to replace JPATH_COMPONENT, JPATH_COMPONENT_SITE and JPATH_COMPONENT_ADMINISTRATOR
+				define($uniqid . 'JPATH_SOURCE_COMPONENT', JPATH_BASE . '/components/' . $option);
+				define($uniqid . 'JPATH_SOURCE_COMPONENT_SITE', JPATH_SITE . '/components/' . $option);
+				define($uniqid . 'JPATH_SOURCE_COMPONENT_ADMINISTRATOR', JPATH_ADMINISTRATOR . '/components/' . $option);
+			}
 
-				if (strpos($originalFilePath, '/controllers/') !== false )
-				{
-					$temp = explode('/controllers/', $originalFilePath);
-					require_once $temp[0] . '/controller.php';
-				}
+			// Include the original code and replace class name add a Default on
+			$bufferFile = file_get_contents($originalFilePath);
 
-				// Detect if source file use some constants
-				preg_match_all('/JPATH_COMPONENT(_SITE|_ADMINISTRATOR)|JPATH_COMPONENT/i', $bufferFile, $definesSource);
+			if (strpos($originalFilePath, '/controllers/') !== false)
+			{
+				$temp = explode('/controllers/', $originalFilePath);
+				require_once $temp[0] . '/controller.php';
+			}
 
-				$overriderFilePath = $overriderFolder . $fileToOverride;
+			// Detect if source file use some constants
+			preg_match_all('/JPATH_COMPONENT(_SITE|_ADMINISTRATOR)|JPATH_COMPONENT/i', $bufferFile, $definesSource);
 
-				// Append "Default" to the class name (ex. ClassNameDefault). We insert the new class name into the original regex match to get
-				$rx = '/class *[a-z0-9]* *(extends|{|\n)/i';
+			$overriderFilePath = $overriderFolder . $fileToOverride;
 
+			// Append "Default" to the class name (ex. ClassNameDefault). We insert the new class name into the original regex match to get
+			$rx = '/class *[a-z0-9]* *(extends|{|\n)/i';
+
+			preg_match($rx, $bufferFile, $classes);
+
+			if (empty($classes))
+			{
+				$rx = '/class *[a-z0-9]*/i';
 				preg_match($rx, $bufferFile, $classes);
+			}
 
-				if (empty($classes))
-				{
-					$rx = '/class *[a-z0-9]*/i';
-					preg_match($rx, $bufferFile, $classes);
-				}
+			$parts = explode(' ', $classes[0]);
 
-				$parts = explode(' ', $classes[0]);
+			$originalClass = $parts[1];
 
-				$originalClass = $parts[1];
+			$replaceClass = trim($originalClass) . 'Default';
 
-				$replaceClass = trim($originalClass) . 'Default';
+			// Replace original class name by default
+			$bufferContent = str_replace($originalClass, $replaceClass, $bufferFile);
 
-				// Replace original class name by default
-				$bufferContent = str_replace($originalClass, $replaceClass, $bufferFile);
-
-				// Replace JPATH_COMPONENT constants if found, because we are loading before define these constants
-				if (count($definesSource[0]))
-				{
-					$bufferContent = preg_replace(
-						array('/JPATH_COMPONENT/','/JPATH_COMPONENT_SITE/','/JPATH_COMPONENT_ADMINISTRATOR/'),
+			// Replace JPATH_COMPONENT constants if found, because we are loading before define these constants
+			if (count($definesSource[0]))
+			{
+				$bufferContent = preg_replace(
+						array('/JPATH_COMPONENT/', '/JPATH_COMPONENT_SITE/', '/JPATH_COMPONENT_ADMINISTRATOR/'),
 						array($uniqid . 'JPATH_SOURCE_COMPONENT', $uniqid . 'JPATH_SOURCE_COMPONENT_SITE', $uniqid . 'JPATH_SOURCE_COMPONENT_ADMINISTRATOR'),
 						$bufferContent
 					);
-				}
-
-				// Change private methods to protected methods
-				// ~ $bufferContent = preg_replace('/private *function/i', 'protected function', $bufferContent);
-
-				// Finally we can load the base class
-				// ~ $bufferContent = $this->_trimEndClodingTag($bufferContent);
-				eval('?>' . $bufferContent . PHP_EOL . '?>');
-
-				require $overriderFilePath;
-
-				$overridden = true;
 			}
 
-			if ($overridden)
-			{
-				$app = \JFactory::getApplication();
-				$pluginObject->_prepareParams();
-				$app->set('plg_system_notificationary', $pluginObject);
-			}
+			// Change private methods to protected methods
+			// ~ $bufferContent = preg_replace('/private *function/i', 'protected function', $bufferContent);
+
+			// Finally we can load the base class
+			// ~ $bufferContent = $this->_trimEndClodingTag($bufferContent);
+			eval('?>' . $bufferContent . PHP_EOL . '?>');
+
+			require $overriderFilePath;
+
+			$overridden = true;
+		}
+
+		if ($overridden)
+		{
+			$app = \JFactory::getApplication();
+			$pluginObject->prepareParams();
+			$app->set('plg_system_notificationary', $pluginObject);
+		}
 	}
-
 }

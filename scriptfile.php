@@ -217,8 +217,8 @@ class plgSystemNotificationaryInstallerScript extends ScriptAry
 				$db->quoteName('params') . '=' . $db->Quote($row['params']),
 			);
 			$conditions = array(
-				$db->quoteName('folder') . '=' . $db->Quote($this->plg_type),
-				$db->quoteName('element') . '=' . $db->Quote($this->plg_name),
+				$db->quoteName('folder') . '=' . $db->Quote($this->plgType),
+				$db->quoteName('element') . '=' . $db->Quote($this->plgName),
 			);
 			$query->update($db->quoteName('#__extensions'))->set($fields)->where($conditions);
 			$db->setQuery($query);
@@ -230,11 +230,11 @@ class plgSystemNotificationaryInstallerScript extends ScriptAry
 
 			if($getAffectedRows>0)
 			{
-				$msg = '<b style="color:green">' . JText::sprintf('COM_INSTALLER_MSG_UPDATE_SUCCESS', JText::_($this->plg_full_name)) . '</b>';
+				$msg = '<b style="color:green">' . JText::sprintf('COM_INSTALLER_MSG_UPDATE_SUCCESS', JText::_($this->plgFullName)) . '</b>';
 			}
 			else
 			{
-				$msg = '<b style="color:red">' . JText::sprintf('COM_INSTALLER_MSG_UPDATE_ERROR', JText::_($this->plg_name)) . '</b>';
+				$msg = '<b style="color:red">' . JText::sprintf('COM_INSTALLER_MSG_UPDATE_ERROR', JText::_($this->plgName)) . '</b>';
 			}
 
 			$this->messages[] = $msg;

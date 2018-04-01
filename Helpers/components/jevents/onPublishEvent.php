@@ -19,7 +19,7 @@ function onPublishEvent($pks, $state)
 		return;
 	}
 
-	$this->_prepareParams();
+	$this->prepareParams();
 	$context = 'jevents.edit.icalevent';
 
 	if (!in_array($context, $this->allowedContexts))

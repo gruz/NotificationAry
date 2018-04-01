@@ -85,15 +85,15 @@ class GJFieldsFormFieldVersion extends GJFieldsFormField
 
 		if ($row['type'] == 'plugin')
 		{
-			$this->plg_full_name = 'plg_' . $row['folder'] . '_' . $row['element'];
+			$this->plgFullName = 'plg_' . $row['folder'] . '_' . $row['element'];
 
 			// Is used for building joomfish links
 			$this->langShortCode = null;
 
 			$this->default_lang = JComponentHelper::getParams('com_languages')->get('admin');
 			$language = JFactory::getLanguage();
-			$language->load($this->plg_full_name, JPATH_ROOT . dirname($xml), 'en-GB', true);
-			$language->load($this->plg_full_name, JPATH_ROOT . dirname($xml), $this->default_lang, true);
+			$language->load($this->plgFullName, JPATH_ROOT . dirname($xml), 'en-GB', true);
+			$language->load($this->plgFullName, JPATH_ROOT . dirname($xml), $this->default_lang, true);
 		}
 
 		$extension = $this->def('extension');

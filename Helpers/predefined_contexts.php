@@ -35,7 +35,7 @@ $otherParams = array(
 );
 $rows = array_merge($rows, $functionsToBeAliased, $contextAliases, $otherParams);
 
-$predefined_context_templates = array(
+$predefinedContextTemplates = array(
 	'com_hotspots.marker' => array(
 		'Title' => 'HotSpots Marker',
 		'Item table class' => 'TableMarker',
@@ -126,4 +126,4 @@ $predefined_context_templates = array(
 		),
 );
 
-ksort($predefined_context_templates);
+ksort($predefinedContextTemplates);

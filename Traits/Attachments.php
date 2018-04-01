@@ -28,15 +28,15 @@ trait Attachments
 	protected function _cleanAttachments ()
 	{
 		$session = \JFactory::getSession();
-		$session->set('Attachments', null, $this->plg_name);
-		$session->set('Diffs', null, $this->plg_name);
+		$session->set('Attachments', null, $this->plgName);
+		$session->set('Diffs', null, $this->plgName);
 
 		// Remove accidently unremoved attachments
 		$files = JFolder::files(\JFactory::getApplication()->getCfg('tmp_path'), 'diff_id_*', false, true);
 		JFile::delete($files);
 		$files = JFolder::files(\JFactory::getApplication()->getCfg('tmp_path'), 'prev_version_id_*', false, true);
 		JFile::delete($files);
-		$files = JFolder::files(\JFactory::getApplication()->getCfg('tmp_path'), $this->plg_name . '_*', false, true);
+		$files = JFolder::files(\JFactory::getApplication()->getCfg('tmp_path'), $this->plgName . '_*', false, true);
 		JFile::delete($files);
 	}
 

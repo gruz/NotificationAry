@@ -15,19 +15,19 @@ namespace NotificationAry;
 defined('_JEXEC') or die;
 
 use JLoader;
-JLoader::registerNamespace('NotificationAry', __DIR__, false, false, 'psr4');
 
-use NotificationAry\Traits;
+JLoader::registerNamespace('NotificationAry', __DIR__, false, false, 'psr4');
 
 jimport('gjfields.gjfields');
 jimport('gjfields.helper.plugin');
-// jimport('joomla.filesystem.folder');
-// jimport('joomla.plugin.plugin');
-// jimport('joomla.filesystem.file');
 
+// ~ jimport('joomla.filesystem.folder');
+
+// ~ jimport('joomla.plugin.plugin');
+// ~ jimport('joomla.filesystem.file');
 
 $latestGjfieldsNeededVersion = '1.2.0';
-$errorMsg = 'Install the latest GJFields plugin version <span style="color:black;">'
+$errorMsg                    = 'Install the latest GJFields plugin version <span style="color:black;">'
 	. __FILE__ . '</span>: <a href="http://www.gruz.org.ua/en/extensions/gjfields-sefl-reproducing-joomla-jform-fields.html">GJFields</a>';
 
 $isOk = true;
@@ -41,6 +41,7 @@ while (true)
 		$errorMsg = 'Strange, but missing GJFields library for <span style="color:black;">'
 			. __FILE__ . '</span><br> The library should be installed together with the extension... Anyway, reinstall it:
 			<a href="http://www.gruz.org.ua/en/extensions/gjfields-sefl-reproducing-joomla-jform-fields.html">GJFields</a>';
+
 		break;
 	}
 
@@ -54,6 +55,7 @@ while (true)
 	}
 
 	$isOk = true;
+
 	break;
 }
 
@@ -65,12 +67,12 @@ else
 {
 	$comPath = JPATH_SITE . '/components/com_content/';
 
-	if (!class_exists('ContentRouter') )
+	if (!class_exists('ContentRouter'))
 	{
 		require_once $comPath . 'router.php';
 	}
 
-	if (!class_exists('ContentHelperRoute') )
+	if (!class_exists('ContentHelperRoute'))
 	{
 		require_once $comPath . 'helpers/route.php';
 	}
@@ -101,12 +103,6 @@ else
 		use Traits\SmallFunctions;
 		use Traits\Subscribe;
 
-		/**
-		 * Constructor.
-		 *
-		 * @param   object  &$subject  The object to observe.
-		 * @param   array   $config    An optional associative array of configuration settings.
-		 */
 		public function __construct(& $subject, $config)
 		{
 			$jinput = \JFactory::getApplication()->input;
@@ -117,6 +113,20 @@ else
 			}
 
 			parent::__construct($subject, $config);
+
+			// Handle generated in gjfiles name in snake_case to follow Joomla coding standards camelCase
+			$mapPlgNamings = [
+				'plg_name',
+				'plg_type',
+				'plg_full_name',
+				'plg_path_relative',
+				'plg_path' ,
+			];
+
+			foreach ($mapPlgNamings as $oldKey) {
+				$newKey = lcfirst(str_replace('_', '', ucwords($oldKey, '_')));
+				$this->$newKey = $this->$oldKey;
+			}
 
 			$this->_preparePluginHasBeenSavedOrAppliedFlag();
 
@@ -173,10 +183,9 @@ else
 				return true;
 			}
 
-			$this->_prepareParams();
+			$this->prepareParams();
 
-
-			$context = $this->_contextAliasReplace($context);
+			$context = $this->contextAliasReplace($context);
 
 			if (!in_array($context, $this->allowedContexts))
 			{
@@ -205,7 +214,7 @@ else
 			{
 				$contentItem->load($id);
 				$contentItem->{'modified_by'} = \JFactory::getUser()->id;
-				$this->previousState = 'not determined';
+				$this->previousState          = 'not determined';
 				$this->onContentAfterSave($context, $contentItem, false);
 			}
 
@@ -244,19 +253,20 @@ else
 
 			$this->contentItem  = $this->_contentItemPrepare($contentItem);
 
-			$session = \JFactory::getSession();
-			$CustomReplacement = $session->get('CustomReplacement', null, $this->plg_name);
+			$session           = \JFactory::getSession();
+			$CustomReplacement = $session->get('CustomReplacement', null, $this->plgName);
 
 			switch ($context)
 			{
 				case $CustomReplacement['context']:
 					$this->previousArticle = $CustomReplacement['previous_item'];
-					$this->previousState = $CustomReplacement['previous_state'];
+					$this->previousState   = $CustomReplacement['previous_state'];
+
 					break;
 				case 'jevents.edit.icalevent':
-					$dataModel = new JEventsDataModel;
+					$dataModel             = new JEventsDataModel;
 					$this->previousArticle = $dataModel;
-					$jevent = $dataModel->queryModel->getEventById(intval($this->contentItem->id), 1, "icaldb");
+					$jevent                = $dataModel->queryModel->getEventById(intval($this->contentItem->id), 1, "icaldb");
 
 					if (!empty($jevent))
 					{
@@ -279,7 +289,7 @@ else
 			$this->previousArticle = $this->_contentItemPrepare($this->previousArticle);
 
 			$confObject = \JFactory::getApplication();
-			$tmpPath = $confObject->getCfg('tmp_path');
+			$tmpPath    = $confObject->getCfg('tmp_path');
 
 			foreach ($this->preparePreviousVersionsFlag as $k => $v)
 			{
@@ -304,36 +314,36 @@ else
 
 						if ($v == 'txt')
 						{
-							if (!class_exists('Html2Text') )
+							if (!class_exists('Html2Text'))
 							{
 								require_once self::$helpersFolder . '/Html2Text.php';
 							}
 
 							// Instantiate a new instance of the class. Passing the string
 							// variable automatically loads the HTML for you.
-							$h2t = new Html2Text\Html2Text($text, array('show_img_link' => 'yes'));
+							$h2t        = new Html2Text\Html2Text($text, array('show_img_link' => 'yes'));
 							$h2t->width = 120;
 
 							// Simply call the get_text() method for the class to convert
 							// the HTML to the plain text. Store it into the variable.
 							$text = $h2t->get_text();
-							unset ($h2t);
+							unset($h2t);
 						}
 
 						break;
 					case 'sql':
-						$db = \JFactory::getDBO();
+						$db                = \JFactory::getDBO();
 						$empty_contentItem = clone $this->previousArticle;
 						$empty_contentItem->reset();
 
 						// $empty_contentItem = $this->_getContentItemTable($context);
 						$tablename = str_replace('#__', $db->getPrefix(), $empty_contentItem->get('_tbl'));
-						$text = 'UPDATE ' . $tablename . ' SET ';
-						$parts = array();
+						$text      = 'UPDATE ' . $tablename . ' SET ';
+						$parts     = array();
 
 						foreach ($this->previousArticle as $field => $value)
 						{
-							if (is_string($value) && property_exists($empty_contentItem, $field) )
+							if (is_string($value) && property_exists($empty_contentItem, $field))
 							{
 								$parts[] = $db->quoteName($field) . '=' . $db->quote($value);
 							}
@@ -341,9 +351,11 @@ else
 
 						$text .= implode(',', $parts);
 						$text .= ' WHERE ' . $db->quoteName('id') . '=' . $db->quote($this->previousArticle->id);
+
 						break;
 					default :
 						$this->attachments[$v] = null;
+
 						break;
 				}
 
@@ -361,7 +373,7 @@ else
 				// If all possible DIFFs are already set to be generated, then don't check, else go:
 				if (count($this->availableDIFFTypes) > count($this->DIFFsToBePreparedGlobally))
 				{
-					if (isset($rule->attachdiffinfo) )
+					if (isset($rule->attachdiffinfo))
 					{
 						foreach ($rule->attachdiffinfo as $k => $v)
 						{
@@ -371,11 +383,11 @@ else
 
 					if ($rule->messagebodysource == 'hardcoded')
 					{
-						if ($rule->emailformat == 'plaintext' && $rule->includediffinfo_text != 'none' )
+						if ($rule->emailformat == 'plaintext' && $rule->includediffinfo_text != 'none')
 						{
 							$this->DIFFsToBePreparedGlobally[$rule->includediffinfo_text] = $rule->includediffinfo_text;
 						}
-						elseif ($rule->emailformat == 'html' && $rule->includediffinfo_html != 'none' )
+						elseif ($rule->emailformat == 'html' && $rule->includediffinfo_html != 'none')
 						{
 							$this->DIFFsToBePreparedGlobally[$rule->includediffinfo_html] = $rule->includediffinfo_html;
 						}
@@ -394,9 +406,9 @@ else
 				}
 			}
 
-			if (!empty($this->DIFFsToBePreparedGlobally) )
+			if (!empty($this->DIFFsToBePreparedGlobally))
 			{
-				if (!class_exists('Diff') )
+				if (!class_exists('Diff'))
 				{
 					require_once self::$helpersFolder . '/Diff.php';
 				}
@@ -406,37 +418,37 @@ else
 					// 'ignoreCase' => true,
 
 					// Determines how much of not changed text to show, 1 means only close to the change
-					'context' => 1
+					'context' => 1,
 				);
 
-				$old = array();
-				$old[] = '<h1>' . $this->previousArticle->title . '</h1>';
+				$old       = array();
+				$old[]     = '<h1>' . $this->previousArticle->title . '</h1>';
 				$introtext = preg_split("/\r\n|\n|\r/", JString::trim($this->previousArticle->introtext));
-				$old = array_merge($old, $introtext);
+				$old       = array_merge($old, $introtext);
 
 				if (!empty($this->previousArticle->fulltext))
 				{
-					$old[] = '<hr id="system-readmore" />';
+					$old[]    = '<hr id="system-readmore" />';
 					$fulltext = preg_split("/\r\n|\n|\r/", JString::trim($this->previousArticle->fulltext));
-					$old = array_merge($old, $fulltext);
+					$old      = array_merge($old, $fulltext);
 				}
 
-				$new = array();
-				$new[] = '<h1>' . $this->contentItem->title . '</h1>';
+				$new       = array();
+				$new[]     = '<h1>' . $this->contentItem->title . '</h1>';
 				$introtext = preg_split("/\r\n|\n|\r/", JString::trim($this->contentItem->introtext));
 
 				$new = array_merge($new, $introtext);
 
 				if (!empty($this->contentItem->fulltext))
 				{
-					$new[] = '<hr id="system-readmore" />';
+					$new[]    = '<hr id="system-readmore" />';
 					$fulltext = preg_split("/\r\n|\n|\r/", JString::trim($this->contentItem->fulltext));
-					$new = array_merge($new, $fulltext);
+					$new      = array_merge($new, $fulltext);
 				}
 
 				// Initialize the diff class
 				$diff = new Diff($old, $new, $options);
-				$css = JFile::read(self::$helpersFolder . '/Diff/styles.css');
+				$css  = JFile::read(self::$helpersFolder . '/Diff/styles.css');
 			}
 
 			$path = $tmpPath . '/diff_id_' . $this->previousArticle->id . '_' . uniqid();
@@ -449,17 +461,20 @@ else
 				{
 					case 'Text/Unified':
 					case 'Text/Context':
-						$fileNamePart = explode('/', $v);
+						$fileNamePart          = explode('/', $v);
 						$this->attachments[$v] = $path . '_' . $fileNamePart[1] . '.txt';
+
 						break;
 					case 'Html/SideBySide':
 					case 'Html/Inline':
-						$useCSS = true;
-						$fileNamePart = explode('/', $v);
+						$useCSS                = true;
+						$fileNamePart          = explode('/', $v);
 						$this->attachments[$v] = $path . '_' . $fileNamePart[1] . '.html';
+
 						break;
 					default :
 						$this->attachments[$v] = null;
+
 						break;
 				}
 
@@ -467,17 +482,18 @@ else
 
 				if (!class_exists($className))
 				{
-					require_once self::$helpersFolder. '/Diff/Renderer/' . $v . '.php';
+					require_once self::$helpersFolder . '/Diff/Renderer/' . $v . '.php';
 				}
 
 				// Generate a side by side diff
 				$renderer = new $className;
-				$text = $diff->Render($renderer);
+				$text     = $diff->Render($renderer);
 
 				if (empty($text))
 				{
 					unset($this->attachments[$v]);
 					$this->noDiffFound = true;
+
 					break;
 				}
 
@@ -502,9 +518,9 @@ else
 
 			$session = \JFactory::getSession();
 
-			if (!empty($this->attachments) )
+			if (!empty($this->attachments))
 			{
-				$session->set('Attachments', $this->attachments, $this->plg_name);
+				$session->set('Attachments', $this->attachments, $this->plgName);
 			}
 		}
 
@@ -539,7 +555,7 @@ else
 				dump($contentItem, 'onContentAfterSave  context = ' . $context);
 			}
 
-			$context = $this->_contextAliasReplace($context, $contentItem);
+			$context = $this->contextAliasReplace($context, $contentItem);
 
 			$this->_setContext($context);
 
@@ -552,14 +568,14 @@ else
 			if ($this->paramGet('showContext'))
 			{
 				$jtable_class = get_class($contentItem);
-				$msg = array();
-				$msg[] = '</p><div class="alert-message row-fluid">';
-				$msg[] = '<p><a href="http://static.xscreenshot.com/2016/05/10/00/screen_31582c1a5da14780c3ab5f5181a4f46f" target="_blank"><small><b>'
-					. $this->plg_name . '</b> ' . \JText::_('JTOOLBAR_DISABLE') . ' ' . \JText::_('NOTICE') . '</small></a></p>';
+				$msg          = array();
+				$msg[]        = '</p><div class="alert-message row-fluid">';
+				$msg[]        = '<p><a href="http://static.xscreenshot.com/2016/05/10/00/screen_31582c1a5da14780c3ab5f5181a4f46f" target="_blank"><small><b>'
+					. $this->plgName . '</b> ' . \JText::_('JTOOLBAR_DISABLE') . ' ' . \JText::_('NOTICE') . '</small></a></p>';
 				$msg[] = '<b>Context:</b> ' . $context;
 				$msg[] = '<br><b>Item table name:</b> ' . trim($jtable_class);
 
-				$app = \JFactory::getApplication();
+				$app   = \JFactory::getApplication();
 				$msg[] = '
 				<br/><button type="button" class="btn btn-warning btn-small object_values"  ><i class="icon-plus"></i></button><br/>
 				<small class="object_values hide">
@@ -591,7 +607,7 @@ else
 				// but onContentAfterSave is fired in a way the $js can be added as inline code.
 				if ($this->paramGet('showContext'))
 				{
-					$app = \JFactory::getApplication();
+					$app         = \JFactory::getApplication();
 					$scriptAdded = $app->get('##mygruz20160216061544', false);
 
 					if (!$scriptAdded)
@@ -619,7 +635,7 @@ else
 				\JFactory::getApplication()->enqueueMessage($msg . $js, 'notice');
 			}
 
-			if (!$this->_isContentEditPage($context) )
+			if (!$this->_isContentEditPage($context))
 			{
 				return;
 			}
@@ -633,7 +649,7 @@ else
 				if (!$this->shouldShowSwitchCheckFlag)
 				{
 					// Is set for onAfterContentSave
-					$this->shouldShowSwitchCheckFlag = $session->get('shouldShowSwitchCheckFlagK2Special', false, $this->plg_name);
+					$this->shouldShowSwitchCheckFlag = $session->get('shouldShowSwitchCheckFlagK2Special', false, $this->plgName);
 
 					if ($this->shouldShowSwitchCheckFlag)
 					{
@@ -643,7 +659,7 @@ else
 				}
 
 				// Clear anyway
-				$session->clear('shouldShowSwitchCheckFlagK2Special', $this->plg_name);
+				$session->clear('shouldShowSwitchCheckFlagK2Special', $this->plgName);
 
 				// Needed for Notification switch in K2 }
 				if ($this->shouldShowSwitchCheckFlag)
@@ -662,10 +678,10 @@ else
 
 					// Get from \JForm to use if there is no in attribs or params. com_content
 					// on saving at FE a New article uses 'params' while everywhere else 'attribs'
-					$jform_runnotificationary = $session->get('shouldShowSwitchCheckFlagK2SpecialDefaultValue', false, $this->plg_name);
+					$jform_runnotificationary = $session->get('shouldShowSwitchCheckFlagK2SpecialDefaultValue', false, $this->plgName);
 
 					// Clear anyway
-					$session->clear('shouldShowSwitchCheckFlagK2SpecialDefaultValue', $this->plg_name);
+					$session->clear('shouldShowSwitchCheckFlagK2SpecialDefaultValue', $this->plgName);
 
 					if (isset($jform['attribs']['runnotificationary']))
 					{
@@ -738,7 +754,7 @@ else
 			}
 
 			$this->isNew = $isNew;
-			$config = \JFactory::getConfig();
+			$config      = \JFactory::getConfig();
 
 			$this->sitename = $config->get('sitename');
 
@@ -748,9 +764,9 @@ else
 			}
 
 			$user = \JFactory::getUser();
-			$app = \JFactory::getApplication();
+			$app  = \JFactory::getApplication();
 
-			$ShowSuccessMessage = $this->paramGet('showsuccessmessage');
+			$ShowSuccessMessage   = $this->paramGet('showsuccessmessage');
 			$this->SuccessMessage = '';
 
 			if ($ShowSuccessMessage == 1)
@@ -758,7 +774,7 @@ else
 				$this->SuccessMessage = $this->paramGet('successmessage');
 			}
 
-			$ShowErrorMessage = $this->paramGet('showerrormessage');
+			$ShowErrorMessage   = $this->paramGet('showerrormessage');
 			$this->ErrorMessage = '';
 
 			if ($ShowErrorMessage == 1)
@@ -778,15 +794,19 @@ else
 				{
 					case '1':
 						$this->publishStateChange = 'publish';
+
 						break;
 					case '0':
 						$this->publishStateChange = 'unpublish';
+
 						break;
 					case '2':
 						$this->publishStateChange = 'archive';
+
 						break;
 					case '-2':
 						$this->publishStateChange = 'trash';
+
 						break;
 				}
 			}
@@ -794,7 +814,7 @@ else
 			// ~ $this->author = \JFactory::getUser( $contentItem->created_by );
 			$this->author = self::getUser($this->contentItem->created_by);
 
-			if ($this->contentItem->{'modified_by'} > 0 )
+			if ($this->contentItem->{'modified_by'} > 0)
 			{
 				$this->modifier = self::getUser($this->contentItem->{'modified_by'});
 			}
@@ -812,27 +832,27 @@ else
 				$Users_to_send = $this->_users_to_send();
 
 				$users_to_send_helper = $this->_addAuthorModifier();
-				$Users_to_send = array_merge($Users_to_send, $users_to_send_helper);
-				$Users_to_send = $this->_remove_mails($Users_to_send);
+				$Users_to_send        = array_merge($Users_to_send, $users_to_send_helper);
+				$Users_to_send        = $this->_remove_mails($Users_to_send);
 
 				if ($this->paramGet('debug') && !$this->isAjax)
 				{
 					// If jdump extension is installed and enabled
 					$debugmsg = 'No messages are sent in the debug mode. You can check the users to be notified.';
 
-					if (function_exists('dump') && function_exists('dumpMessage') )
+					if (function_exists('dump') && function_exists('dumpMessage'))
 					{
 						dumpMessage($debugmsg);
 						dump($Users_to_send, '$Users_to_send');
 					}
 					else
 					{
-							$msg = array();
-							$msg[] = '<div style="color:red;">' . $debugmsg . '</div>';
-							$msg[] = '<pre>$Users_to_send = ';
-							$msg[] = print_r($Users_to_send, true);
-							$msg[] = '</pre>';
-							$msg = implode(PHP_EOL, $msg);
+						$msg   = array();
+						$msg[] = '<div style="color:red;">' . $debugmsg . '</div>';
+						$msg[] = '<pre>$Users_to_send = ';
+						$msg[] = print_r($Users_to_send, true);
+						$msg[] = '</pre>';
+						$msg   = implode(PHP_EOL, $msg);
 						\JFactory::getApplication()->enqueueMessage($msg, 'notice');
 					}
 
@@ -859,10 +879,10 @@ else
 					 *
 					 * @var array
 					 */
-					if (!empty ($this->brokenSends) && !empty($this->ErrorMessage))
+					if (!empty($this->brokenSends) && !empty($this->ErrorMessage))
 					{
 						// User has back-end access
-						if ($canLoginBackend )
+						if ($canLoginBackend)
 						{
 							/**
 							 * Broken email sends
@@ -873,7 +893,7 @@ else
 						}
 
 						$app->enqueueMessage(
-							\JText::_(ucfirst($this->plg_name)) . ' (line ' . __LINE__ . '): ' . \JText::_($this->ErrorMessage) . ' ' . $email,
+							\JText::_(ucfirst($this->plgName)) . ' (line ' . __LINE__ . '): ' . \JText::_($this->ErrorMessage) . ' ' . $email,
 							'error'
 						);
 					}
@@ -882,13 +902,13 @@ else
 					 *
 					 * @var array
 					 */
-					elseif (empty ($this->brokenSends) && !empty($this->SuccessMessage) )
+					elseif (empty($this->brokenSends) && !empty($this->SuccessMessage))
 					{
-						if (!empty($Users_to_send) )
+						if (!empty($Users_to_send))
 						{
-							$canLoginBackend = $user->authorise('core.login.admin');
+							$canLoginBackend             = $user->authorise('core.login.admin');
 							$successmessagenumberofusers = $this->paramGet('successmessagenumberofusers');
-							$msg = \JText::_($this->SuccessMessage);
+							$msg                         = \JText::_($this->SuccessMessage);
 
 							if ($canLoginBackend && $successmessagenumberofusers > 0)
 							{
@@ -918,8 +938,8 @@ else
 			}
 			else
 			{
-				$session = \JFactory::getSession();
-				$attachments = $session->set('AjaxHash', $this->ajaxHash, $this->plg_name);
+				$session     = \JFactory::getSession();
+				$attachments = $session->set('AjaxHash', $this->ajaxHash, $this->plgName);
 			}
 		}
 
@@ -948,15 +968,15 @@ else
 			$session = \JFactory::getSession();
 
 			// Is set in onAfterContentSave
-			$ajaxHash = $session->get('AjaxHash', null, $this->plg_name);
+			$ajaxHash = $session->get('AjaxHash', null, $this->plgName);
 
 			if (!empty($ajaxHash))
 			{
 				$paramsToBePassed = array(
-					'ajaxHash' => $ajaxHash,
-					'verbose' => $this->paramGet('verbose'),
+					'ajaxHash'          => $ajaxHash,
+					'verbose'           => $this->paramGet('verbose'),
 					'showNumberOfUsers' => $this->paramGet('successmessagenumberofusers'),
-					'debug' => $this->paramGet('debug'),
+					'debug'             => $this->paramGet('debug'),
 				);
 
 				$paramsToBePassed = base64_encode(serialize($paramsToBePassed));
@@ -966,7 +986,7 @@ else
 							JURI::base()
 							// It's a must
 							. '?option=com_ajax&format=raw'
-							. '&group=' . $this->plg_type
+							. '&group=' . $this->plgType
 							. '&plugin=notificationAryRun'
 							. '&' . JSession::getFormToken() . '=1'
 							. '&uniq=' . uniqid()
@@ -981,16 +1001,16 @@ else
 
 				$doc = \JFactory::getDocument();
 
-				$doc->addScriptOptions($this->plg_name, array('ajax_place' => $this->plg_full_name));
-				$doc->addScriptOptions($this->plg_name, array('ajax_url' => $url_ajax_plugin));
+				$doc->addScriptOptions($this->plgName, array('ajax_place' => $this->plgFullName));
+				$doc->addScriptOptions($this->plgName, array('ajax_url' => $url_ajax_plugin));
 
-				//$doc->addScriptOptions($this->plg_name, ['messages' => array('error' => \JText::_('Ajax error')) ]);
+				//$doc->addScriptOptions($this->plgName, ['messages' => array('error' => \JText::_('Ajax error')) ]);
 
 				if ($this->paramGet('ajax_allow_to_cancel') && $this->paramGet('ajax_delay') > 0)
 				{
-					$doc->addScriptOptions($this->plg_name, array('start_delay' => ($this->paramGet('ajax_delay') + 1)));
+					$doc->addScriptOptions($this->plgName, array('start_delay' => ($this->paramGet('ajax_delay') + 1)));
 					\JText::script('PLG_SYSTEM_NOTIFICATIONARY_AJAX_TIME_TO_START');
-				 // ~ $doc->addScriptOptions($this->plg_name, array('messages' => array('delay_text' => \JText::_('PLG_SYSTEM_NOTIFICATIONARY_AJAX_TIME_TO_START')) ));
+					// ~ $doc->addScriptOptions($this->plgName, array('messages' => array('delay_text' => \JText::_('PLG_SYSTEM_NOTIFICATIONARY_AJAX_TIME_TO_START')) ));
 				}
 
 				$SuccessMessage = '';
@@ -1005,15 +1025,15 @@ else
 					$SuccessMessage .= ' ' . \JText::_('PLG_SYSTEM_NOTIFICATIONARY_USERS_NOTIFIED');
 				}
 
-				$doc->addScriptOptions($this->plg_name,['messages' => array('sent' => $SuccessMessage) ] );
+				$doc->addScriptOptions($this->plgName, array('messages' => array('sent' => $SuccessMessage) ));
 
-				self::addJSorCSS('ajax.js', $this->plg_full_name);
+				self::addJSorCSS('ajax.js', $this->plgFullName);
 
-				self::addJSorCSS('styles.css', $this->plg_full_name);
+				self::addJSorCSS('styles.css', $this->plgFullName);
 
 				if ($this->paramGet('debug'))
 				{
-					$doc->addScriptOptions($this->plg_name, array('debug' => true));
+					$doc->addScriptOptions($this->plgName, array('debug' => true));
 				}
 			}
 		}
@@ -1052,16 +1072,16 @@ else
 				// Get extension table class
 				$extensionTable = \JTable::getInstance('extension');
 
-				$pluginId = $extensionTable->find(array('element' => $this->plg_name, 'type' => 'plugin'));
+				$pluginId = $extensionTable->find(array('element' => $this->plgName, 'type' => 'plugin'));
 
 				$language = \JFactory::getLanguage();
 
 				// Have to load curren logged in language to show the proper menu item language, not the default backend language
-				$language->load($this->plg_full_name, $this->plg_path, $language->get('tag'), true);
+				$language->load($this->plgFullName, $this->plgPath, $language->get('tag'), true);
 
 				$menu = '<li><a class="menu-'
-					. $this->plg_name . ' " href="index.php?option=com_plugins&task=plugin.edit&extension_id=' . $pluginId . '">'
-					. \JText::_($this->plg_full_name . '_MENU')
+					. $this->plgName . ' " href="index.php?option=com_plugins&task=plugin.edit&extension_id=' . $pluginId . '">'
+					. \JText::_($this->plgFullName . '_MENU')
 					. ' <i class="icon-mail-2"></i></a></li>';
 
 				$js = '
@@ -1079,7 +1099,7 @@ else
 
 				// The second check of a non-normal Joomla page
 				// (e.g. JSON format has no body tag). Needed because of problems with RockSprocket
-				if (count($body) == 2 )
+				if (count($body) == 2)
 				{
 					$body = $body[0] . $js . '</body>' . $body[1];
 					$app->setBody($body);
@@ -1090,43 +1110,43 @@ else
 			$session = \JFactory::getSession();
 
 			// Is set in onAfterContentSave
-			$ajaxHash = $session->get('AjaxHash', null, $this->plg_name);
+			$ajaxHash = $session->get('AjaxHash', null, $this->plgName);
 
-			$session->clear('AjaxHash', $this->plg_name);
+			$session->clear('AjaxHash', $this->plgName);
 
 			if (!empty($ajaxHash))
 			{
-				$place_debug = '';
-				$user = \JFactory::getUser();
+				$placeDebug = '';
+				$user        = \JFactory::getUser();
 
 				// Since the _checkAllowed checks the global settings, there is no $this->rule passed and used there
 				if ($this->paramGet('ajax_allow_to_cancel') && $this->_checkAllowed($user, $paramName = 'allowuser', $prefix = 'ajax'))
 				{
-					$place_debug .= '<button type="button" id="' . $this->plg_full_name . '_close">X</button>';
+					$placeDebug .= '<button type="button" id="' . $this->plgFullName . '_close">X</button>';
 				}
 
 				if ($this->paramGet('debug'))
 				{
-					// ~ $place_debug .= '<div style="position:fixed">';
-					$place_debug .= '<a id="clear" class="btn btn-error">Clear</a>';
-					$place_debug .= '<a id="continue" class="btn btn-warning">Continue</a>';
+					// ~ $placeDebug .= '<div style="position:fixed">';
+					$placeDebug .= '<a id="clear" class="btn btn-error">Clear</a>';
+					$placeDebug .= '<a id="continue" class="btn btn-warning">Continue</a>';
 
-					// ~ $place_debug .= '</div>';
+				// ~ $placeDebug .= '</div>';
 				}
 				else
 				{
-					$place_debug .= '<small>';
+					$placeDebug .= '<small>';
 
 					if ($this->paramGet('ajax_allow_to_cancel') && $this->_checkAllowed($user, $paramName = 'allowuser', $prefix = 'ajax'))
 					{
-						$place_debug .= \JText::_('PLG_SYSTEM_NOTIFICATIONARY_AJAX_TIME_TO_CANCEL');
-						$place_debug .= '. ';
+						$placeDebug .= \JText::_('PLG_SYSTEM_NOTIFICATIONARY_AJAX_TIME_TO_CANCEL');
+						$placeDebug .= '. ';
 					}
 
-					$place_debug .= \JText::_('PLG_SYSTEM_NOTIFICATIONARY_AJAX_SENDING_MESSAGES') . '</small>';
+					$placeDebug .= \JText::_('PLG_SYSTEM_NOTIFICATIONARY_AJAX_SENDING_MESSAGES') . '</small>';
 				}
 
-				$ajax_place_holder = '<div class="nasplace" >' . $place_debug . '<div class="nasplaceitself" id="' . $this->plg_full_name . '" ></div>';
+				$ajax_place_holder = '<div class="nasplace" >' . $placeDebug . '<div class="nasplaceitself" id="' . $this->plgFullName . '" ></div>';
 
 				$body = $app->getBody();
 				$body = str_replace('</body>', $ajax_place_holder . '</body>', $body);
@@ -1135,22 +1155,22 @@ else
 
 			// K2 doesn't run onContentPrepareForm. So we need to imitate it here.
 			$option = $jinput->get('option', null);
-			$view = $jinput->get('view', null);
+			$view   = $jinput->get('view', null);
 
 			if ($option == 'com_k2' && $view == 'item')
 			{
 				// Prepare to imitate onContentPrepareForm {
-				$this->_prepareParams();
-				$context = 'com_k2.item';
+				$this->prepareParams();
+				$context                 = 'com_k2.item';
 				$this->allowedContexts[] = $context;
 				$this->_setContext($context);
 
 				$this->shouldShowSwitchCheckFlag = false;
-				$contentItem = $this->_getContentItemTable($context);
+				$contentItem                     = $this->_getContentItemTable($context);
 				$contentItem->load($jinput->get('cid', 0));
 
 				jimport('joomla.form.form');
-				$form = \JForm::getInstance('itemForm', JPATH_ADMINISTRATOR . '/components/com_k2/models/item.xml');
+				$form   = \JForm::getInstance('itemForm', JPATH_ADMINISTRATOR . '/components/com_k2/models/item.xml');
 				$values = array('params' => json_decode($contentItem->params));
 				$form->bind($values);
 
@@ -1167,12 +1187,12 @@ else
 				$this->shouldShowSwitchCheckFlag = true;
 
 				// Is set for onAfterContentSave as onContentPrepareForm is not run, but this method onAfterRender runs after onContentAfterSave.
-				$session->set('shouldShowSwitchCheckFlagK2Special', true, $this->plg_name);
+				$session->set('shouldShowSwitchCheckFlagK2Special', true, $this->plgName);
 
 				// If the NS should be shown but cannot be shown due to HTML layout problems, then we need to know default value
 				$rule = array_pop($rules);
 
-				$session->set('shouldShowSwitchCheckFlagK2SpecialDefaultValue', (bool) $rule->notificationswitchdefault, $this->plg_name);
+				$session->set('shouldShowSwitchCheckFlagK2SpecialDefaultValue', (bool) $rule->notificationswitchdefault, $this->plgName);
 			}
 
 			// Can be set in onContentPrepareForm or onContentAfterSave
@@ -1181,7 +1201,7 @@ else
 				return;
 			}
 
-			if (!$this->_isContentEditPage($this->context['full']) )
+			if (!$this->_isContentEditPage($this->context['full']))
 			{
 				return;
 			}
@@ -1196,28 +1216,28 @@ else
 				return;
 			}
 
-			$body = $app->getBody();
-			$app = \JFactory::getApplication();
-			$checkedyes = $checkedno = 'checked="checked"';
+			$body        = $app->getBody();
+			$app         = \JFactory::getApplication();
+			$checkedyes  = $checkedno  = 'checked="checked"';
 			$selectedyes = $selectedno = 'selected="selected"';
-			$active_no = $active_yes = '';
+			$active_no   = $active_yes   = '';
 
 			if ($this->runnotificationary == 1)
 			{
-				$checkedno = '';
+				$checkedno  = '';
 				$selectedno = '';
 
-				// $active_yes='active btn-success';
+			// $active_yes='active btn-success';
 			}
 			else
 			{
-				$checkedyes = '';
+				$checkedyes  = '';
 				$selectedyes = '';
 
 				// $active_no=' active btn-danger';
 			}
 
-			$CustomReplacement = $session->get('CustomReplacement', null, $this->plg_name);
+			$CustomReplacement = $session->get('CustomReplacement', null, $this->plgName);
 
 			$replacement_label = '
 					<label title="" data-original-title="<strong>' . \JText::_('PLG_SYSTEM_NOTIFICATIONARY_NOTIFY') . '</strong><br />'
@@ -1227,24 +1247,24 @@ else
 
 			if (!empty($CustomReplacement) && $CustomReplacement['context'] == $this->context['full'])
 			{
-				$possible_tag_ids = $CustomReplacement['possible_tag_ids'];
+				$possible_tag_ids     = $CustomReplacement['possible_tag_ids'];
 				$replacement_fieldset = $CustomReplacement['replacement_fieldset'];
 
-				$replace = [
+				$replace = array(
 					'{{$this->attribsField}}' => $this->attribsField,
-					'{{$checkedyes}}' => $checkedyes,
-					'{{$active_yes}}' => $active_yes,
-					'{{$checkedno}}' => $checkedno,
-					'{{$active_no}}' => $active_no,
+					'{{$checkedyes}}'         => $checkedyes,
+					'{{$active_yes}}'         => $active_yes,
+					'{{$checkedno}}'          => $checkedno,
+					'{{$active_no}}'          => $active_no,
 
-				];
+				);
 
-				$search = array_keys($replace);
+				$search               = array_keys($replace);
 				$replacement_fieldset = str_replace($search, $replace, $replacement_fieldset);
 			}
 			else
 			{
-				$CustomReplacement = ['option' => false];
+				$CustomReplacement = array('option' => false);
 
 				if (!$app->isAdmin() && $this->paramGet('replacement_type') === 'simple')
 				{
@@ -1272,7 +1292,7 @@ else
 				// $oldFieldsFormat = self::getHTMLElementById($body,'adminformlist','ul','class');
 
 				// NOTE! self::getHTMLElementById doesn't work with non-double tags like <input ... /> .
-				$possible_tag_ids = array (
+				$possible_tag_ids = array(
 
 					// ~ array('textarea', 'jform_articletext'),
 					array('select', 'jform_catid'),
@@ -1292,13 +1312,12 @@ else
 					array('select', 'catid'),
 				);
 
-
 				// JEvents compatibility\
 				if ($this->context['full'] == 'jevents.edit.icalevent')
 				{
-					$possible_tag_ids = array (
+					$possible_tag_ids = array(
 						array('select', 'access'),
-						array('select', 'catid')
+						array('select', 'catid'),
 					);
 					$replacement_fieldset = '
 						<div><fieldset id="jform_' . $this->attribsField . '_runnotificationary" class="radio btn-group btn-group-yesno nswitch" >
@@ -1311,12 +1330,11 @@ else
 				}
 			}
 
-
 			$oldFormat = false;
 
 			foreach ($possible_tag_ids as $tag)
 			{
-				$attribute_name = isset($tag[2]) ? $tag[2] : 'id';
+				$attribute_name      = isset($tag[2]) ? $tag[2] : 'id';
 				$nswitch_placeholder = self::getHTMLElementById($body, $tag[1], $tag[0], $attribute_name);
 
 				if (!empty($nswitch_placeholder))
@@ -1443,8 +1461,8 @@ else
 				else
 				{
 					$hiddenTabNav = '<li><a href="#params-basic" data-toggle="tab"></a></li>';
-					$body = str_replace($hiddenTabNav, '', $body);
-					$body = str_replace($hiddenTab, '', $body);
+					$body         = str_replace($hiddenTabNav, '', $body);
+					$body         = str_replace($hiddenTab, '', $body);
 				}
 
 				$body = str_replace($nswitch_placeholder, $nswitch_placeholder . $replacement, $body);
@@ -1495,10 +1513,10 @@ else
 		 *
 		 * @return   void
 		 */
-		public function onContentPrepare($context, &$article, &$params, $page=null)
+		public function onContentPrepare($context, &$article, &$params, $page = null)
 		{
 			static $assetsAdded = false;
-			$app = \JFactory::getApplication();
+			$app                = \JFactory::getApplication();
 
 			// Replace plugin code with the subscribe/unsubscribe form if needed
 			if ($app->isSite())
@@ -1515,7 +1533,7 @@ else
 				{
 					if (!isset($this->pparams))
 					{
-						$this->_prepareParams();
+						$this->prepareParams();
 					}
 
 					$possible_object_parameters = array('text', 'introtext');
@@ -1527,9 +1545,9 @@ else
 							$text = self::pluginCodeReplace($this, $article->{$param}, $matches);
 						}
 
-						if (isset($text) && $text !==false)
+						if (isset($text) && $text !== false)
 						{
-								$article->{$param} = $text;
+							$article->{$param} = $text;
 						}
 					}
 				}
@@ -1555,8 +1573,8 @@ else
 
 			$this->_userProfileFormHandle($form, $contentItem);
 
-			$debug = true;
-			$debug = false;
+			$debug  = true;
+			$debug  = false;
 			$jinput = \JFactory::getApplication()->input;
 
 			if ($jinput->get('option', null) == 'com_dump')
@@ -1579,8 +1597,7 @@ else
 			}
 
 			// Check we are manipulating a valid form.
-			
-			
+
 			if (!$this->checkIsForm($form))
 			{
 				$this->_subject->setError('JERROR_NOT_A_FORM');
@@ -1607,8 +1624,8 @@ else
 				dump($context, '$context from Form');
 			}
 
-			$session->set('FormContext', $context, $this->plg_name);
-			$context = $this->_contextAliasReplace($context);
+			$session->set('FormContext', $context, $this->plgName);
+			$context = $this->contextAliasReplace($context);
 			$this->_setContext($context);
 
 			if ($debug)
@@ -1616,7 +1633,7 @@ else
 				dump($context, 'here 1 $context');
 			}
 
-			if (!$this->_isContentEditPage($context) )
+			if (!$this->_isContentEditPage($context))
 			{
 				return;
 			}
@@ -1627,13 +1644,13 @@ else
 			}
 
 			// Specially for JEvents. Here I set data for special JEvents event onEventEdit which is run after onContentPrepare
-			if ($context == "jevents.edit.icalevent" )
+			if ($context == "jevents.edit.icalevent")
 			{
 				global  $NotificationAryFirstRunCheck;
 
 				if (empty($this->form))
 				{
-					$this->form = &$form;
+					$this->form                                           = &$form;
 					$NotificationAryFirstRunCheck['onContentPrepareForm'] = null;
 
 					return;
@@ -1669,8 +1686,8 @@ else
 
 			if (empty($contentItem))
 			{
-				$attribs = $session->get('AttribsField' . $context, 'attribs', $this->plg_name);
-				$session->clear('AttribsField' . $context, $this->plg_name);
+				$attribs = $session->get('AttribsField' . $context, 'attribs', $this->plgName);
+				$session->clear('AttribsField' . $context, $this->plgName);
 			}
 			else
 			{
@@ -1681,7 +1698,7 @@ else
 					$attribs = 'params';
 				}
 
-				$session->set('AttribsField' . $context, $attribs, $this->plg_name);
+				$session->set('AttribsField' . $context, $attribs, $this->plgName);
 			}
 
 			// ~ dump($contentItem,'$contentItem');
@@ -1697,7 +1714,7 @@ else
 
 			$this->runnotificationary = 0;
 
-			if (isset ($contentItem->{$attribs}['runnotificationary']))
+			if (isset($contentItem->{$attribs}['runnotificationary']))
 			{
 				$this->runnotificationary = $contentItem->{$attribs}['runnotificationary'];
 			}
@@ -1717,18 +1734,18 @@ else
 						<form>
 							<fields name="' . $attribs . '">';
 
-								if ($app->isAdmin())
-								{
-									$string .= '<fieldset name="basic" >';
-								}
-								/*
-								if (version_compare(JVERSION, '3.7', '<') == 1 || true)
-								{
-									$string .= '<fieldset name="basic" >';
-								}
-								*/
+			if ($app->isAdmin())
+			{
+				$string .= '<fieldset name="basic" >';
+			}
+			/*
+			if (version_compare(JVERSION, '3.7', '<') == 1 || true)
+			{
+				$string .= '<fieldset name="basic" >';
+			}
+			*/
 
-								$string .= '
+			$string .= '
 									<field
 										label="PLG_SYSTEM_NOTIFICATIONARY_NOTIFY"
 										description="PLG_SYSTEM_NOTIFICATIONARY_NOTIFY_DESC"
@@ -1741,47 +1758,47 @@ else
 										<option value="1">JYES</option>
 									</field>';
 
-								if ($app->isAdmin())
-								{
-									$string .= '</fieldset>';
-								}
-								/*
-								if (version_compare(JVERSION, '3.7', '<') == 1 || true)
-								{
-									$string .= '</fieldset>';
-								}
-								*/
+			if ($app->isAdmin())
+			{
+				$string .= '</fieldset>';
+			}
+			/*
+			if (version_compare(JVERSION, '3.7', '<') == 1 || true)
+			{
+				$string .= '</fieldset>';
+			}
+			*/
 
-								$string .= '
+			$string .= '
 							</fields>
 						</form>';
 
 			$form->load((string) $string, true);
-			$this->attribsField = $attribs;
+			$this->attribsField              = $attribs;
 			$this->shouldShowSwitchCheckFlag = true;
 
-			$CustomReplacement = $session->get('CustomReplacement', null, $this->plg_name);
+			$CustomReplacement = $session->get('CustomReplacement', null, $this->plgName);
 
 			if (!empty($CustomReplacement) && $CustomReplacement['context'] == $this->context['full'])
 			{
 				$switch_selector = $CustomReplacement['switch_selector'];
-				$form_selector = $CustomReplacement['form_selector'];
+				$form_selector   = $CustomReplacement['form_selector'];
 			}
 			else
 			{
 				$switch_selector = "[name=\"jform[" . $attribs . "][runnotificationary]\"]:checked";
-				$form_selector = 'adminForm';
+				$form_selector   = 'adminForm';
 			}
 
 			foreach ($rules as $rule_number => $rule)
 			{
 				if ($rule->notificationswitchaddconfirmation)
 				{
-					$doc = \JFactory::getDocument();
+					$doc      = \JFactory::getDocument();
 					$language = \JFactory::getLanguage();
 
 					// Have to load current logged in user language to show the proper menu item language, not the default backend language
-					$language->load($this->plg_full_name, $this->plg_path, $language->get('tag'), true);
+					$language->load($this->plgFullName, $this->plgPath, $language->get('tag'), true);
 
 					$js = "
 						jQuery(document).ready(function (\$){
@@ -1829,17 +1846,17 @@ else
 		public function onAfterRoute()
 		{
 			$jinput = \JFactory::getApplication()->input;
-			$uniq = $jinput->get('unsubscribe', null);
-			$email = $jinput->get('email', null, 'raw');
-			$md5 = $jinput->get('hash', null, 'raw');
+			$uniq   = $jinput->get('unsubscribe', null);
+			$email  = $jinput->get('email', null, 'raw');
+			$md5    = $jinput->get('hash', null, 'raw');
 
 			if ($uniq)
 			{
 				$serialize = (base64_encode(serialize(array('unsubscribe' => $email, 'md5' => $md5))));
-				$app	= \JFactory::getApplication();
+				$app	      = \JFactory::getApplication();
 
 				$redirect_url = 'index.php?option=com_ajax&format=raw'
-					. '&group=' . $this->plg_type
+					. '&group=' . $this->plgType
 					. '&plugin=notificationAryRun'
 					. '&' . JSession::getFormToken() . '=1'
 					. '&uniq=' . uniqid()
@@ -1859,23 +1876,26 @@ else
 		{
 			self::_autoOverride($this);
 
-			$this->_prepareParams();
+			$this->prepareParams();
 
 			foreach ($this->pparams as $k => $param)
 			{
-
 				if (!$param->isenabled)
 				{
 					continue;
 				}
+
 				if ($param->context_or_contenttype == "context" && $param->context == "com_zoo.item" && JComponentHelper::getComponent('com_zoo', true)->enabled)
 				{
 					self::loadZoo();
+
 					break;
 				}
 			}
 		}
 	}
+
+	// PlgSystemNotificationaryCore }
 
 	JLoader::register('plgSystemNotificationary', __FILE__);
 
@@ -1896,37 +1916,40 @@ else
 
 	$notificationgroup = $plgParams->get('{notificationgroup');
 
-	$custom_templates = array();
+	// Convert properties to camelCase to follow Joomla coding standards
+	$notificationgroup = PlgSystemNotificationaryCore::camelSizeProperties($notificationgroup);
 
-	if (!empty($notificationgroup->context_or_contenttype))
+	$customTemplates = [];
+
+	if (!empty($notificationgroup->contextOrContenttype))
 	{
-		$context_or_contenttype = $notificationgroup->context_or_contenttype;
 		$enabled = $plgParams->get('{notificationgroup')->isenabled;
 
-		foreach ($context_or_contenttype as $k => $v )
+		foreach ($notificationgroup->contextOrContenttype as $k => $v)
 		{
-			if ($v == 'context' && $enabled[$k] == 1 )
+			if ('context' === $v && $enabled[$k] == 1)
 			{
-				// $custom_templates[] = $plgParams->get('{notificationgroup')->context[$k];
-				$custom_template = $plgParams->get('{notificationgroup')->context[$k];
-				$custom_template = self::_parseManualContextTemplate($custom_template);
+				// $customTemplates[] = $plgParams->get('{notificationgroup')->context[$k];
+				$customTemplate = $plgParams->get('{notificationgroup')->context[$k];
+				$customTemplate = PlgSystemNotificationaryCore::parseManualContextTemplate($customTemplate);
 
-				if (!empty($custom_template['Context']))
+
+				if (!empty($customTemplate['Context']))
 				{
-					$custom_templates[$custom_template['Context']] = $custom_template;
+					$customTemplates[$customTemplate['Context']] = $customTemplate;
 				}
 			}
 		}
 
-		if (!isset($predefined_context_templates))
+		if (!isset($predefinedContextTemplates))
 		{
 			include PlgSystemNotificationaryCore::$predefinedContentsFile;
 		}
 	}
 
-	$temp_alias_functions = array();
+	$tempAliasFunctions = array();
 
-	foreach ($custom_templates as $context => $array)
+	foreach ($customTemplates as $context => $array)
 	{
 		foreach ($functionsToBeAliased as $functionName)
 		{
@@ -1939,14 +1962,14 @@ else
 
 			if (strpos($array[$functionName], 'function ') === 0 || strpos($array[$functionName], 'static function ') === 0)
 			{
-				$temp_alias_functions [$array[$functionName]] = 'public ' . $array[$functionName];
+				$tempAliasFunctions [$array[$functionName]] = 'public ' . $array[$functionName];
 			}
 			else
 			{
 				// Prevent error if custom file doesn't exists'
 				if (strpos($array[$functionName], '/') === false)
 				{
-					$temp_alias_functions [$array[$functionName]] = '
+					$tempAliasFunctions [$array[$functionName]] = '
 					public function ' . $array[$functionName] . ' ($context, $contentItem, $isNew) {
 						return $this->' . $functionName . '($context, $contentItem, $isNew);
 					}
@@ -1956,12 +1979,13 @@ else
 		}
 	}
 
-	$class_dynamic = '
-	class plgSystemNotificationary extends NotificationAry\plgSystemNotificationaryCore {
-		public function __construct(& $subject, $config) {
-			parent::__construct($subject, $config);
-		}
-		' . implode(PHP_EOL, $temp_alias_functions) . '
-	}';
-	eval($class_dynamic);
+	$classDynamic = '
+		class plgSystemNotificationary extends NotificationAry\plgSystemNotificationaryCore {
+			public function __construct(& $subject, $config) {
+				parent::__construct($subject, $config);
+			}
+			' . implode(PHP_EOL, $tempAliasFunctions) . '
+		}';
+
+	eval($classDynamic);
 }

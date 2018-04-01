@@ -81,18 +81,18 @@ trait BuildMail
 		if (!empty($lang_code) && $lang_code != $this->default_lang)
 		{
 			$language->load($this->plg_base_name, JPATH_ADMINISTRATOR, $lang_code, true);
-			$language->load($this->plg_full_name, JPATH_ADMINISTRATOR, $lang_code, true);
+			$language->load($this->plgFullName, JPATH_ADMINISTRATOR, $lang_code, true);
 			$user_language_loaded = true;
 		}
 		elseif ($user_language_loaded)
 		{
 			$language->load($this->plg_base_name, JPATH_ADMINISTRATOR, 'en-GB', true);
-			$language->load($this->plg_full_name, JPATH_ADMINISTRATOR, 'en-GB', true);
+			$language->load($this->plgFullName, JPATH_ADMINISTRATOR, 'en-GB', true);
 
 			if ($this->default_lang != 'en-GB')
 			{
 				$language->load($this->plg_base_name, JPATH_ADMINISTRATOR, $this->default_lang, true);
-				$language->load($this->plg_full_name, JPATH_ADMINISTRATOR, $this->default_lang, true);
+				$language->load($this->plgFullName, JPATH_ADMINISTRATOR, $this->default_lang, true);
 			}
 
 			$user_language_loaded = false;

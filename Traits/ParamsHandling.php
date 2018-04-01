@@ -23,7 +23,7 @@ trait ParamsHandling
 	/**
 	 * Geat plugin parameters from DB and parses them for later usage in the plugin
 	 */
-	public function _prepareParams()
+	public function prepareParams()
 	{
 		// No need to run if already generated
 		if (!empty($this->pparams))
@@ -37,41 +37,41 @@ trait ParamsHandling
 		$this->getGroupParams('{notificationgroup');
 
 		// Some parameters preparations
-		foreach ($this->pparams as $rule_number => $rule)
+		foreach ($this->pparams as $ruleNumber => $rule)
 		{
 			$rule = (object) $rule;
 
 			// Do not handle this rule, if it shound never be run . $rule->ausers_notifyon part is here for legacy
 			if (!$rule->isenabled || $rule->ausers_notifyon == 3)
 			{
-				unset($this->pparams[$rule_number]);
+				unset($this->pparams[$ruleNumber]);
 				continue;
 			}
 
-			$this->pparams[$rule_number] = (object) $rule;
+			$this->pparams[$ruleNumber] = (object) $rule;
 
 			// This array is used to build mails once per user group, as mails to users from the same user groups are the same.
 			// Here we just init it to be used when building a mail.
-			$this->pparams[$rule_number]->cachedMailBuilt = array();
+			$this->pparams[$ruleNumber]->cachedMailBuilt = array();
 
 			// If categories entered manually, then convert to array
 			if (!empty($rule->ausers_articlegroupsselection) && strpos($rule->ausers_articlegroupsselection[0], ',') !== false )
 			{
-				$this->pparams[$rule_number]->ausers_articlegroupsselection = array_map('trim', explode(',', $rule->ausers_articlegroupsselection[0]));
+				$this->pparams[$ruleNumber]->ausers_articlegroupsselection = array_map('trim', explode(',', $rule->ausers_articlegroupsselection[0]));
 			}
 
 			// Prepare global cumulative flag to know which prev. versions to be attached in all rules.
 
 			// To later prepare all needed attached files together and only once.
 			// So we avoid preparing the same attached files which may be needed for several groups
-			if (isset($this->pparams[$rule_number]->attachpreviousversion) )
+			if (isset($this->pparams[$ruleNumber]->attachpreviousversion) )
 			{
-				if (!is_array($this->pparams[$rule_number]->attachpreviousversion))
+				if (!is_array($this->pparams[$ruleNumber]->attachpreviousversion))
 				{
-					$this->pparams[$rule_number]->attachpreviousversion = (array) $this->pparams[$rule_number]->attachpreviousversion;
+					$this->pparams[$ruleNumber]->attachpreviousversion = (array) $this->pparams[$ruleNumber]->attachpreviousversion;
 				}
 
-				foreach ($this->pparams[$rule_number]->attachpreviousversion as $k => $v)
+				foreach ($this->pparams[$ruleNumber]->attachpreviousversion as $k => $v)
 				{
 					$this->preparePreviousVersionsFlag[$v] = $v;
 				}
@@ -79,12 +79,12 @@ trait ParamsHandling
 			// Here we get the extension and the context to be notified. We use either a registred in Joomla extension (like DPCalendar or core Articles) or
 			if ($rule->context_or_contenttype == "content_type")
 			{
-				list($extension_info, $contentType) = $this->_getExtensionInfo($context = null, $id = $rule->content_type);
-				$this->pparams[$rule_number]->contenttype_title = $contentType->type_title;
+				list($extensionInfo, $contentType) = $this->getExtensionInfo($context = null, $id = $rule->content_type);
+				$this->pparams[$ruleNumber]->contenttype_title = $contentType->type_title;
 			}
 			else
 			{
-				$templateRows = array_map('trim', explode(PHP_EOL, $this->pparams[$rule_number]->context));
+				$templateRows = array_map('trim', explode(PHP_EOL, $this->pparams[$ruleNumber]->context));
 
 				$context = trim($templateRows[0]);
 
@@ -92,68 +92,68 @@ trait ParamsHandling
 				{
 					\JFactory::getApplication()->enqueueMessage(
 						\JText::_(
-							ucfirst($this->plg_name)
+							ucfirst($this->plgName)
 						)
 						. ' (line ' . __LINE__ . '): '
 						. \JText::sprintf(
 							'PLG_SYSTEM_NOTIFICATIONARY_NO_EXTENSION_SELECTED',
-							$this->pparams[$rule_number]->{'{notificationgroup'}[0],
-							$this->pparams[$rule_number]->__ruleUniqID
+							$this->pparams[$ruleNumber]->{'{notificationgroup'}[0],
+							$this->pparams[$ruleNumber]->__ruleUniqID
 						),
 						'warning'
 					);
 
-					unset($this->pparams[$rule_number]);
+					unset($this->pparams[$ruleNumber]);
 					continue;
 				}
 
-				list($extension_info, $contentType) = $this->_getExtensionInfo($context, $id = null);
-				$this->pparams[$rule_number]->contenttype_title = $extension_info['Context'];
+				list($extensionInfo, $contentType) = $this->getExtensionInfo($context, $id = null);
+				$this->pparams[$ruleNumber]->contenttype_title = $extensionInfo['Context'];
 
 				$i = 0;
 
-				$extension_info_merged = array();
+				$extensionInfo_merged = array();
 
-				foreach ($extension_info as $key => $value)
+				foreach ($extensionInfo as $key => $value)
 				{
 					if (empty($templateRows[$i]))
 					{
-						$extension_info_merged[$key] = '';
+						$extensionInfo_merged[$key] = '';
 					}
 					else
 					{
-						$extension_info_merged[$key] = $templateRows[$i];
+						$extensionInfo_merged[$key] = $templateRows[$i];
 					}
 					$i++;
 				}
 
-				$extension_info = $extension_info_merged;
+				$extensionInfo = $extensionInfo_merged;
 
-				unset($extension_info_merged);
+				unset($extensionInfo_merged);
 			}
 
-			if (!empty($extension_info['contextAliases']))
+			if (!empty($extensionInfo['contextAliases']))
 			{
-				$contextAliases = explode(',', $extension_info['contextAliases']);
+				$contextAliases = explode(',', $extensionInfo['contextAliases']);
 				$contextAliases = array_map('trim', $contextAliases);
 
 				foreach ($contextAliases as $ka => $va)
 				{
 					$this->allowedContexts[] = $va;
-					$this->context_aliases[$va] = $extension_info['Context'];
+					$this->context_aliases[$va] = $extensionInfo['Context'];
 				}
 			}
 
-			$this->pparams[$rule_number]->context = $extension_info['Context'];
-			$this->pparams[$rule_number]->extension_info = $extension_info;
-			$this->predefined_context_templates[$extension_info['Context']] = $extension_info;
+			$this->pparams[$ruleNumber]->context = $extensionInfo['Context'];
+			$this->pparams[$ruleNumber]->extension_info = $extensionInfo;
+			$this->predefinedContextTemplates[$extensionInfo['Context']] = $extensionInfo;
 
-			unset($extension_info);
+			unset($extensionInfo);
 
 			// $this->allowedContexts[] = $rule->context;
-			$this->allowedContexts[] = $this->pparams[$rule_number]->context;
+			$this->allowedContexts[] = $this->pparams[$ruleNumber]->context;
 
-			$component = explode('.', $this->pparams[$rule_number]->context);
+			$component = explode('.', $this->pparams[$ruleNumber]->context);
 			$this->allowedComponents[] = $component[0];
 
 			// Prepare options for author and editor mailbody
@@ -169,8 +169,8 @@ trait ParamsHandling
 
 			foreach ($includes as $include)
 			{
-				$mb_type = $this->pparams[$rule_number]->{$include . '_mailbody_type'};
-				$mb = $this->pparams[$rule_number]->{$include . '_mailbody'};
+				$mb_type = $this->pparams[$ruleNumber]->{$include . '_mailbody_type'};
+				$mb = $this->pparams[$ruleNumber]->{$include . '_mailbody'};
 
 				if (!is_array($mb))
 				{
@@ -181,7 +181,7 @@ trait ParamsHandling
 				{
 					foreach ($available_options as $k => $v)
 					{
-						$this->pparams[$rule_number]->{'ausers_' . $include . 'include' . $v} = $this->pparams[$rule_number]->{'ausers_include' . $v};
+						$this->pparams[$ruleNumber]->{'ausers_' . $include . 'include' . $v} = $this->pparams[$ruleNumber]->{'ausers_include' . $v};
 					}
 				}
 				else
@@ -190,20 +190,20 @@ trait ParamsHandling
 					{
 						if (in_array($v, $mb))
 						{
-							$this->pparams[$rule_number]->{'ausers_' . $include . 'include' . $v} = true;
+							$this->pparams[$ruleNumber]->{'ausers_' . $include . 'include' . $v} = true;
 						}
 						else
 						{
-							$this->pparams[$rule_number]->{'ausers_' . $include . 'include' . $v} = false;
+							$this->pparams[$ruleNumber]->{'ausers_' . $include . 'include' . $v} = false;
 						}
 					}
 				}
 			}
 
-			$additionalmailadresses = $this->pparams[$rule_number]->ausers_additionalmailadresses;
+			$additionalmailadresses = $this->pparams[$ruleNumber]->ausers_additionalmailadresses;
 			$additionalmailadresses = array_map('trim', explode(PHP_EOL, $additionalmailadresses));
 
-			$this->pparams[$rule_number]->usersAddedByEmail = array();
+			$this->pparams[$ruleNumber]->usersAddedByEmail = array();
 
 			foreach ($additionalmailadresses as $k => $v)
 			{
@@ -211,12 +211,12 @@ trait ParamsHandling
 
 				if ($user->id)
 				{
-					$this->pparams[$rule_number]->usersAddedByEmail[] = $user;
+					$this->pparams[$ruleNumber]->usersAddedByEmail[] = $user;
 					unset($additionalmailadresses[$k]);
 				}
 			}
 
-			$this->pparams[$rule_number]->ausers_additionalmailadresses = implode(PHP_EOL, $additionalmailadresses);
+			$this->pparams[$ruleNumber]->ausers_additionalmailadresses = implode(PHP_EOL, $additionalmailadresses);
 		}
 
 		$this->allowedContexts = array_unique($this->allowedContexts);
@@ -256,7 +256,7 @@ trait ParamsHandling
 		// Get extension table class
 		$extensionTable = \JTable::getInstance('extension');
 
-		$pluginId = $extensionTable->find(array('element' => $this->plg_name, 'type' => 'plugin'));
+		$pluginId = $extensionTable->find(array('element' => $this->plgName, 'type' => 'plugin'));
 		$extensionTable->load($pluginId);
 
 		$group = $this->params->get('{notificationgroup');
@@ -301,7 +301,7 @@ trait ParamsHandling
 				$hash_srip = substr($v, 0, 20) . ' ......... ' . substr($v, -20);
 
 				\JFactory::getApplication()->enqueueMessage(
-					$this->plg_name . ": "
+					$this->plgName . ": "
 					. \JText::_('PLG_SYSTEM_NOTIFICATIONARY_COULD_NOT_APPLY_CONFIGURATION_HASH')
 					. '<i>' . $hash_srip . '</i>', 'error');
 			}

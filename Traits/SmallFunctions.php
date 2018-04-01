@@ -9,7 +9,6 @@
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 
-
 namespace NotificationAry\Traits;
 
 /**
@@ -38,7 +37,6 @@ trait SmallFunctions
 		}
 	}
 
-
 	/**
 	 * Checks if current page is a content item edit page
 	 *
@@ -46,9 +44,9 @@ trait SmallFunctions
 	 *
 	 * @return   bool
 	 */
-	public function _isContentEditPage(&$context )
+	public function _isContentEditPage(&$context)
 	{
-		$this->_prepareParams();
+		$this->prepareParams();
 
 		if (!empty($context))
 		{
@@ -61,7 +59,6 @@ trait SmallFunctions
 		return false;
 	}
 
-
 	/**
 	 * Returns a variable from a link
 	 *
@@ -70,7 +67,7 @@ trait SmallFunctions
 	 *
 	 * @return   string
 	 */
-	static public function getVarFromQuery($link, $varName)
+	public static function getVarFromQuery($link, $varName)
 	{
 		$parsed_url = parse_url($link);
 
@@ -81,10 +78,10 @@ trait SmallFunctions
 			return $query_params[$varName];
 		}
 
-		return null;
+		return;
 	}
 
-		/**
+	/**
 	 * Checks if it's the first run of the function. The plugin is executed twice  - as system and as content.
 	 *
 	 * Is needed i.e. to properly add notification switch, to run the add routine only once
@@ -93,7 +90,7 @@ trait SmallFunctions
 	 *
 	 * @return  bool  True is the functions is rub not the first time
 	 */
-	static public function isFirstRun($name = 'unknown')
+	public static function isFirstRun($name = 'unknown')
 	{
 		global  $NotificationAryFirstRunCheck;
 
@@ -117,7 +114,7 @@ trait SmallFunctions
 	 *
 	 * @return   string  Hiddedn email address
 	 */
-	static public function obfuscate_email($email)
+	public static function obfuscateEmail($email)
 	{
 		$em   = explode("@", $email);
 		$name = implode(array_slice($em, 0, count($em) - 1), '@');
@@ -126,5 +123,39 @@ trait SmallFunctions
 		return substr($name, 0, $len) . str_repeat('*', $len) . "@" . end($em);
 	}
 
+	/**
+	 * Converts an object propertirs to camleCase.
+	 * 
+	 * Is needed to keep code following Joomla coding standards, while mass renaming is not complete.
+	 *
+	 * @param   object   $object                Object to be processed
+	 * @param   boolean  $preserveOldProperties If to delete or not old keys
+	 * 
+	 * @return  object
+	 */
+	public static function camelSizeProperties($object, $preserveOldProperties = false)
+	{
+		$properties = get_object_vars($object);
+		
+		foreach ($properties as $key => $value)
+		{
+			if (method_exists($object, $key))
+			{
+				continue;
+			}
 
+			$tmp = $value;
+
+			if (!$preserveOldProperties)
+			{
+				unset($object->$key);
+			}
+
+			$newKey = lcfirst(str_replace('_', '', ucwords($key, '_')));
+
+			$object->$newKey = $tmp;
+		}
+
+		return $object;
+	}
 }

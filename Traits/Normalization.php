@@ -143,7 +143,7 @@ trait Normalization
 		}
 
 		$session = \JFactory::getSession();
-		$CustomReplacement = $session->get('CustomReplacement', null, $this->plg_name);
+		$CustomReplacement = $session->get('CustomReplacement', null, $this->plgName);
 
 		if (isset($CustomReplacement['context']))
 		{
@@ -170,7 +170,7 @@ trait Normalization
 	 *
 	 * @return   string  replace context
 	 */
-	public function _contextAliasReplace($context, $contentItem = false)
+	public function contextAliasReplace($context, $contentItem = false)
 	{
 		$this->real_context = $context;
 					/*
@@ -200,7 +200,7 @@ trait Normalization
 			}
 
 			$session = \JFactory::getSession();
-			$formContext = $session->get('FormContext', null, $this->plg_name);
+			$formContext = $session->get('FormContext', null, $this->plgName);
 
 			// When editing an article at first (not after page reload), I can meet such ""
 			$tmp = explode('.', $formContext);

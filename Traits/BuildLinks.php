@@ -393,7 +393,7 @@ trait BuildLinks
 						JURI::ROOT()
 						// It's a must
 						. '?option=com_ajax&format=raw'
-						. '&group=' . $this->plg_type
+						. '&group=' . $this->plgType
 						. '&plugin=notificationAryGetFEURL'
 						// . '&' . JSession::getFormToken() . '=1'
 						. '&userid=' . $user->id
