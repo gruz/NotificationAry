@@ -28,7 +28,7 @@ trait Zoo
 	public static function loadZoo()
 	{
 		// Make sure ZOO exists
-		if (!JComponentHelper::getComponent('com_zoo', true)->enabled)
+		if (!\JComponentHelper::getComponent('com_zoo', true)->enabled)
 		{
 			return;
 		}
@@ -36,7 +36,7 @@ trait Zoo
 		// Load ZOO config
 		jimport('joomla.filesystem.file');
 
-		if (!JFile::exists(JPATH_ADMINISTRATOR . '/components/com_zoo/config.php') || !JComponentHelper::getComponent('com_zoo', true)->enabled)
+		if (!\JFile::exists(JPATH_ADMINISTRATOR . '/components/com_zoo/config.php') || !\JComponentHelper::getComponent('com_zoo', true)->enabled)
 		{
 			return;
 		}

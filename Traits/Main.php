@@ -236,7 +236,7 @@ trait Main
 		$extensionTable->load($pluginId);
 
 		// Get joomla default object
-		$plgParams = new JRegistry;
+		$plgParams = new \JRegistry;
 
 		// Load my plugin params.
 		$plgParams->loadString($extensionTable->params, 'JSON');
@@ -419,11 +419,11 @@ trait Main
 		// Loading override files
 		foreach ($files_to_override as $fileToOverride => $overriderFolder)
 		{
-			if (JFile::exists(JPATH_ROOT . $fileToOverride))
+			if (\JFile::exists(JPATH_ROOT . $fileToOverride))
 			{
 				$originalFilePath = JPATH_ROOT . $fileToOverride;
 			}
-			elseif (strpos($fileToOverride, '/com_') === 0 && JFile::exists(JPATH_ROOT . '/components' . $fileToOverride))
+			elseif (strpos($fileToOverride, '/com_') === 0 && \JFile::exists(JPATH_ROOT . '/components' . $fileToOverride))
 			{
 				$originalFilePath = JPATH_ROOT . '/components' . $fileToOverride;
 			}

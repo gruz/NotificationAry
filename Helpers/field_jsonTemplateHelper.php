@@ -17,7 +17,7 @@ defined('_JEXEC') or die('Restricted access');
 	$extensionTable->load($pluginId);
 
 	// Get joomla default object
-	$params = new JRegistry;
+	$params = new \JRegistry;
 	$params->loadString($extensionTable->params, 'JSON'); // Load my plugin params.
 	$group_params = $params->get('{notificationgroup');
 	unset($group_params->{'{notificationgroup'});

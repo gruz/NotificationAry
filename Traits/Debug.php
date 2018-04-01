@@ -111,7 +111,7 @@ trait Debug
 
 		$instance = JUser::getInstance();
 		jimport('joomla.application.component.helper');
-		$config = JComponentHelper::getParams('com_users');
+		$config = \JComponentHelper::getParams('com_users');
 		$db = \JFactory::getDBO();
 		$query = $db->getQuery(true);
 		$query->select('id , title');

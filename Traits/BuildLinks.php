@@ -318,7 +318,7 @@ trait BuildLinks
 
 					if(self::getVarFromQuery($link, 'option') === 'com_jevents' && self::getVarFromQuery($link, 'task') === 'icalevent.detail')
 					{
-						$jevents_params = JComponentHelper::getParams('com_jevents');
+						$jevents_params = \JComponentHelper::getParams('com_jevents');
 						$jevents_itemid = $jevents_params->get('permatarget', 0);
 						$link .= '&Itemid=' . $jevents_itemid;
 						$link = JURI::ROOT() . JRoute::_($link);

@@ -160,7 +160,7 @@ trait MailSend
 				$mailer_ser = base64_encode(serialize($mailer));
 				$tmpPath = \JFactory::getApplication()->getCfg('tmp_path');
 				$filename = $this->plgName . '_' . $this->ajaxHash . '_' . uniqid();
-				JFile::write($tmpPath . '/' . $filename, $mailer_ser);
+				\JFile::write($tmpPath . '/' . $filename, $mailer_ser);
 
 				continue;
 			}

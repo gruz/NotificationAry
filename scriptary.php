@@ -160,7 +160,7 @@ class ScriptAry
 		}
 
 		$this->langShortCode = null;
-		$this->default_lang = JComponentHelper::getParams('com_languages')->get('admin');
+		$this->default_lang = \JComponentHelper::getParams('com_languages')->get('admin');
 		$language = JFactory::getLanguage();
 
 		$language->load($this->ext_full_name, dirname(__FILE__), 'en-GB');
@@ -208,11 +208,11 @@ class ScriptAry
 			{
 				$path = JPATH_ROOT . '/plugins/' . $this->ext_group . '/' . $this->ext_name . '/';
 				$pattern = '.*min\.' . $ftype . '';
-				$files = JFolder::files($path, $pattern, true, true);
+				$files = \JFolder::files($path, $pattern, true, true);
 
 				foreach ($files as $fll)
 				{
-					JFile::delete($files);
+					\JFile::delete($files);
 				}
 			}
 
@@ -327,7 +327,7 @@ class ScriptAry
 			return;
 		}
 
-		$folders = JFolder::folders($extpath);
+		$folders = \JFolder::folders($extpath);
 
 		foreach ($folders as $folder)
 		{

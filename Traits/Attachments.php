@@ -32,12 +32,12 @@ trait Attachments
 		$session->set('Diffs', null, $this->plgName);
 
 		// Remove accidently unremoved attachments
-		$files = JFolder::files(\JFactory::getApplication()->getCfg('tmp_path'), 'diff_id_*', false, true);
-		JFile::delete($files);
-		$files = JFolder::files(\JFactory::getApplication()->getCfg('tmp_path'), 'prev_version_id_*', false, true);
-		JFile::delete($files);
-		$files = JFolder::files(\JFactory::getApplication()->getCfg('tmp_path'), $this->plgName . '_*', false, true);
-		JFile::delete($files);
+		$files = \JFolder::files(\JFactory::getApplication()->getCfg('tmp_path'), 'diff_id_*', false, true);
+		\JFile::delete($files);
+		$files = \JFolder::files(\JFactory::getApplication()->getCfg('tmp_path'), 'prev_version_id_*', false, true);
+		\JFile::delete($files);
+		$files = \JFolder::files(\JFactory::getApplication()->getCfg('tmp_path'), $this->plgName . '_*', false, true);
+		\JFile::delete($files);
 	}
 
 }

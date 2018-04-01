@@ -25,7 +25,7 @@ class paramsHelper
 		$this->extensionTable->load($this->pluginId);
 
 		// Get joomla default object
-		$this->params = new JRegistry;
+		$this->params = new \JRegistry;
 		$this->params->loadString($this->extensionTable->params, 'JSON'); // Load my plugin params.
 		// $this->params already contains this and is the same array
 

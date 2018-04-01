@@ -361,7 +361,7 @@ else
 
 				if (!empty($this->attachments[$v]))
 				{
-					JFile::write($this->attachments[$v], $text);
+					\JFile::write($this->attachments[$v], $text);
 				}
 			}
 
@@ -448,7 +448,7 @@ else
 
 				// Initialize the diff class
 				$diff = new Diff($old, $new, $options);
-				$css  = JFile::read(self::$helpersFolder . '/Diff/styles.css');
+				$css  = \JFile::read(self::$helpersFolder . '/Diff/styles.css');
 			}
 
 			$path = $tmpPath . '/diff_id_' . $this->previousArticle->id . '_' . uniqid();
@@ -512,7 +512,7 @@ else
 
 				if (!empty($this->attachments[$v]))
 				{
-					JFile::write($this->attachments[$v], $text);
+					\JFile::write($this->attachments[$v], $text);
 				}
 			}
 
@@ -1885,7 +1885,7 @@ else
 					continue;
 				}
 
-				if ($param->context_or_contenttype == "context" && $param->context == "com_zoo.item" && JComponentHelper::getComponent('com_zoo', true)->enabled)
+				if ($param->context_or_contenttype == "context" && $param->context == "com_zoo.item" && \JComponentHelper::getComponent('com_zoo', true)->enabled)
 				{
 					self::loadZoo();
 

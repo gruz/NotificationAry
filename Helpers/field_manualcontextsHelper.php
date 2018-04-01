@@ -63,10 +63,10 @@ foreach ($predefinedContextTemplates as $context => $array)
 	$option_text  = $array['Title'];
 
 	// Check if component is installed
-	//~ if (!JComponentHelper::getComponent($component[0], true)->enabled){
+	//~ if (!\JComponentHelper::getComponent($component[0], true)->enabled){
 	$file = JPATH_ADMINISTRATOR . '/components/com_' . $option . '/' . $option . '.php';
 
-	if (file_exists($file) && JComponentHelper::isEnabled('com_' . $option, true))
+	if (file_exists($file) && \JComponentHelper::isEnabled('com_' . $option, true))
 	{
 	}
 	else

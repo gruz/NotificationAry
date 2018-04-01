@@ -10,7 +10,7 @@
 defined('_JEXEC') or die;
 
 use Joomla\Utilities\ArrayHelper;
-use NotificationAry;
+use NotificationAry\NotificationAry;
 
 /**
  * Methods supporting a list of user records.

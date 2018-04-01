@@ -360,7 +360,7 @@ trait Ajax
 
 		$counter = $session->get('AjaxHashCounter' . $hash, -1, $this->plgName);
 
-		$files = JFolder::files(\JFactory::getApplication()->getCfg('tmp_path'), $this->plgName . '_' . $hash . '_*', false, true);
+		$files = \JFolder::files(\JFactory::getApplication()->getCfg('tmp_path'), $this->plgName . '_' . $hash . '_*', false, true);
 
 		if (empty($files))
 		{
@@ -484,7 +484,7 @@ trait Ajax
 				}
 			}
 
-			JFile::delete($file);
+			\JFile::delete($file);
 			unset($mailer);
 
 			if ($serialize['verbose'])

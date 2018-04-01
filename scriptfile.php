@@ -305,8 +305,8 @@ $debug = false;
 		$extensionTable->load($pluginId);
 
 		// Get joomla default object
-		$params = new JRegistry;
-		$params_new = new JRegistry;
+		$params = new \JRegistry;
+		$params_new = new \JRegistry;
 		$params->loadString($extensionTable->params, 'JSON'); // Load my plugin params.
 
 		// The parameters in the DB are stored as a one-dimensional array

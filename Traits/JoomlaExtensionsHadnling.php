@@ -255,7 +255,7 @@ trait JoomlaExtensionsHadnling
 			if (!$this->paramGet('debug'))
 			{
 				$app           = \JFactory::getApplication();
-				$appReflection = new ReflectionClass(get_class($app));
+				$appReflection = new \ReflectionClass(get_class($app));
 				$_messageQueue = $appReflection->getProperty('_messageQueue');
 				$_messageQueue->setAccessible(true);
 				$messages = $_messageQueue->getValue($app);
