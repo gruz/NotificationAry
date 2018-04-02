@@ -203,7 +203,7 @@ else
 
 			$this->onContentChangeStateFired = true;
 
-			$contentItem = $this->_getContentItemTable($context);
+			$contentItem = $this->getContentItemTable($context);
 
 			if (!$contentItem)
 			{
@@ -277,7 +277,7 @@ else
 				default :
 
 					// $this->previousArticle = \JTable::getInstance('content');
-					// $this->previousArticle = $this->_getContentItemTable($context);
+					// $this->previousArticle = $this->getContentItemTable($context);
 					$this->previousArticle = clone $contentItem;
 					$this->previousArticle->reset();
 					$this->previousArticle->load($contentItem->id);
@@ -336,7 +336,7 @@ else
 						$empty_contentItem = clone $this->previousArticle;
 						$empty_contentItem->reset();
 
-						// $empty_contentItem = $this->_getContentItemTable($context);
+						// $empty_contentItem = $this->getContentItemTable($context);
 						$tablename = str_replace('#__', $db->getPrefix(), $empty_contentItem->get('_tbl'));
 						$text      = 'UPDATE ' . $tablename . ' SET ';
 						$parts     = array();
@@ -1167,7 +1167,7 @@ else
 				$this->_setContext($context);
 
 				$this->shouldShowSwitchCheckFlag = false;
-				$contentItem                     = $this->_getContentItemTable($context);
+				$contentItem                     = $this->getContentItemTable($context);
 				$contentItem->load($jinput->get('cid', 0));
 
 				jimport('joomla.form.form');

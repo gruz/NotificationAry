@@ -39,7 +39,6 @@ trait JoomlaExtensionsHadnling
 			$contentType = \JTable::getInstance('contenttype');
 			$contentType->load($id);
 			$context = $this->contextAliasReplace($contentType->{'type_alias'});
-
 		}
 		else
 		{
@@ -130,7 +129,7 @@ trait JoomlaExtensionsHadnling
 	 *
 	 * @return   type  Description
 	 */
-	public function _getContentItemTable ($context, $getCategoryTable = false)
+	public function getContentItemTable($context, $getCategoryTable = false)
 	{
 		// Parse context var in case it's an extension template textarea field
 		$extensionInfo = self::parseManualContextTemplate($context);
@@ -173,7 +172,7 @@ trait JoomlaExtensionsHadnling
 
 		if (!empty($jtableClassName))
 		{
-			if (strpos($jtableClassName, ':')  !== false)
+			if (strpos($jtableClassName, ':') !== false)
 			{
 				$tablename       = explode(':', $jtableClassName);
 				$path            = $tablename[0];

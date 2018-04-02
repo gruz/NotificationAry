@@ -1011,7 +1011,7 @@ trait BuildMail
 				// ~ $context = 'com_'.$this->context['extension'].'.category';
 
 				$context = $this->context['full'];
-				$contentItem = $this->_getContentItemTable($context, $category = true);
+				$contentItem = $this->getContentItemTable($context, $category = true);
 				$contentItem->load($catid);
 				array_unshift($this->categoryTree, $contentItem->name);
 

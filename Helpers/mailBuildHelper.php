@@ -99,7 +99,7 @@ JText::_('JSITE').':  %SITELINK% :: %SITENAME%
 
 			}
 
-			$contentObject = $app->triggerEvent('_getContentItemTable', array($extension,false,true));
+			$contentObject = $app->triggerEvent('getContentItemTable', array($extension,false,true));
 
 			// If a rule is disabled, then an empty result is returned. Not sence to handle in this case
 			if (!empty($contentObject) && !empty($contentObject[0])) {

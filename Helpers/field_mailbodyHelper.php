@@ -129,7 +129,7 @@ if (get_class($this) == 'GJFieldsFormFieldTextareafixed')
 			$scriptAdded = true;
 		}
 
-		$contentObject = $app->triggerEvent('_getContentItemTable', array($extension));
+		$contentObject = $app->triggerEvent('getContentItemTable', array($extension));
 
 		// If a rule is disabled, then an empty result is returned. Not sence to handle in this case
 		if (!empty($contentObject) && !empty($contentObject[0]))
