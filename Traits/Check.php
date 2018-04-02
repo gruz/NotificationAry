@@ -315,7 +315,7 @@ trait Check
 			{
 				$this->_debug(' > <b>' . $className . '</b>');
 	
-				if (in_array($className, ['JUser', 'Joomla\CMS\User\User']))
+				if (in_array($className, ['\JUser', 'Joomla\CMS\User\User']))
 				{
 					$selectionDebugTextGroups = '<i>user groups</i>';
 					$selectionDebugTextSpecific = '<i>specific users</i>';
@@ -327,7 +327,7 @@ trait Check
 				}
 			}
 	
-			if (in_array($className, ['JUser', 'Joomla\CMS\User\User']) && !empty($this->rule))
+			if (in_array($className, ['\JUser', 'Joomla\CMS\User\User']) && !empty($this->rule))
 			{
 				foreach ($this->rule->usersAddedByEmail as $user)
 				{
@@ -338,7 +338,7 @@ trait Check
 				}
 			}
 	
-			if (!in_array($className, ['JUser', 'Joomla\CMS\User\User']) && empty($object->id))
+			if (!in_array($className, ['\JUser', 'Joomla\CMS\User\User']) && empty($object->id))
 			{
 				$msg = '';
 	
@@ -357,7 +357,7 @@ trait Check
 				return false;
 			}
 	
-			if (!in_array($className, ['JUser', 'Joomla\CMS\User\User']) && $this->task == 'saveItem')
+			if (!in_array($className, ['\JUser', 'Joomla\CMS\User\User']) && $this->task == 'saveItem')
 			{
 				$this->rule->content_language = (array) $this->rule->content_language;
 	
@@ -441,13 +441,13 @@ trait Check
 			switch ($className)
 			{
 				// If means &object is user, not article
-				case "JUser":
+				case "\JUser":
 				case "Joomla\CMS\User\User":
 					$object->temp_gid = $object->get('groups');
 	
 					if ($object->temp_gid === null)
 					{
-							$table   = JUser::getTable();
+							$table   = \JUser::getTable();
 							$table->load($object->id);
 							$object->temp_gid = $table->groups;
 					}
@@ -669,7 +669,7 @@ trait Check
 	 * Checks if the user is subscribed to the passed category in the passed rule
 	 *
 	 * @param   object  $rule   NA rule
-	 * @param   mixed   $user   User either JUser object or an array with basic user information
+	 * @param   mixed   $user   User either \JUser object or an array with basic user information
 	 * @param   int     $catid  Category id
 	 * @param   bool    $force  Force DB query rerun
 	 *

@@ -652,11 +652,11 @@ trait PrepareUsersToNotify
 
 
 	/**
-	 * Gets JUser object by email
+	 * Gets \JUser object by email
 	 *
 	 * @param   string  $email  Email
 	 *
-	 * @return   JUser  Either a JUser object for an existing user or a blank JUser object filled with the email
+	 * @return   \JUser  Either a \JUser object for an existing user or a blank \JUser object filled with the email
 	 */
 	static public function getUserByEmail ($email)
 	{

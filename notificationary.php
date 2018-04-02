@@ -87,7 +87,7 @@ else
 	{
 		use Traits\Ajax;
 		use Traits\Attachments;
-		use Traits\BackendInerface;
+		use Traits\BackendInterfaceHelper;
 		use Traits\BuildLinks;
 		use Traits\BuildMail;
 		use Traits\Check;
@@ -538,6 +538,7 @@ else
 		 */
 		public function onContentAfterSave($context, $contentItem, $isNew)
 		{
+			dump($contentItem, 'context = ' . $context . ' | isNew = ' . $isNew);
 			// ~ dumpTrace();
 			$jinput = \JFactory::getApplication()->input;
 
@@ -893,7 +894,7 @@ else
 						}
 
 						$app->enqueueMessage(
-							\JText::_(ucfirst($this->plgName)) . ' (line ' . __LINE__ . '): ' . \JText::_($this->ErrorMessage) . ' ' . $email,
+							\JText::_(ucfirst($this->plgName)) . ' (File: '. __FILE__ .' , line: ' . __LINE__ . '): ' . \JText::_($this->ErrorMessage) . ' ' . $email,
 							'error'
 						);
 					}
@@ -1507,8 +1508,8 @@ else
 		 * Replace plugin code at Frontend
 		 *
 		 * @param   string  $context   The context of the content being passed to the plugin.
-		 * @param   object  &$article  The article object
-		 * @param   object  &$params   The article params
+		 * @param   object  $article   The article object
+		 * @param   object  $params    The article params
 		 * @param   int     $page      Returns int 0 when is called not form an article, and empty when called from an article
 		 *
 		 * @return   void
@@ -1536,9 +1537,9 @@ else
 						$this->prepareParams();
 					}
 
-					$possible_object_parameters = array('text', 'introtext');
+					$possibleObjectParameters = array('text', 'introtext');
 
-					foreach ($possible_object_parameters as $param)
+					foreach ($possibleObjectParameters as $param)
 					{
 						if (isset($article->{$param}))
 						{
@@ -1562,7 +1563,7 @@ else
 		 * saved to DB when a content item is saved
 		 *
 		 * @param   \JForm   $form         The form to be altered.
-		 * @param   object  $contentItem  The associated data for the form.
+		 * @param   object   $contentItem  The associated data for the form.
 		 *
 		 * @return  boolean
 		 */

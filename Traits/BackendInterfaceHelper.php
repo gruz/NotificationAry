@@ -1,6 +1,6 @@
 <?php
 /**
- * BackendInerface
+ * BackendInterfaceHelper
  *
  * @package     NotificationAry
  *
@@ -17,18 +17,18 @@ namespace NotificationAry\Traits;
  *
  * @since 0.2.17
  */
-trait BackendInerface
+trait BackendInterfaceHelper
 {
 
 	/**
 	 * Prepares a test object output
 	 *
-	 * @param   object  $contentObject              A content object to be parsed
-	 * @param   array   &$place_holders_body_input  Array to place HTML output
+	 * @param   object  $contentObject          A content object to be parsed
+	 * @param   array   $placeHoldersBodyInput  Array to place HTML output
 	 *
 	 * @return   void
 	 */
-	static public function buildExampleObject($contentObject, &$place_holders_body_input)
+	static public function buildExampleObject($contentObject, &$placeHoldersBodyInput)
 	{
 		foreach ($contentObject as $key => $value)
 		{
@@ -36,7 +36,7 @@ trait BackendInerface
 			{
 				foreach ($value as $kf => $vf)
 				{
-					$place_holders_body_input[] = ''
+					$placeHoldersBodyInput[] = ''
 						. '<span style="color:red;">##Content#' . $key . '##' . $kf . '##</span> => ' . htmlentities((string) $vf) . '<br/>';
 				}
 			}
@@ -47,7 +47,7 @@ trait BackendInerface
 					continue;
 				}
 
-				$place_holders_body_input[] = ''
+				$placeHoldersBodyInput[] = ''
 					. '<span style="color:red;">##Content#' . $key . '##</span> => ' . htmlentities((string) $value) . '<br/>';
 			}
 		}
@@ -57,12 +57,12 @@ trait BackendInerface
 	/**
 	 * Prepares a test object output
 	 *
-	 * @param   JUser  $user                       A content object to be parsed
-	 * @param   array  &$place_holders_body_input  Array to place HTML output
+	 * @param   \JUser  $user                   A content object to be parsed
+	 * @param   array   $placeHoldersBodyInput  Array to place HTML output
 	 *
 	 * @return   void
 	 */
-	public static function buildExampleUser($user, &$place_holders_body_input)
+	public static function buildExampleUser($user, &$placeHoldersBodyInput)
 	{
 		foreach ($user as $key => $value)
 		{
@@ -76,12 +76,12 @@ trait BackendInerface
 				$value = implode(',', $value);
 			}
 
-			if ( is_object( $value ) ) 
+			if (is_object($value))
 			{
 				continue;
 			}
-			
-			$place_holders_body_input[] = '<span style="color:red;">##User#' . $key . '##</span> => ' . htmlentities((string) $value) . '<br/>';
+
+			$placeHoldersBodyInput[] = '<span style="color:red;">##User#' . $key . '##</span> => ' . htmlentities((string) $value) . '<br/>';
 		}
 	}
 

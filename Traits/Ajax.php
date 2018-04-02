@@ -111,7 +111,7 @@ trait Ajax
 		$session = \JFactory::getSession();
 
 		// Set a temporary password for the user
-		$tempPass = JApplicationHelper::getHash(JUserHelper::genRandomPassword());
+		$tempPass = JApplicationHelper::getHash(\JUserHelper::genRandomPassword());
 
 		$query = $db->getQuery(true);
 		$query->update('#__users');

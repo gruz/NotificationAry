@@ -21,7 +21,7 @@ extract($displayData);
  * 	$layout          : (object) JLayout object to later be able to call a sublayout
  * 	$sublayout       : (string) Sublayout name
  * 	$debug           : (bool)   If to output layout debug
- * 	$user           :  (JUser)  User object
+ * 	$user           :  (\JUser)  User object
  */
 
 $form = array();

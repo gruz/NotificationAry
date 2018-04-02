@@ -109,7 +109,7 @@ trait Debug
 			return null;
 		}
 
-		$instance = JUser::getInstance();
+		$instance = \JUser::getInstance();
 		jimport('joomla.application.component.helper');
 		$config = \JComponentHelper::getParams('com_users');
 		$db = \JFactory::getDBO();

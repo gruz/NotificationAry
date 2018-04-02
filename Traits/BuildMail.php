@@ -23,7 +23,7 @@ trait BuildMail
 	/**
 	 * Builds mail body and subject
 	 *
-	 * @param   JUserObject  $user  Joomla use object
+	 * @param   \JUserObject  $user  Joomla use object
 	 *
 	 * @return   mixed  False or array with mail parts (subject and body)
 	 */
@@ -1144,11 +1144,11 @@ trait BuildMail
 	 *
 	 * @param   string  $user_id  User id
 	 *
-	 * @return   JUser
+	 * @return   \JUser
 	 */
 	static public function getUser($user_id)
 	{
-		$table   = JUser::getTable();
+		$table   = \JUser::getTable();
 
 		if ($table->load($user_id))
 		{
