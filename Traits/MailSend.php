@@ -120,9 +120,9 @@ trait MailSend
 				}
 			}
 
-			$curr_root = parse_url(JURI::root());
+			$curr_root = parse_url(\JURI::root());
 			$live_site_host = $curr_root['scheme'] . '://' . $curr_root['host'] . '/';
-			$live_site = JURI::root();
+			$live_site = \JURI::root();
 
 			$link = $live_site . 'index.php?unsubscribe=' . $this->rule->__ruleUniqID
 								. '&email=' . $user->email . '&hash=' . md5($user->id . $this->rule->__ruleUniqID);

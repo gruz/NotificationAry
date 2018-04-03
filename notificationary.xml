@@ -114,7 +114,15 @@
 					<field name="{ausers_articlegroups12" maxrepeatlength="1" type="gjfields.variablefield" basetype="gjfields.toggler" param="ausers_articlegroups" value="1,2"/>
 
 					<field name="{loadcategory" maxrepeatlength="1" type="gjfields.variablefield" basetype="gjfields.toggler" param="context_or_contenttype" value="content_type,context"/>
-						<field name="ausers_articlegroupsselection" maxrepeatlength="1" type="gjfields.variablefield" basetype="gjfields.categoryext" extension="com_content" source_parameter="context_or_contenttype,content_type,context" target_parameter="context_or_contenttype,content_type,context" multiple="multiple" size="20" show_uncategorized="1" label="" description="" class="chzn-custom-value" hint="PLG_SYSTEM_NOTIFICATIONARY_FIELD_CATEGORIES_CUSTOM"/>
+						<field 
+							name="ausers_articlegroupsselection" 
+							maxrepeatlength="1" 
+							type="gjfields.variablefield" 
+							basetype="gjfields.categoryext" 
+							extension="com_content" 
+							source_parameter="context_or_contenttype,content_type,context" 
+							target_parameter="context_or_contenttype,content_type,context" 
+							multiple="multiple" size="20" show_uncategorized="1" label="" description="" class="chzn-custom-value" hint="PLG_SYSTEM_NOTIFICATIONARY_FIELD_CATEGORIES_CUSTOM"/>
 					<field name="loadcategory}" maxrepeatlength="1" type="gjfields.variablefield" basetype="gjfields.toggler"/>
 
 					<!-- Select categories } -->

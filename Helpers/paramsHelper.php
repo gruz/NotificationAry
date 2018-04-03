@@ -18,7 +18,7 @@ class paramsHelper
 		$this->groupname = $groupname;
 
 		// Get extension table class
-		$this->extensionTable = JTable::getInstance('extension');
+		$this->extensionTable = \JTable::getInstance('extension');
 
 		// Find plugin id, in my case it was plg_ajax_ajaxhelpary
 		$this->pluginId = $this->extensionTable->find( array('element' => $element, 'type' => $type) );
@@ -89,7 +89,7 @@ if($debug) {
 
 	}
 	private function unParseGroups() {
-		$combinedGroup = new stdClass;
+		$combinedGroup = new \stdClass;
 		foreach ($this->groups as $numOfGroup=>$group) {
 			foreach ($group as $fieldName=>$arrayValues) {
 				if (!isset($combinedGroup->$fieldName)) {

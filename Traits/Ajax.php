@@ -21,8 +21,8 @@ trait Ajax
 	/**
 	 * The function to be called from as Ajax to build really working SEF links from backend.
 	 *
-	 * Creates a backend user session, gets JRoute::_() and delets the session.
-	 * It's a must to fake login-logout at FE, as JRoute::_() doesn't create correct links
+	 * Creates a backend user session, gets \JRoute::_() and delets the session.
+	 * It's a must to fake login-logout at FE, as \JRoute::_() doesn't create correct links
 	 * for e.g. content items limited to Registred if you are not logged in at FE.
 	 *
 	 * @return   void
@@ -86,7 +86,7 @@ trait Ajax
 
 		if ($user->id == $userId)
 		{
-			echo JRoute::_($url);
+			echo \JRoute::_($url);
 
 			return;
 		}
@@ -111,7 +111,7 @@ trait Ajax
 		$session = \JFactory::getSession();
 
 		// Set a temporary password for the user
-		$tempPass = JApplicationHelper::getHash(\JUserHelper::genRandomPassword());
+		$tempPass = \JApplicationHelper::getHash(\JUserHelper::genRandomPassword());
 
 		$query = $db->getQuery(true);
 		$query->update('#__users');
@@ -123,7 +123,7 @@ trait Ajax
 		$credentials = array('username' => $instance->username, 'password' => $tempPass);
 		$result      = $app->login($credentials);
 
-		$url = JRoute::_($url);
+		$url = \JRoute::_($url);
 		echo $url;
 
 		$session->close();

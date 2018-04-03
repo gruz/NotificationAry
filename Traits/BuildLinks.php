@@ -44,9 +44,9 @@ trait BuildLinks
 		}
 
 		$link = '';
-		$curr_root = parse_url(JURI::root());
+		$curr_root = parse_url(\JURI::root());
 		$live_site_host = $curr_root['scheme'] . '://' . $curr_root['host'] . '/';
-		$live_site = JURI::root();
+		$live_site = \JURI::root();
 
 		switch ($task)
 		{
@@ -105,7 +105,7 @@ trait BuildLinks
 									$seed = $submission_id.$type_id.$item_id.$edit;
 
 									// index.php?option=com_zoo&view=submission&layout=submission&submission_id=&type_id=article&item_id=##ID##&redirect=itemedit
-									$seed = JApplication::getHash($seed);
+									$seed = \JApplicationHelper::getHash($seed);
 									$link = str_replace('##SUBMISSION_HASH##', $seed, $link);
 								}
 							}
@@ -192,7 +192,7 @@ trait BuildLinks
 								if (!empty($extension_info['RouterClass::RouterMethod']))
 								{
 									$parts = explode('::', $extension_info['RouterClass::RouterMethod']);
-									JLoader::register($parts[0], JPATH_ROOT . '/components/' . $this->context['option'] . '/helpers/route.php');
+									\JLoader::register($parts[0], JPATH_ROOT . '/components/' . $this->context['option'] . '/helpers/route.php');
 									$link = $parts[0]::{$parts[1]}($this->contentItem->id, $catid);
 								}
 								else
@@ -245,7 +245,7 @@ trait BuildLinks
 							$routerClass = $this->context['extension'] . 'HelperRoute';
 							$routerMethod = 'get' . $this->context['task'] . 'Route';
 
-							JLoader::register($routerClass, JPATH_ROOT . '/components/' . $this->context['option'] . '/helpers/route.php');
+							\JLoader::register($routerClass, JPATH_ROOT . '/components/' . $this->context['option'] . '/helpers/route.php');
 
 							if (class_exists($routerClass) && method_exists($routerClass, $routerMethod))
 							{
@@ -321,7 +321,7 @@ trait BuildLinks
 						$jevents_params = \JComponentHelper::getParams('com_jevents');
 						$jevents_itemid = $jevents_params->get('permatarget', 0);
 						$link .= '&Itemid=' . $jevents_itemid;
-						$link = JURI::ROOT() . JRoute::_($link);
+						$link = \JURI::ROOT() . \JRoute::_($link);
 					}
 					else {
 						$link = $this->_makeSEF($link);
@@ -333,7 +333,7 @@ trait BuildLinks
 
 		if ($link)
 		{
-			$link = JPath::clean($link);
+			$link = \JPath::clean($link);
 			$link = str_replace(':/', '://', $link);
 			$link = str_replace('&amp;', '&', $link);
 		}
@@ -356,12 +356,12 @@ trait BuildLinks
 
 		if ($conf->get('sef') != 1)
 		{
-			$live_site_host = JURI::root();
+			$live_site_host = \JURI::root();
 
 			return $live_site_host . $link;
 		}
 
-		$curr_root = parse_url(JURI::root());
+		$curr_root = parse_url(\JURI::root());
 
 		// Add non-standard port if needed
 		$port = isset($curr_root['port']) ? ':' . $curr_root['port'] : '';
@@ -389,8 +389,8 @@ trait BuildLinks
 			$origPass = $db->loadResult();
 
 			// Build remote link
-			$url_ajax_plugin = JRoute::_(
-						JURI::ROOT()
+			$url_ajax_plugin = \JRoute::_(
+						\JURI::ROOT()
 						// It's a must
 						. '?option=com_ajax&format=raw'
 						. '&group=' . $this->plgType
@@ -441,23 +441,23 @@ trait BuildLinks
 				$link = $res_link;
 			}
 
-			$link = JPath::clean($link);
+			$link = \JPath::clean($link);
 		}
 		else
 		{
-			$app = JApplication::getInstance('site');
+			$app = \JApplicationCms::getInstance('site');
 			$router = $app->getRouter();
 			$url = $router->build($link);
 			$url->setHost($live_site_host);
 			$url = $url->toString();
-			$url = JPath::clean($url);
+			$url = \JPath::clean($url);
 			$link = $url;
 
 			if ($this->isNew)
 			{
 				$jinput = \JFactory::getApplication()->input;
-				$submit_url = JRoute::_('index.php?Itemid=' . $jinput->get('Itemid', null));
-				$submit_url = JPath::clean($live_site_host . $submit_url);
+				$submit_url = \JRoute::_('index.php?Itemid=' . $jinput->get('Itemid', null));
+				$submit_url = \JPath::clean($live_site_host . $submit_url);
 				$link = str_replace($submit_url, $live_site_host, $link);
 			}
 		}

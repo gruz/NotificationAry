@@ -31,7 +31,7 @@ static function onAfterSaveZooItem($event)
 	$isNew = $event['new'];
 	$context = 'com_zoo.item';
 
-	\JDispatcher::getInstance()->trigger(
+	\JEventDispatcher::getInstance()->trigger(
 		'onContentAfterSave',
 		array(
 			$context,
@@ -48,7 +48,7 @@ static function onAfterSaveZooItem($event)
 		if (!empty($vevent->data['custom_runnotificationary']))
 		{
 			$jform['params']['runnotificationary'] = $vevent->data['custom_runnotificationary'];
-			$jinput = JFactory::getApplication()->input;
+			$jinput = \JFactory::getApplication()->input;
 			$jform = $jinput->set('jform', $jform);
 			$jform = $jinput->get('jform', null, null);
 		}

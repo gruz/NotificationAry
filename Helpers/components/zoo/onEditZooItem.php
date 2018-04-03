@@ -11,13 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use NotificationAry,
-	JDispatcher,
-	JForm,
-	JFactory,
-	JTable,
-	JText,
-	JPluginHelper;
+use NotificationAry;
 /**
  * `static` before function name is a must
  *
@@ -34,13 +28,13 @@ static function onEditZooItem($event)
 		return;
 	}
 
-	$session = JFactory::getSession();
+	$session = \JFactory::getSession();
 	$session->clear('CustomReplacement', "notificationary");
 
 	$context = 'com_zoo.item';
 
 	/*
-			JLoader::register('ItemTable', JPATH_ROOT . JPATH_ADMINISTRATOR . '/components/com_zoo/tables/item.php');
+			\JLoader::register('ItemTable', JPATH_ROOT . JPATH_ADMINISTRATOR . '/components/com_zoo/tables/item.php');
 			$app = App::getInstance('zoo');
 			// ~ $app = $event->getApplication();
 
@@ -53,7 +47,7 @@ static function onEditZooItem($event)
 	dump($a,'$dataModel');
 	*/
 
-	// ~ $jinput = JFactory::getApplication()->input;
+	// ~ $jinput = \JFactory::getApplication()->input;
 	// ~ $cid = $jinput->get('cid', []);
 
 	if (isset($event['new']))
@@ -75,11 +69,11 @@ static function onEditZooItem($event)
 	}
 
 	// Include buttons defined by published quickicon plugins
-	JPluginHelper::importPlugin('system', 'notificationary');
+	\JPluginHelper::importPlugin('system', 'notificationary');
 
-	$app = JFactory::getApplication();
+	$app = \JFactory::getApplication();
 
-	// ~ JDispatcher::getInstance()->trigger('onContentPrepare', [$context, &$contentItem, $params = $contentItem->params, $page=null]);
+	// ~ JEventDispatcher::getInstance()->trigger('onContentPrepare', [$context, &$contentItem, $params = $contentItem->params, $page=null]);
 
 	// ~ static public function getHTMLElementById($html,$attributeValue,$tagname = 'div', $attributeName = 'id')
 	$possibleTagIds = array (
@@ -102,9 +96,9 @@ static function onEditZooItem($event)
 		$replacementFieldset = '
 			<fieldset id="jform_' . '{{$this->attribsField}}' . '_runnotificationary" class="radio btn-group btn-group-yesno nswitch" >
 				<input type="radio" ' . '{{$checkedyes}}' . ' value="1" name="params[config][custom_runnotificationary]" id="jform_' . '{{$this->attribsField}}' . '_runnotificationary1">
-				<label for="jform_' . '{{$this->attribsField}}' . '_runnotificationary1" class="btn ' . '{{$active_yes}}' . '">' . JText::_('JYES') . '</label>
+				<label for="jform_' . '{{$this->attribsField}}' . '_runnotificationary1" class="btn ' . '{{$active_yes}}' . '">' . \JText::_('JYES') . '</label>
 				<input type="radio" ' . '{{$checkedno}}' . ' value="0" name="params[config][custom_runnotificationary]" id="jform_' . '{{$this->attribsField}}' . '_runnotificationary0">
-				<label for="jform_' . '{{$this->attribsField}}' . '_runnotificationary0" class="btn' . '{{$active_no}}' . '">' . JText::_('JNO') . '</label>
+				<label for="jform_' . '{{$this->attribsField}}' . '_runnotificationary0" class="btn' . '{{$active_no}}' . '">' . \JText::_('JNO') . '</label>
 			</fieldset>
 		';
 
@@ -121,8 +115,8 @@ static function onEditZooItem($event)
 	$customReplacement['switch_selector'] = $switchSelector;
 
 		$path = __DIR__ . '/helpers/components/zoo/tables/';
-		JTable::addIncludePath($path);
-		$table = JTable::getInstance('Item', 'ZooTable');
+		\JTable::addIncludePath($path);
+		$table = \JTable::getInstance('Item', 'ZooTable');
 		$table->load($contentItem->id);
 
 	// ~ dump($contentItemId,'$contentItemId');
@@ -175,7 +169,7 @@ static function onEditZooItem($event)
 		}
 	}
 
-	$db = JFactory::getDbo();
+	$db = \JFactory::getDbo();
 	$query = $db->getQuery(true);
 	$query->select('category_id');
 	$query->from($db->quoteName('#__zoo_category_item'));
@@ -204,7 +198,7 @@ static function onEditZooItem($event)
 		$table->fulltext = implode(PHP_EOL, $textsOld);
 	}
 
-	$previousObject = new stdClass;
+	$previousObject = new \stdClass;
 	$previousObject->id = $table->id;
 	$previousObject->title = $table->name;
 	$previousObject->introtext = $table->introtext;
@@ -225,9 +219,9 @@ static function onEditZooItem($event)
 
 	$session->set('CustomReplacement', $customReplacement,  "notificationary");
 
-	$form = new JForm($context);
+	$form = new \JForm($context);
 
-	JDispatcher::getInstance()->trigger(
+	\JEventDispatcher::getInstance()->trigger(
 		'onContentPrepareForm',
 		array(
 			$form,

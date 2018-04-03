@@ -11,12 +11,12 @@
 
 namespace NotificationAry;
 
+use Joomla\String\StringHelper;
+
 // No direct access
 defined('_JEXEC') or die;
 
-use JLoader;
-
-JLoader::registerNamespace('NotificationAry', __DIR__, false, false, 'psr4');
+\JLoader::registerNamespace('NotificationAry', __DIR__, false, false, 'psr4');
 
 jimport('gjfields.gjfields');
 jimport('gjfields.helper.plugin');
@@ -105,6 +105,7 @@ else
 
 		public function __construct(& $subject, $config)
 		{
+			\JLoader::registerNamespace('Html2Text', self::$helpersFolder, false, false, 'psr4');
 			$jinput = \JFactory::getApplication()->input;
 
 			if ($jinput->get('option', null) == 'com_dump')
@@ -423,31 +424,31 @@ else
 
 				$old       = array();
 				$old[]     = '<h1>' . $this->previousArticle->title . '</h1>';
-				$introtext = preg_split("/\r\n|\n|\r/", JString::trim($this->previousArticle->introtext));
+				$introtext = preg_split("/\r\n|\n|\r/", StringHelper::trim($this->previousArticle->introtext));
 				$old       = array_merge($old, $introtext);
 
 				if (!empty($this->previousArticle->fulltext))
 				{
 					$old[]    = '<hr id="system-readmore" />';
-					$fulltext = preg_split("/\r\n|\n|\r/", JString::trim($this->previousArticle->fulltext));
+					$fulltext = preg_split("/\r\n|\n|\r/", StringHelper::trim($this->previousArticle->fulltext));
 					$old      = array_merge($old, $fulltext);
 				}
 
 				$new       = array();
 				$new[]     = '<h1>' . $this->contentItem->title . '</h1>';
-				$introtext = preg_split("/\r\n|\n|\r/", JString::trim($this->contentItem->introtext));
+				$introtext = preg_split("/\r\n|\n|\r/", StringHelper::trim($this->contentItem->introtext));
 
 				$new = array_merge($new, $introtext);
 
 				if (!empty($this->contentItem->fulltext))
 				{
 					$new[]    = '<hr id="system-readmore" />';
-					$fulltext = preg_split("/\r\n|\n|\r/", JString::trim($this->contentItem->fulltext));
+					$fulltext = preg_split("/\r\n|\n|\r/", StringHelper::trim($this->contentItem->fulltext));
 					$new      = array_merge($new, $fulltext);
 				}
 
 				// Initialize the diff class
-				$diff = new Diff($old, $new, $options);
+				$diff = new \Diff($old, $new, $options);
 				$css  = \JFile::read(self::$helpersFolder . '/Diff/styles.css');
 			}
 
@@ -538,7 +539,7 @@ else
 		 */
 		public function onContentAfterSave($context, $contentItem, $isNew)
 		{
-			dump($contentItem, 'context = ' . $context . ' | isNew = ' . $isNew);
+			// dump($contentItem, 'context = ' . $context . ' | isNew = ' . $isNew);
 			// ~ dumpTrace();
 			$jinput = \JFactory::getApplication()->input;
 
@@ -761,7 +762,7 @@ else
 
 			if (trim($this->sitename) == '')
 			{
-				$this->sitename = JURI::root();
+				$this->sitename = \JURI::root();
 			}
 
 			$user = \JFactory::getUser();
@@ -983,8 +984,8 @@ else
 				$paramsToBePassed = base64_encode(serialize($paramsToBePassed));
 
 				// Build remote link
-				$url_ajax_plugin = JRoute::_(
-							JURI::base()
+				$url_ajax_plugin = \JRoute::_(
+							\JURI::base()
 							// It's a must
 							. '?option=com_ajax&format=raw'
 							. '&group=' . $this->plgType
@@ -1898,7 +1899,7 @@ else
 
 	// PlgSystemNotificationaryCore }
 
-	JLoader::register('plgSystemNotificationary', __FILE__);
+	\JLoader::register('plgSystemNotificationary', __FILE__);
 
 	// Generate and empty object
 	$plgParams = new \JRegistry;

@@ -12,6 +12,7 @@
 
 namespace NotificationAry\Traits;
 
+use Joomla\CMS\HTML\HTMLHelper;
 /**
  * A helper trait
  *
@@ -143,7 +144,7 @@ trait BuildMail
 		$place_holders_body = $this->place_holders_body;
 
 		$place_holders_subject['%SITENAME%'] = $this->sitename;
-		$place_holders_subject['%SITELINK%'] = JURI::root();
+		$place_holders_subject['%SITELINK%'] = \JURI::root();
 
 		if ($this->rule->personalize)
 		{
@@ -311,8 +312,8 @@ trait BuildMail
 
 			if (!empty($this->rule->manage_subscription_link))
 			{
-				$link = str_replace(JURI::root(), '', $this->rule->manage_subscription_link);
-				$link = JURI::root() . $link;
+				$link = str_replace(\JURI::root(), '', $this->rule->manage_subscription_link);
+				$link = \JURI::root() . $link;
 
 				if ($this->rule->emailformat == 'plaintext')
 				{
@@ -544,7 +545,7 @@ trait BuildMail
 
 		if ($this->rule->make_image_path_absolute == 'absolute')
 		{
-			$domain = JURI::root();
+			$domain = \JURI::root();
 
 			if (!empty($this->contentItem->introtext))
 			{
@@ -571,21 +572,11 @@ trait BuildMail
 
 		// *** prepare introtext and fulltext {
 
-		// Instantiate a new instance of the class. Passing the string
-		// variable automatically loads the HTML for you.
-		if ($this->rule->emailformat == 'plaintext')
-		{
-			if (!class_exists('Html2Text') )
-			{
-				require_once self::$helpersFolder . '/Html2Text.php';
-			}
-		}
-
 		if (empty($this->rule->introtext))
 		{
 			if ($this->rule->emailformat == 'plaintext')
 			{
-				$h2t = new Html2Text\Html2Text($this->contentItem->introtext, array('show_img_link' => 'yes'));
+				$h2t = new \Html2Text\Html2Text($this->contentItem->introtext, array('show_img_link' => 'yes'));
 				$h2t->width = 120;
 
 				// Simply call the get_text() method for the class to convert
@@ -605,7 +596,7 @@ trait BuildMail
 			{
 				// Instantiate a new instance of the class. Passing the string
 				// variable automatically loads the HTML for you.
-				$h2t = new Html2Text\Html2Text($this->contentItem->fulltext);
+				$h2t = new \Html2Text\Html2Text($this->contentItem->fulltext);
 				$h2t->width = 120;
 
 				// Simply call the get_text() method for the class to convert
@@ -1039,15 +1030,15 @@ trait BuildMail
 		if (isset($this->contentItem->extension))
 		{
 			$scope = explode('_', $this->contentItem->extension);
-			$cat = JCategories::getInstance($scope[1], $options);
+			$cat = \JCategories::getInstance($scope[1], $options);
 			$cat_id = $this->contentItem->id;
 		}
 		else
 		{
-			$cat = JCategories::getInstance($this->context['extension'], $options);
+			$cat = \JCategories::getInstance($this->context['extension'], $options);
 
 			// ~ \JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_categories'.DS.'tables');
-			// ~ $cat = JCategories::getInstance('users',$options);
+			// ~ $cat = \JCategories::getInstance('users',$options);
 
 			$catid = (is_array($this->contentItem->catid)) ? $this->contentItem->catid[0] : $this->contentItem->catid;
 			$cat_id = $catid;
@@ -1133,7 +1124,7 @@ trait BuildMail
 			return \JText::_('JNONE');
 		}
 
-		$value = JHTML::_('date',  $value, 'Y-m-d H:i:s');
+		$value = HTMLHelper::_('date',  $value, 'Y-m-d H:i:s');
 
 		return $value;
 	}

@@ -12,6 +12,8 @@
 
 namespace NotificationAry\Traits;
 
+use Joomla\CMS\HTML\HTMLHelper;
+
 /**
  * A helper trait
  *
@@ -19,8 +21,6 @@ namespace NotificationAry\Traits;
  */
 trait Subscribe
 {
-
-
 	/**
 	 * Get profile data (used from subscribe)
 	 *
@@ -214,7 +214,7 @@ trait Subscribe
 						onMouseOut="this.style.color=\'#000\'"
 						class="hasTooltip ' . $iconClass . '" style="
 						cursor: help;"
-						title="' . JHtml::tooltipText($iconText) . '"></span>' . '</span>';
+						title="' . HTMLHelper::tooltipText($iconText) . '"></span>' . '</span>';
 			}
 		}
 

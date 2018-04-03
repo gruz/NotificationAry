@@ -70,7 +70,7 @@ class ScriptAry
 
 		return true;
 		// $parent is the class calling this method
-		// E.g. echo '<p>' . JText::_('COM_HELLOWORLD_UPDATE_TEXT') . '</p>';
+		// E.g. echo '<p>' . \JText::_('COM_HELLOWORLD_UPDATE_TEXT') . '</p>';
 	}
 
 	/**
@@ -105,12 +105,12 @@ class ScriptAry
 		// Check for the minimum Joomla version before continuing
 		if (!empty($this->minimumJoomla) && !version_compare(JVERSION, $this->minimumJoomla, '>'))
 		{
-			$msg = JText::sprintf('JLIB_INSTALLER_MINIMUM_JOOMLA', $this->minimumJoomla);
+			$msg = \JText::sprintf('JLIB_INSTALLER_MINIMUM_JOOMLA', $this->minimumJoomla);
 
 			// Older Joomlas don't have this line
 			if ($msg == 'JLIB_INSTALLER_MINIMUM_JOOMLA')
 			{
-				$msg = JText::sprintf("You don't have the minimum Joomla version requirement of J%s", $this->minimumJoomla);
+				$msg = \JText::sprintf("You don't have the minimum Joomla version requirement of J%s", $this->minimumJoomla);
 			}
 
 			JLog::add($msg, JLog::WARNING, 'jerror');
@@ -161,7 +161,7 @@ class ScriptAry
 
 		$this->langShortCode = null;
 		$this->default_lang = \JComponentHelper::getParams('com_languages')->get('admin');
-		$language = JFactory::getLanguage();
+		$language = \JFactory::getLanguage();
 
 		$language->load($this->ext_full_name, dirname(__FILE__), 'en-GB');
 
@@ -216,15 +216,15 @@ class ScriptAry
 				}
 			}
 
-			$extensionTable = JTable::getInstance('extension');
+			$extensionTable = \JTable::getInstance('extension');
 
 			// Find plugin id
 			$pluginId = $extensionTable->find(array('element' => $this->ext_name, 'type' => 'plugin'));
 			$extensionTable->load($pluginId);
 
-			$this->messages[] = JText::_('JOPTIONS')
+			$this->messages[] = \JText::_('JOPTIONS')
 					. ': <a class="menu-' . $this->ext_name . ' " href="index.php?option=com_plugins&task=plugin.edit&extension_id=' . $pluginId . '">'
-					. JText::_($this->ext_full_name) . '</a>';
+					. \JText::_($this->ext_full_name) . '</a>';
 		}
 
 		if (!empty($this->messages))
@@ -234,7 +234,7 @@ class ScriptAry
 
 		return true;
 
-		// E.g.: echo '<p>' . JText::_('COM_HELLOWORLD_POSTFLIGHT_' . $type . '_TEXT') . '</p>';
+		// E.g.: echo '<p>' . \JText::_('COM_HELLOWORLD_POSTFLIGHT_' . $type . '_TEXT') . '</p>';
 	}
 
 	/**
@@ -248,7 +248,7 @@ class ScriptAry
 	 */
 	private function _publishPlugin($plg_name,$plg_type, $plg_full_name = null)
 	{
-		$plugin = JPluginHelper::getPlugin($plg_type, $plg_name);
+		$plugin = \JPluginHelper::getPlugin($plg_type, $plg_name);
 		$success = true;
 
 		if (empty($plugin))
@@ -282,15 +282,15 @@ class ScriptAry
 			$plg_full_name = $plg_name;
 		}
 
-		$msg = jtext::_('jglobal_fieldset_publishing') . ': <b style="color:blue;"> ' . JText::_($plg_full_name) . '</b> ... ';
+		$msg = \JText::_('jglobal_fieldset_publishing') . ': <b style="color:blue;"> ' . \JText::_($plg_full_name) . '</b> ... ';
 
 		if ($success)
 		{
-			$msg .= '<b style="color:green">' . jtext::_('jpublished') . '</b>';
+			$msg .= '<b style="color:green">' . \JText::_('jpublished') . '</b>';
 		}
 		else
 		{
-			$msg .= '<b style="color:red">' . jtext::_('error') . '</b>';
+			$msg .= '<b style="color:red">' . \JText::_('error') . '</b>';
 		}
 
 		$this->messages[] = $msg;
@@ -310,7 +310,7 @@ class ScriptAry
 		jimport('joomla.filesystem.folder');
 		jimport('joomla.installer.installer');
 
-		JLoader::register('LanguagesModelInstalled', JPATH_ADMINISTRATOR . '/components/com_languages/models/installed.php');
+		\JLoader::register('LanguagesModelInstalled', JPATH_ADMINISTRATOR . '/components/com_languages/models/installed.php');
 		$lang = new LanguagesModelInstalled;
 		$current_languages = $lang->getData();
 		$locales = array();
@@ -351,7 +351,7 @@ class ScriptAry
 			if ($installer->install($extpath . '/' . $folder))
 			{
 				$manifest = $installer->getManifest();
-				$this->messages[] = JText::sprintf(
+				$this->messages[] = \JText::sprintf(
 						'COM_INSTALLER_INSTALL_SUCCESS',
 						'<b style="color:#0055BB;">[' . $manifest->name . ']<span style="color:green;">'
 					)
@@ -359,7 +359,7 @@ class ScriptAry
 			}
 			else
 			{
-				$this->messages[] = '<span style="color:red;">' . $folder . ' ' . JText::_('JERROR_AN_ERROR_HAS_OCCURRED') . '</span>';
+				$this->messages[] = '<span style="color:red;">' . $folder . ' ' . \JText::_('JERROR_AN_ERROR_HAS_OCCURRED') . '</span>';
 			}
 		}
 	}

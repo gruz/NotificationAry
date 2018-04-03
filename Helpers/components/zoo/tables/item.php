@@ -14,7 +14,7 @@ defined('_JEXEC') or die;
  *
  * @since  1.6
  */
-class ZooTableItem extends JTable
+class ZooTableItem extends \JTable
 {
 	/**
 	 * Constructor
@@ -32,7 +32,7 @@ class ZooTableItem extends JTable
 	{
 		parent::load($id, $reset);
 
-		$db    = JFactory::getDbo();
+		$db    = \JFactory::getDbo();
 		$query = $db->getQuery(true);
 		$query->select('category_id');
 		$query->from($db->quoteName('#__zoo_category_item'));

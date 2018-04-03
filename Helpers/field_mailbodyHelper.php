@@ -65,17 +65,17 @@ foreach ($ph_body as $k => $v)
 
 $place_holders_body_label = array_merge($place_holders_subject_label, $place_holders_body_label);
 
-$default_body = JText::_('JSITE') . ':  %SITELINK% :: %SITENAME%
-' . JText::_('JGLOBAL_TITLE') . ': %TITLE%
-' . JText::_('PLG_SYSTEM_NOTIFICATIONARY_CONTENT_TYPE') . ': %CONTENT_TYPE%
-' . JText::_('PLG_SYSTEM_NOTIFICATIONARY_ACTION') . ': %ACTION%
-' . JText::_('JCATEGORY') . ': %CATEGORY PATH%
-' . JText::_('PLG_SYSTEM_NOTIFICATIONARY_VIEW_LINK') . ': %FRONT VIEW LINK%
+$default_body = \JText::_('JSITE') . ':  %SITELINK% :: %SITENAME%
+' . \JText::_('JGLOBAL_TITLE') . ': %TITLE%
+' . \JText::_('PLG_SYSTEM_NOTIFICATIONARY_CONTENT_TYPE') . ': %CONTENT_TYPE%
+' . \JText::_('PLG_SYSTEM_NOTIFICATIONARY_ACTION') . ': %ACTION%
+' . \JText::_('JCATEGORY') . ': %CATEGORY PATH%
+' . \JText::_('PLG_SYSTEM_NOTIFICATIONARY_VIEW_LINK') . ': %FRONT VIEW LINK%
 
-' . JText::_('JGLOBAL_CREATED_DATE') . ': %CREATED DATE%
-' . JText::_('JGLOBAL_FIELD_MODIFIED_LABEL') . ': %MODIFIED DATE%
+' . \JText::_('JGLOBAL_CREATED_DATE') . ': %CREATED DATE%
+' . \JText::_('JGLOBAL_FIELD_MODIFIED_LABEL') . ': %MODIFIED DATE%
 
-' . JText::_('JGLOBAL_INTRO_TEXT') . ':
+' . \JText::_('JGLOBAL_INTRO_TEXT') . ':
 ----
 %INTRO TEXT%
 ----
@@ -102,20 +102,20 @@ if (get_class($this) == 'GJFieldsFormFieldTextareafixed')
 				break;
 			case 'content_type':
 			default :
-				$category = JTable::getInstance('contenttype');
+				$category = \JTable::getInstance('contenttype');
 				$category->load($extension);
 				$extension = $category->type_alias;
 				break;
 		}
 
-		JPluginHelper::importPlugin('notificationary');
-		$app = JFactory::getApplication();
+		\JPluginHelper::importPlugin('notificationary');
+		$app = \JFactory::getApplication();
 
 		$scriptAdded = $app->get('##mygruz20160216061544', false);
 
 		if (!$scriptAdded)
 		{
-			$document = JFactory::getDocument();
+			$document = \JFactory::getDocument();
 			$js = "
 				jQuery(document).ready(function(){
 					jQuery('small.object_values').toggle('hide');
@@ -138,7 +138,7 @@ if (get_class($this) == 'GJFieldsFormFieldTextareafixed')
 
 			$tbl = $contentObject->get('_tbl');
 			$tbl_key = $contentObject->get('_tbl_key');
-			$db = JFactory::getDBO();
+			$db = \JFactory::getDBO();
 			$query = $db->getQuery(true);
 			$query->select($tbl_key);
 			$query->from($tbl);
@@ -157,7 +157,7 @@ if (get_class($this) == 'GJFieldsFormFieldTextareafixed')
 		$placeHoldersBodyInput = array();
 
 		$placeHoldersBodyInput[] = '<br/>'
-			. JText::_('PLG_SYSTEM_NOTIFICATIONARY_SHOW_EXAMPLE_OBJECT')
+			. \JText::_('PLG_SYSTEM_NOTIFICATIONARY_SHOW_EXAMPLE_OBJECT')
 			. ' <button type="button" class="btn btn-warning btn-small object_values" >
 						<i class="icon-plus"></i>
 					</button><br/>
@@ -165,14 +165,14 @@ if (get_class($this) == 'GJFieldsFormFieldTextareafixed')
 					<pre style="clear:both;float:left;width:46%;margin-right:1%;"><b>----'
 						. get_class($contentObject) . '----</b><br/>';
 
-		// JLoader::register('NotificationAry', dirname(__FILE__) . '/helper.php');
+		// \JLoader::register('NotificationAry', dirname(__FILE__) . '/helper.php');
 
 		NotificationAry\PlgSystemNotificationaryCore::buildExampleObject($contentObject, $placeHoldersBodyInput);
 
 		// Free some memory
 		unset($contentObject);
 
-		$user = JFactory::getUser();
+		$user = \JFactory::getUser();
 		$placeHoldersBodyInput[] = '</pre>';
 		$placeHoldersBodyInput[] = '<pre style="float:left;width:46%;"><b>----' . get_class($user) . '----</b><br/>';
 		NotificationAry\PlgSystemNotificationaryCore::buildExampleUser($user, $placeHoldersBodyInput);

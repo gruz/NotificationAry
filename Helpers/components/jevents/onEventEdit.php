@@ -14,7 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 function onEventEdit($extraTabs, $row, $params)
 {
 	// ~ dump ('onEventEdit');
-	$db    = JFactory::getDbo();
+	$db    = \JFactory::getDbo();
 	$query = $db->getQuery(true)
 		->select($db->quoteName('rawdata'))
 		->from($db->quoteName('#__jevents_vevent'))

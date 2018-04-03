@@ -11,7 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-	$extensionTable = JTable::getInstance('extension');
+	$extensionTable = \JTable::getInstance('extension');
 	// Find plugin id, in my case it was plg_ajax_ajaxhelpary
 	$pluginId = $extensionTable->find( array('element' => 'notificationary', 'type' => 'plugin') );
 	$extensionTable->load($pluginId);
@@ -38,7 +38,7 @@ defined('_JEXEC') or die('Restricted access');
 	//~ }
 	//~ dump ($array,'$array');
 	//~ return;
-	$app = JFactory::getApplication();
+	$app = \JFactory::getApplication();
 	$number_of_rule = $app->get ('number_of_rule',0,$pluginId);
 	$app->set ('number_of_rule',$number_of_rule+1,$pluginId);
 	$number_of_rule_index = $app->get ('number_of_rule_index',0,$pluginId);
@@ -84,7 +84,7 @@ defined('_JEXEC') or die('Restricted access');
 	$app->get('js added ##mygruz20160506172158',false);
 	if (!$app->get('js added ##mygruz20160506172158',false)) {
 
-		$app    = JFactory::getApplication();
+		$app    = \JFactory::getApplication();
 		$js = "
 			jQuery( document ).ready(function( $ ) {
 				$('textarea[name=\"jform[params][{notificationgroup][use_json_template][]\"]').val('');
@@ -109,10 +109,10 @@ defined('_JEXEC') or die('Restricted access');
 				});
 			});
 		";
-		$document = JFactory::getDocument();
+		$document = \JFactory::getDocument();
 		$document->addScriptDeclaration($js);
 
-		JPluginGJFields::addJSorCSS('clipboard.js', 'plg_system_notificationary', false);
+		\JPluginGJFields::addJSorCSS('clipboard.js', 'plg_system_notificationary', false);
 
 		$app->set('js added ##mygruz20160506172158',true);
 

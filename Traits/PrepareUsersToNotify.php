@@ -12,6 +12,8 @@
 
 namespace NotificationAry\Traits;
 
+use Joomla\String\StringHelper;
+
 /**
  * A helper trait
  *
@@ -441,7 +443,7 @@ trait PrepareUsersToNotify
 
 		foreach ($Users_Add_emails as $cur_email)
 		{
-			$cur_email = JString::trim($cur_email);
+			$cur_email = StringHelper::trim($cur_email);
 
 			if ($cur_email == "")
 			{
@@ -630,7 +632,7 @@ trait PrepareUsersToNotify
 
 		foreach ($Users_Exclude_emails as $cur_email)
 		{
-			$cur_email = JString::trim($cur_email);
+			$cur_email = StringHelper::trim($cur_email);
 
 			if ($cur_email == "")
 			{

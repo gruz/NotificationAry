@@ -58,7 +58,7 @@ static function onBeforeSaveZooItem($event)
 	{
 	}
 
-	JDispatcher::getInstance()->trigger(
+	\JEventDispatcher::getInstance()->trigger(
 		'onContentBeforeSave',
 		array(
 				$context,
