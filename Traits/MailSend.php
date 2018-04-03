@@ -60,7 +60,7 @@ trait MailSend
 				$user->set('email', $value['email']);
 			}
 
-			$mail = $this->_buildMail($user);
+			$mail = $this->buildMail($user);
 
 			if (!$mail)
 			{

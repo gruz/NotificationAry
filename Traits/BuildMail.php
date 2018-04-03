@@ -28,7 +28,7 @@ trait BuildMail
 	 *
 	 * @return   mixed  False or array with mail parts (subject and body)
 	 */
-	protected function _buildMail ($user)
+	protected function buildMail ($user)
 	{
 		// Need this for authors and modifiers as they are not checked anywhere else
 		if ($user->block == 1)
@@ -364,7 +364,7 @@ trait BuildMail
 
 			if ($IncludeCategoryTree)
 			{
-				$this->_buildCategoryTree();
+				$this->buildCategoryTree();
 				$place_holders_body['%CATEGORY PATH%'] = "<b>"
 					. \JText::_('PLG_SYSTEM_NOTIFICATIONARY_JCATEGORY') . '</b>: ' . implode(' > ', $this->categoryTree);
 			}
@@ -452,7 +452,7 @@ trait BuildMail
 
 			if (strpos($this->rule->messagebodycustom, '%CATEGORY PATH%') !== false)
 			{
-				$this->_buildCategoryTree();
+				$this->buildCategoryTree();
 				$place_holders_body['%CATEGORY PATH%'] = implode(' > ', $this->categoryTree);
 			}
 
@@ -977,7 +977,7 @@ trait BuildMail
 	 *
 	 * @return   void
 	 */
-	protected function _buildCategoryTree ()
+	protected function buildCategoryTree ()
 	{
 		if (!empty($this->categoryTree))
 		{
@@ -1031,7 +1031,7 @@ trait BuildMail
 		{
 			$scope = explode('_', $this->contentItem->extension);
 			$cat = \JCategories::getInstance($scope[1], $options);
-			$cat_id = $this->contentItem->id;
+			$catId = $this->contentItem->id;
 		}
 		else
 		{
@@ -1041,7 +1041,7 @@ trait BuildMail
 			// ~ $cat = \JCategories::getInstance('users',$options);
 
 			$catid = (is_array($this->contentItem->catid)) ? $this->contentItem->catid[0] : $this->contentItem->catid;
-			$cat_id = $catid;
+			$catId = $catid;
 		}
 
 		$this->categoryTree = array();
@@ -1054,7 +1054,7 @@ trait BuildMail
 
 		if (method_exists($cat, 'get'))
 		{
-			$cat = $cat->get($cat_id);
+			$cat = $cat->get($catId);
 		}
 
 		if (method_exists($cat, 'hasParent'))
