@@ -57,7 +57,7 @@ trait BuildLinks
 				{
 					switch ($this->context['option'])
 					{
-						/*
+						/**
 						case 'com_k2':
 							* // $link = false;
 							$link = 'index.php?option='.$this->context['option']
@@ -72,31 +72,31 @@ trait BuildLinks
 						case 'com_users':
 							$link = false;
 							break;
-						/*
+						/**
 						case 'com_jdownloads':
 							$link = $link . '&'.'a_id='.$this->contentItem->id;
 							break;
 						*/
 						default :
-							if ($this->rule->extension_info['Frontend edit link'] === false)
+							if ($this->rule->extensionInfo['Frontend edit link'] === false)
 							{
 								$link = false;
 							}
-							elseif (empty($this->rule->extension_info['Frontend edit link']))
+							elseif (empty($this->rule->extensionInfo['Frontend edit link']))
 							{
 								// Try to use some default link form
 								$link = $link . '&' . $this->context['task'][0] . '_id=' . $this->contentItem->id;
 							}
 							else
 							{
-								$link = str_replace('##ID##', $this->contentItem->id, $this->rule->extension_info['Frontend edit link']);
+								$link = str_replace('##ID##', $this->contentItem->id, $this->rule->extensionInfo['Frontend edit link']);
 
-								/* For ZOO frontend edit link
+								/** For ZOO frontend edit link
 									* Check /administrator/components/com_zoo/Helpers/route.php line 394
 									* /administrator/components/com_zoo/Helpers/submission.php line 62
 									* /administrator/components/com_zoo/framework/Helpers/system.php line 56
 									*/
-								if (strpos($this->rule->extension_info['Frontend edit link'], '##SUBMISSION_HASH##') !== false)
+								if (strpos($this->rule->extensionInfo['Frontend edit link'], '##SUBMISSION_HASH##') !== false)
 								{
 									$submission_id = null;
 									$type_id = 'article';
@@ -104,7 +104,7 @@ trait BuildLinks
 									$edit = 1;
 									$seed = $submission_id.$type_id.$item_id.$edit;
 
-									// index.php?option=com_zoo&view=submission&layout=submission&submission_id=&type_id=article&item_id=##ID##&redirect=itemedit
+									// ~ index.php?option=com_zoo&view=submission&layout=submission&submission_id=&type_id=article&item_id=##ID##&redirect=itemedit
 									$seed = \JApplicationHelper::getHash($seed);
 									$link = str_replace('##SUBMISSION_HASH##', $seed, $link);
 								}
@@ -130,30 +130,30 @@ trait BuildLinks
 				{
 					switch ($this->context['option'])
 					{
-						/* /administrator/index.php?option=com_k2&view=item&cid=1
+						/** /administrator/index.php?option=com_k2&view=item&cid=1
 						case 'com_k2':
 							$link = 'index.php?option='.$this->context['option'].'&view='.$this->context['task'].'&cid='.$this->contentItem->id;
 							break;
 						*/
-						/* /administrator/index.php?option=com_jdownloads&task=download.edit&file_id=36
+						/** /administrator/index.php?option=com_jdownloads&task=download.edit&file_id=36
 						case 'com_jdownloads':
 							$link = $link . '&file_id='.$this->contentItem->id;
 							$link = "administrator/index.php?option='.$this->context['option'].'&task=article.edit&id=".$this->contentItem->id;
 							break;
 						*/
 						default :
-							// ~ if (isset($this->rule->extension_info)) {
-							if ($this->rule->extension_info['Backend edit link'] === false )
+							// ~ if (isset($this->rule->extensionInfo)) {
+							if ($this->rule->extensionInfo['Backend edit link'] === false )
 							{
 								$link = false;
 							}
-							elseif (empty($this->rule->extension_info['Backend edit link']) )
+							elseif (empty($this->rule->extensionInfo['Backend edit link']) )
 							{
 								$link = $link . '&id=' . $this->contentItem->id;
 							}
 							else
 							{
-								$link = str_replace('##ID##', $this->contentItem->id, $this->rule->extension_info['Backend edit link']);
+								$link = str_replace('##ID##', $this->contentItem->id, $this->rule->extensionInfo['Backend edit link']);
 							}
 							break;
 					}
@@ -176,7 +176,7 @@ trait BuildLinks
 						$break = true;
 						break;
 					default :
-						$extension_info = $this->rule->extension_info;
+						$extension_info = $this->rule->extensionInfo;
 
 						if ($extension_info['View link'] === false)
 						{
@@ -217,7 +217,7 @@ trait BuildLinks
 							}
 							else
 							{
-								$link = str_replace('##ID##', $this->contentItem->id, $this->rule->extension_info['View link']);
+								$link = str_replace('##ID##', $this->contentItem->id, $this->rule->extensionInfo['View link']);
 							}
 						}
 						else
@@ -249,7 +249,7 @@ trait BuildLinks
 
 							if (class_exists($routerClass) && method_exists($routerClass, $routerMethod))
 							{
-								if ( $this->real_context == "com_categories.category")
+								if ( "com_categories.category" === $this->realContext)
 								{
 									$catid = $this->contentItem->id;
 								}

@@ -60,7 +60,7 @@ trait Main
 
 			$items_model = \JModelLegacy::getInstance('Users', 'UsersModel');
 			$ruleUniqID  = $items_model->getState('filter.naruleUniqID');
-			/* // ##mygruz20170214152631 DO NOT DELETE.
+			/** // ##mygruz20170214152631 DO NOT DELETE.
 				* I tried to make the filters be opened upong a page load
 				* but this didn't work. Not to invest
 			*/

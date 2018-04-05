@@ -77,7 +77,7 @@ trait ParamsHandling
 				}
 			}
 			// Here we get the extension and the context to be notified. We use either a registred in Joomla extension (like DPCalendar or core Articles) or
-			if ($rule->context_or_contenttype == "content_type")
+			if ("content_type" === $rule->context_or_contenttype)
 			{
 				list($extensionInfo, $contentType) = $this->getExtensionInfo($context = null, $id = $rule->content_type);
 				$this->pparams[$ruleNumber]->contenttype_title = $contentType->type_title;
@@ -145,7 +145,7 @@ trait ParamsHandling
 			}
 
 			$this->pparams[$ruleNumber]->context = $extensionInfo['Context'];
-			$this->pparams[$ruleNumber]->extension_info = $extensionInfo;
+			$this->pparams[$ruleNumber]->extensionInfo = $extensionInfo;
 			$this->predefinedContextTemplates[$extensionInfo['Context']] = $extensionInfo;
 
 			unset($extensionInfo);

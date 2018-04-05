@@ -972,12 +972,12 @@ trait BuildMail
 		return $text;
 	}
 
-		/**
+	/**
 	 * Builds content item category tree
 	 *
 	 * @return   void
 	 */
-	protected function buildCategoryTree ()
+	protected function buildCategoryTree()
 	{
 		if (!empty($this->categoryTree))
 		{
@@ -1024,14 +1024,20 @@ trait BuildMail
 				return;
 				break;
 			default :
+				if (isset($this->rule->extensionInfo) && !empty($this->rule->extensionInfo['Category table class'])) {
+
+				}
 				break;
 		}
 
+		/**	##mygruz20180405023013 { It seems that if (isset($this->contentItem->extension)) never runs.
+			Semms to be outdated code, let it stay here for a while.
+		It was:
 		if (isset($this->contentItem->extension))
 		{
 			$scope = explode('_', $this->contentItem->extension);
 			$cat = \JCategories::getInstance($scope[1], $options);
-			$catId = $this->contentItem->id;
+			$catid = $this->contentItem->id;
 		}
 		else
 		{
@@ -1041,12 +1047,17 @@ trait BuildMail
 			// ~ $cat = \JCategories::getInstance('users',$options);
 
 			$catid = (is_array($this->contentItem->catid)) ? $this->contentItem->catid[0] : $this->contentItem->catid;
-			$catId = $catid;
 		}
+		It became: */
+		$cat = \JCategories::getInstance($this->context['extension'], $options);
+		$catid = (is_array($this->contentItem->catid)) ? $this->contentItem->catid[0] : $this->contentItem->catid;
+
+		/** ##mygruz20180405023013 } */
 
 		$this->categoryTree = array();
 
 		// If current extension which item is saved, doesn't use Joomla native category system
+		// then we go ways. Maybe the tree is build above.
 		if (!$cat)
 		{
 			return;
@@ -1054,7 +1065,7 @@ trait BuildMail
 
 		if (method_exists($cat, 'get'))
 		{
-			$cat = $cat->get($catId);
+			$cat = $cat->get($catd);
 		}
 
 		if (method_exists($cat, 'hasParent'))

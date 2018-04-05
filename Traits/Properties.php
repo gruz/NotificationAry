@@ -193,10 +193,13 @@ trait Properties {
 			array ('modified_by','modified_user_id'),
 			array ('created','created_time'),
 			array ('modified','modified_time'),
-			
+
 			// PhocaDownload
 			array ('created_by', 'owner_id'),
-			
+			array ('modified_by', 'owner_id'),
+			array ('modified', 'date'),
+			array ('created', 'date'),
+
 			// JDownloads
 			array ('id','file_id'),
 			array ('catid','cat_id'),

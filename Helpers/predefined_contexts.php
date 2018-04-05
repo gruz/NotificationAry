@@ -28,7 +28,8 @@ $functionsToBeAliased = [
 	'onContentPrepareForm',
 ];
 $contextAliases = [
-	'contextAliases'
+	// JForm object may have different naming, then context, So alias may be needed.
+	'contextAliases' 
 ];
 $otherParams = [
 	'RouterClass::RouterMethod',
@@ -128,15 +129,15 @@ $predefinedContextTemplates = [
 		// 'View link'=> 'index.php?option=com_zoo&task=item&item_id=##ID##',
 		// 'Frontend edit link'=> 'index.php?option=com_zoo&view=submission&layout=submission&submission_id=&type_id=article&item_id=##ID##&redirect=itemedit&submission_hash=##SUBMISSION_HASH##',
 		// 'Backend edit link'=> 'index.php?option=com_menus&task=item.edit&id=##ID##',
-		'Category table class' => 'PhocaDownloadModelCategory',
+		'Category table class' => 'administrator/components/com_phocadownload/libraries/phocadownload/category/:PhocaDownloadCategory',
 		// ~ 'Category context' => 'com_jevents.category',
-		// ~ 'RouterClass::RouterMethod' => 'DPCalendarHelperRoute::getEventRoute',
 		// 'onContentAfterSave' => 'zoo/onAfterSaveZooItem.php', // The extension uses own function with own parameters. Have to catch the parametes, rework them to the form accepted by the regural joomla event, and pass to the regular joomla event
 		// 'onContentBeforeSave' => 'zoo/onBeforeSaveZooItem.php', // The extension uses own function with own parameters. Have to catch the parametes, rework them to the form accepted by the regural joomla event, and pass to the regular joomla event
 		// ~ 'onContentChangeState' => 'zoo/onStateChangedZooItem.php', // The extension uses own function with own parameters. Have to catch the parametes, rework them to the form accepted by the regural joomla event, and pass to the regular joomla event
 		// 'onContentPrepareForm' => 'zoo/onEditZooItem.php', // The extension uses own function with own parameters. Have to catch the parametes, rework them to the form accepted by the regural joomla event, and pass to the regular joomla event
-		'contextAliases' => 'phocadownloadfile',
 		'RouterClass::RouterMethod' => 'PhocaDownloadRoute::getFileRoute',
+		'contextAliases' => 'phocadownloadfile',
+		
 	],
 ];
 

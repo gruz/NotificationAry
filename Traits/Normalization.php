@@ -172,7 +172,7 @@ trait Normalization
 	 */
 	public function contextAliasReplace($context, $contentItem = false)
 	{
-		$this->real_context = $context;
+		$this->realContext = $context;
 					/*
 					"com_categories.categorycom_content" => 'com_categories.category',
 					"com_banners.category" => 'com_categories.category',
@@ -189,10 +189,16 @@ trait Normalization
 				break;
 			}
 
+			/** ##mygruz20180405023855 {
+			 * It seems, that $contentItem->extension is never used used. May oudated code
+			 * Let it stay here for a while
+			It was:
 			if ($contentItem && !empty($contentItem->extension) && $context == 'com_categories.category')
 			{
 				$context = $contentItem->extension . '.category';
 			}
+			It became: */
+			/** ##mygruz20180405023855 } */
 
 			if (strpos($context, 'com_categories.categorycom_') === 0)
 			{
