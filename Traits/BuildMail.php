@@ -1120,7 +1120,6 @@ trait BuildMail
 		}
 	}
 
-
 	/**
 	 * Converts DB date to the date including joomla offset. Just a shortcut to JHTML::_('date',  $value, 'Y-m-d H:i:s')
 	 *
@@ -1139,7 +1138,6 @@ trait BuildMail
 
 		return $value;
 	}
-
 
 	/**
 	 * Load user from table by id if exists or returns an empty user
@@ -1163,8 +1161,6 @@ trait BuildMail
 
 		return $user;
 	}
-
-
 
 	/**
 	 * Removes plugin tags
@@ -1216,139 +1212,6 @@ trait BuildMail
 		}
 
 		return $text;
-	}
-
-		/**
-	 * Replaces plugin code with the subscribe/unsubscribe form if needed
-	 *
-	 * If the user is guest, then just removes the plugin code.
-	 * Removes the code if the user doesn't match any NA rule or there is no such a rule
-	 * Replaces the plugin code with the subscribe/unsubscribe form otherwise.
-	 * The plugin code format: {na subscribe 5889f0565a762} where 5889f0565a762 is the
-	 * NA rule UniqID. See the screenshot to get the idea
-	 * http://view.xscreenshot.com/a3dbc86f705ab26c2c2b15627b40dc52
-	 *
-	 * @param   object  $pluginObject  NA plugin object
-	 * @param   array   $body          HTML body
-	 * @param   array   $matches       Plugin code matches found
-	 *
-	 * @return   mixed  HTML string with body if something was replaced or false if no replace occurred
-	 */
-	public static function pluginCodeReplace($pluginObject, $body, $matches)
-	{
-		// Load NA subscribed options from the user profiles table
-		$user = \JFactory::getUser();
-
-		$rules = $pluginObject->pparams;
-
-		$app = \JFactory::getApplication();
-		$app->set('plg_system_notificationary', $pluginObject);
-
-		$replaced = false;
-
-		$replacements = array();
-
-		// Prepare names of plugin settings fields. These strange names are due to the plugin history
-		// when the plugin had admin users settings (ausers) and registred users settings (rusers)
-		$paramName = 'notifyuser';
-		$groupName = 'ausers_' . $paramName . 'groups';
-		$itemName = 'ausers_' . $paramName . 's';
-
-		\JForm::addFieldPath($pluginObject->plg_path . '/fields');
-
-		$formfield = \JFormHelper::loadFieldType('na.subscribe');
-
-		foreach ($matches as $keymatches => $match)
-		{
-			$replace_code = $match[0];
-			$ruleUniqID = $match[1];
-
-			$form = array();
-
-			if (\JFactory::getUser()->guest)
-			{
-				$replacements[$replace_code] = '';
-				$replaced = true;
-
-				continue;
-			}
-
-			$msg = null;
-
-			foreach ($rules as $ruleNumber => $rule)
-			{
-				if ($rule->__ruleUniqID != $ruleUniqID)
-				{
-					continue;
-				}
-
-				if (!$rule->allow_subscribe)
-				{
-					$replacements[$replace_code] = '<span style="color:red;">['
-						. \JText::_('PLG_SYSTEM_NOTIFICATIONARY_RULE_DOESNT_ALLOW_TO_SUBSCRIBE') . ': ' . $ruleUniqID
-						. ']</span>';
-					continue;
-				}
-
-				if (!$rule->isenabled)
-				{
-					$replacements[$replace_code] = '<span style="color:red;">['
-						. \JText::_('PLG_SYSTEM_NOTIFICATIONARY_RULE_DISABLED') . ': ' . $ruleUniqID
-						. ']</span>';
-					continue;
-				}
-
-				$element = simplexml_load_string(
-					'
-						<field
-							name="subscribe"
-							type="na.subscribe"
-							ruleids="' . $ruleUniqID . '"
-							label="PLG_SYSTEM_NOTIFICATIONARY_SUBSCRIBE_SELECT_LABEL"
-						/>
-					');
-
-				$formfield->setup($element, '');
-				$replacements[$replace_code] = $formfield->renderField();
-			}
-		}
-
-		// Try to remove wrapping <p> tag. Stupid way, a preg function should be used. Lazy to implement.
-		$patterns = array(
-			'<p>' . $replace_code . '</p>',
-			'<p>' . PHP_EOL . $replace_code . PHP_EOL . '</p>',
-		);
-
-		$replaced = false;
-
-		foreach ($replacements as $replace_code => $form)
-		{
-			foreach ($patterns as $k => $pattern)
-			{
-				if (strpos($body, $pattern) !== false)
-				{
-					$replace_code = $pattern;
-					break;
-				}
-			}
-
-			$body_tmp = $body;
-
-			$body = str_replace(array_keys($replacements), $replacements, $body);
-
-			if ($body_tmp !== $body)
-			{
-				$replaced = true;
-			}
-		}
-
-		if ($replaced)
-		{
-			return $body;
-		}
-
-		// To avoid later run setBody method
-		return false;
 	}
 
 }

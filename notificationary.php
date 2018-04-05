@@ -990,7 +990,7 @@ else
 							. '?option=com_ajax&format=raw'
 							. '&group=' . $this->plgType
 							. '&plugin=notificationAryRun'
-							. '&' . JSession::getFormToken() . '=1'
+							. '&' . \JSession::getFormToken() . '=1'
 							. '&uniq=' . uniqid()
 							. '&serialize=' . $paramsToBePassed
 					);
@@ -1573,7 +1573,7 @@ else
 			// ~ dump('onContentPrepareForm','onContentPrepareForm');
 			// ~ dumpTrace();
 
-			$this->_userProfileFormHandle($form, $contentItem);
+			$this->userProfileFormHandle($form, $contentItem);
 
 			$debug  = true;
 			$debug  = false;
@@ -1607,9 +1607,9 @@ else
 				return false;
 			}
 
-			/* ***************************************************************************************************************************** */
-			/*  NOTE!!! I must load the form below even if $contentItem is empty, becasue otherwise it doesn't save the notify switch state  */
-			/* ***************************************************************************************************************************** */
+			/** ***************************************************************************************************************************** */
+			/**  NOTE!!! I must load the form below even if $contentItem is empty, becasue otherwise it doesn't save the notify switch state  */
+			/** ***************************************************************************************************************************** */
 			if (!empty($this->context))
 			{
 				$context = $this->context['full'];
@@ -1860,7 +1860,7 @@ else
 				$redirect_url = 'index.php?option=com_ajax&format=raw'
 					. '&group=' . $this->plgType
 					. '&plugin=notificationAryRun'
-					. '&' . JSession::getFormToken() . '=1'
+					. '&' . \JSession::getFormToken() . '=1'
 					. '&uniq=' . uniqid()
 					. '&uniq=' . $uniq
 					. '&serialize=' . $serialize;
@@ -1876,7 +1876,7 @@ else
 		 */
 		public function onAfterInitialise()
 		{
-			self::_autoOverride($this);
+			self::autoOverride($this);
 
 			$this->prepareParams();
 

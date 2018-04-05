@@ -8,8 +8,6 @@
 
 defined('JPATH_PLATFORM') or die;
 
-use NotificationAry;
-
 if (!class_exists('GJFieldsFormField'))
 {
 	include JPATH_ROOT . '/libraries/gjfields/gjfields.php';
@@ -146,7 +144,7 @@ class NAFormFieldSubscribe extends GJFieldsFormField
 
 				// Per rule subscribe
 				case '2':
-					$allowedCategories = NotificationAry::getProfileData($user->id, $rule->__ruleUniqID);
+					$allowedCategories = plgSystemNotificationary::getProfileData($user->id, $rule->__ruleUniqID);
 
 					if (empty($allowedCategories))
 					{
@@ -177,7 +175,7 @@ class NAFormFieldSubscribe extends GJFieldsFormField
 			{
 				// Per category subscribe
 				case '1':
-					/*
+					/**
 					switch ($rule->context_or_contenttype)
 					{
 						case 'content_type':
@@ -202,18 +200,18 @@ class NAFormFieldSubscribe extends GJFieldsFormField
 					$element = simplexml_load_string(
 						'
 							<field name="subscribe_categories" maxrepeatlength="1" type="gjfields.variablefield"
-											basetype="gjfields.categoryext" extension="com_content"
+								basetype="gjfields.categoryext" extension="com_content"
 
-											context_or_contenttype="' . $rule->context_or_contenttype . '"
+								context_or_contenttype="' . $rule->context_or_contenttype . '"
 
-											scope="' . $scope . '"
-											published="1"
+								scope="' . $scope . '"
+								published="1"
 
-											source_parameter="context_or_contenttype,content_type,context"
-											target_parameter="context_or_contenttype,content_type,context"
-											multiple="multiple" size="20" show_uncategorized="1" label="PLG_SYSTEM_NOTIFICATIONARY_SUBSCRIBE_TO_CATEGORY"
-											description="" class="chzn-custom-value"
-											hint="PLG_SYSTEM_NOTIFICATIONARY_FIELD_CATEGORIES_CUSTOM"/>
+								source_parameter="context_or_contenttype,content_type,context"
+								target_parameter="context_or_contenttype,content_type,context"
+								multiple="multiple" size="20" show_uncategorized="1" label="PLG_SYSTEM_NOTIFICATIONARY_SUBSCRIBE_TO_CATEGORY"
+								description="" class="chzn-custom-value"
+								hint="PLG_SYSTEM_NOTIFICATIONARY_FIELD_CATEGORIES_CUSTOM"/>
 
 						');
 
@@ -229,14 +227,14 @@ class NAFormFieldSubscribe extends GJFieldsFormField
 					// Iterate categories and and add only needed ones and checked if needed.
 					foreach ($categories as $k => $category)
 					{
-						/*
-								<field name="ausers_articlegroups" maxrepeatlength="1"
-								 		type="gjfields.variablefield" basetype="list" default="0"
-								 		label="PLG_SYSTEM_NOTIFICATIONARY_FIELD_CATEGORIES" description="PLG_SYSTEM_NOTIFICATIONARY_FIELD_NOTIFY_ON_DESC">
-									<option value="1">PLG_SYSTEM_NOTIFICATIONARY_FIELD_SELECTION</option>
-									<option value="2">PLG_SYSTEM_NOTIFICATIONARY_FIELD_EXCLUDE_SELECTION</option>
-									<option value="0">JALL</option>
-								</field>
+						/**
+							<field name="ausers_articlegroups" maxrepeatlength="1"
+									type="gjfields.variablefield" basetype="list" default="0"
+									label="PLG_SYSTEM_NOTIFICATIONARY_FIELD_CATEGORIES" description="PLG_SYSTEM_NOTIFICATIONARY_FIELD_NOTIFY_ON_DESC">
+								<option value="1">PLG_SYSTEM_NOTIFICATIONARY_FIELD_SELECTION</option>
+								<option value="2">PLG_SYSTEM_NOTIFICATIONARY_FIELD_EXCLUDE_SELECTION</option>
+								<option value="0">JALL</option>
+							</field>
 						 */
 
 						$continue = false;

@@ -216,9 +216,9 @@ trait Ajax
 		$resposne = array('success' => false);
 
 		$jinput = \JFactory::getApplication()->input;
-		$token  = JSession::getFormToken();
+		$token  = \JSession::getFormToken();
 
-		if (!JSession::checkToken())
+		if (!\JSession::checkToken())
 		{
 			$resposne['message'] = \JText::_('JINVALID_TOKEN');
 

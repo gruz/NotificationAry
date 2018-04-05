@@ -22,81 +22,6 @@ defined('_JEXEC') or die;
 trait Main
 {
 	/**
-	 * Adds additional fields to the user editing form
-	 *
-	 * @param   \JForm  $form  The form to be altered.
-	 * @param   mixed   $data  The associated data for the form.
-	 *
-	 * @return  boolean
-	 *
-	 * @since   1.6
-	 */
-	public function _userProfileFormHandle($form, $data)
-	{
-		if (!$this->checkIsForm($form))
-		{
-			$this->_subject->setError('JERROR_NOT_A_FORM');
-
-			return false;
-		}
-
-		// Check we are manipulating a valid form.
-		$name = $form->getName();
-
-		$app = \JFactory::getApplication();
-
-		if (!in_array($name, array('com_admin.profile', 'com_users.user', 'com_users.profile', "com_users.users.default.filter")))
-		{
-			return true;
-		}
-
-		// Pass the plugin object to be available in the field to have plugin params parsed there
-		$app->set($this->plgFullName, $this);
-
-		if ($name == "com_users.users.default.filter")
-		{
-			\JForm::addFormPath(__DIR__ . '/forms');
-			$form->loadFile('filter', false);
-
-			$items_model = \JModelLegacy::getInstance('Users', 'UsersModel');
-			$ruleUniqID  = $items_model->getState('filter.naruleUniqID');
-			/** // ##mygruz20170214152631 DO NOT DELETE.
-				* I tried to make the filters be opened upong a page load
-				* but this didn't work. Not to invest
-			*/
-
-			return true;
-		}
-
-		$jinput = \JFactory::getApplication()->input;
-		$userID = $jinput->get('id', null);
-
-		if (empty($userID))
-		{
-			return;
-		}
-
-		// Add the registration fields to the form.
-		\JForm::addFormPath(__DIR__ . '/forms');
-		$form->loadFile('subscribe', false);
-		$form->setFieldAttribute('subscribe', 'userid', $userID, 'nasubscribe');
-		$form->setFieldAttribute('subscribe', 'isProfile', true, 'nasubscribe');
-
-		$doc = \JFactory::getDocument();
-		$js  = '
-			jQuery(document).ready(function($){
-				var label = $(".nasubscribe").closest("div.control-group").find(".control-label:first").text().trim();
-				if (label.length === 0)
-				{
-					$(".nasubscribe").closest("div.controls").css("margin-left", "0");
-				}
-
-			});
-		';
-		$doc->addScriptDeclaration($js);
-	}
-
-	/**
 	 * Parses textarea multiline template into an assosiative array
 	 *
 	 * @param   string  $extension  Manual extension template field contents
@@ -331,9 +256,10 @@ trait Main
 	/**
 	 * Autooverride (based on plg_system_mvcoverride but changed a little)
 	 *
-	 * @return   type  Description
+	 * @param   \plgSystemNotificationary  $pluginObject Our plugin itself
+	 * @return  void
 	 */
-	public static function _autoOverride($pluginObject)
+	public static function autoOverride(\plgSystemNotificationary $pluginObject)
 	{
 		$jinput = \JFactory::getApplication()->input;
 
@@ -367,12 +293,12 @@ trait Main
 		jimport('joomla.filesystem.file');
 		jimport('joomla.filesystem.folder');
 
-		$codefolder        = __DIR__ . '/../code/';
-		$files             = str_replace($codefolder, '', \JFolder::files($codefolder, '.php', true, true));
-		$files             = array_fill_keys($files, $codefolder);
-		$files_to_override = $files;
+		$codefolder      = \realpath(__DIR__ . '/../code/');
+		$files           = str_replace($codefolder, '', \JFolder::files($codefolder, '.php', true, true));
+		$files           = array_fill_keys($files, $codefolder);
+		$filesToOverride = $files;
 
-		if (empty($files_to_override))
+		if (empty($filesToOverride))
 		{
 			return;
 		}
@@ -386,30 +312,30 @@ trait Main
 		}
 
 		// Do not override wrong scope for components
-		foreach ($files_to_override as $fileToOverride => $overriderFolder)
+		foreach ($filesToOverride as $fileToOverride => $overriderFolder)
 		{
 			if (\JFactory::getApplication()->isAdmin())
 			{
 				if (strpos($fileToOverride, '/com_') === 0)
 				{
-					unset($files_to_override[$fileToOverride]);
+					unset($filesToOverride[$fileToOverride]);
 				}
 
 				if (strpos($fileToOverride, '/components/com_') === 0)
 				{
-					unset($files_to_override[$fileToOverride]);
+					unset($filesToOverride[$fileToOverride]);
 				}
 			}
 			else
 			{
 				if (strpos($fileToOverride, '/administrator/com_') === 0)
 				{
-					unset($files_to_override[$fileToOverride]);
+					unset($filesToOverride[$fileToOverride]);
 				}
 
 				if (strpos($fileToOverride, '/administrator/components/com_') === 0)
 				{
-					unset($files_to_override[$fileToOverride]);
+					unset($filesToOverride[$fileToOverride]);
 				}
 			}
 		}
@@ -417,7 +343,7 @@ trait Main
 		$overridden = false;
 
 		// Loading override files
-		foreach ($files_to_override as $fileToOverride => $overriderFolder)
+		foreach ($filesToOverride as $fileToOverride => $overriderFolder)
 		{
 			if (\JFile::exists(JPATH_ROOT . $fileToOverride))
 			{
@@ -429,7 +355,7 @@ trait Main
 			}
 			else
 			{
-				JLog::add("Can see an overrider file ($overriderFolder" . "$fileToOverride) , but cannot find what to override", JLog::INFO, 'notificationary');
+				JLog::add("Can see an overrider file ($overriderFolder $fileToOverride) , but cannot find what to override", JLog::INFO, 'notificationary');
 
 				continue;
 			}
@@ -493,10 +419,10 @@ trait Main
 			if (count($definesSource[0]))
 			{
 				$bufferContent = preg_replace(
-						array('/JPATH_COMPONENT/', '/JPATH_COMPONENT_SITE/', '/JPATH_COMPONENT_ADMINISTRATOR/'),
-						array($uniqid . 'JPATH_SOURCE_COMPONENT', $uniqid . 'JPATH_SOURCE_COMPONENT_SITE', $uniqid . 'JPATH_SOURCE_COMPONENT_ADMINISTRATOR'),
-						$bufferContent
-					);
+					array('/JPATH_COMPONENT/', '/JPATH_COMPONENT_SITE/', '/JPATH_COMPONENT_ADMINISTRATOR/'),
+					array($uniqid . 'JPATH_SOURCE_COMPONENT', $uniqid . 'JPATH_SOURCE_COMPONENT_SITE', $uniqid . 'JPATH_SOURCE_COMPONENT_ADMINISTRATOR'),
+					$bufferContent
+				);
 			}
 
 			// Change private methods to protected methods

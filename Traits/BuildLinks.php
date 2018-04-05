@@ -395,7 +395,7 @@ trait BuildLinks
 						. '?option=com_ajax&format=raw'
 						. '&group=' . $this->plgType
 						. '&plugin=notificationAryGetFEURL'
-						// . '&' . JSession::getFormToken() . '=1'
+						// . '&' . \JSession::getFormToken() . '=1'
 						. '&userid=' . $user->id
 						. '&sid=' . $sessionId
 						// Pass your data if needed
