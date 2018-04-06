@@ -43,23 +43,23 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 	$place_holders_body_label = array_merge($place_holders_subject_label,$place_holders_body_label);
 
 	$default_body =
-JText::_('JSITE').':  %SITELINK% :: %SITENAME%
-'.JText::_('JGLOBAL_TITLE').': %TITLE%
-'.JText::_('PLG_SYSTEM_NOTIFICATIONARY_CONTENT_TYPE').': %CONTENT_TYPE%
-'.JText::_('PLG_SYSTEM_NOTIFICATIONARY_ACTION').': %ACTION%
-'.JText::_('JCATEGORY').': %CATEGORY PATH%
-'.JText::_('PLG_SYSTEM_NOTIFICATIONARY_VIEW_LINK').': %FRONT VIEW LINK%
+\JText::_('JSITE').':  %SITELINK% :: %SITENAME%
+'.\JText::_('JGLOBAL_TITLE').': %TITLE%
+'.\JText::_('PLG_SYSTEM_NOTIFICATIONARY_CONTENT_TYPE').': %CONTENT_TYPE%
+'.\JText::_('PLG_SYSTEM_NOTIFICATIONARY_ACTION').': %ACTION%
+'.\JText::_('JCATEGORY').': %CATEGORY PATH%
+'.\JText::_('PLG_SYSTEM_NOTIFICATIONARY_VIEW_LINK').': %FRONT VIEW LINK%
 
-'.JText::_('JGLOBAL_CREATED_DATE').': %CREATED DATE%
-'.JText::_('JGLOBAL_FIELD_MODIFIED_LABEL').': %MODIFIED DATE%
+'.\JText::_('JGLOBAL_CREATED_DATE').': %CREATED DATE%
+'.\JText::_('JGLOBAL_FIELD_MODIFIED_LABEL').': %MODIFIED DATE%
 
-'.JText::_('JGLOBAL_INTRO_TEXT').':
+'.\JText::_('JGLOBAL_INTRO_TEXT').':
 ----
 %INTRO TEXT%
 ----
 ';
 
-	if (get_class($this) == 'JFormFieldTextareafixed') {
+	if (get_class($this) == '\JFormFieldTextareafixed') {
 		while (true) {
 			$context_or_contenttype = $this->element['context_or_contenttype'];
 			if (empty ($context_or_contenttype)) { break; }
@@ -73,18 +73,18 @@ JText::_('JSITE').':  %SITELINK% :: %SITENAME%
 					break;
 				case 'content_type':
 				default :
-					$category = JTable::getInstance( 'contenttype' );
+					$category = \JTable::getInstance( 'contenttype' );
 					$category->load( $extension );
 					$extension = $category->type_alias;
 					break;
 			}
 
-			JPluginHelper::importPlugin('notificationary');
-			$app = JFactory::getApplication();
+			\JPluginHelper::importPlugin('notificationary');
+			$app = \JFactory::getApplication();
 
 			$scriptAdded = $app->get('##mygruz20160216061544',false);
 			if (!$scriptAdded) {
-				$document = JFactory::getDocument();
+				$document = \JFactory::getDocument();
 				$js = "
 					jQuery(document).ready(function(){
 						jQuery('small.object_values').toggle('hide');
@@ -99,7 +99,7 @@ JText::_('JSITE').':  %SITELINK% :: %SITENAME%
 
 			}
 
-			$contentObject = $app->triggerEvent('_getContentItemTable', array($extension,false,true));
+			$contentObject = $app->triggerEvent('getContentItemTable', array($extension,false,true));
 
 			// If a rule is disabled, then an empty result is returned. Not sence to handle in this case
 			if (!empty($contentObject) && !empty($contentObject[0])) {
@@ -112,7 +112,7 @@ JText::_('JSITE').':  %SITELINK% :: %SITENAME%
 			foreach ($contentObject as $key=>$value) {
 				$place_holders_body_label[] = '##Content#'.$key.'##<br/>';
 			}
-			$user =  JFactory::getUser();
+			$user =  \JFactory::getUser();
 			$place_holders_body_label[] = '
 			</pre>';
 			$place_holders_body_label[] = '

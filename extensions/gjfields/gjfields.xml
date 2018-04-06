@@ -3,12 +3,12 @@
   <name>GJFields - a set of additional JForm feilds</name>
   <libraryname>gjfields</libraryname>
   <author>Gruz</author>
-  <creationDate>2018-03-19</creationDate>
+  <creationDate>2018-04-06</creationDate>
   <copyright>Copyright (C) 2004-2018 Gruz All rights reserved.</copyright>
   <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
   <authorEmail>arygroup@gmail.com</authorEmail>
   <authorUrl>http://gruz.ml/about-joomla/29-joomla-extensions/34-joomla-self-reproducing-jfrom-field.html</authorUrl>
-  <version>1.2.10</version>
+  <version>1.2.11</version>
   <description>Provides a set of additional JForm fileds. I.e. Variablefield is a self-reproducing JFrom field, which supports variable fields and groups of fields. Alas, no nested groups allowed. </description>
   <files>
   <folder>css</folder><folder>extensions</folder><folder>helper</folder><folder>images</folder><folder>js</folder><folder>language</folder><folder>layouts</folder><filename>README.md</filename><filename>article.php</filename><filename>blockquote.php</filename><filename>categoryext.php</filename><filename>gjfields.php</filename><filename>gjfields.xml</filename><filename>gjlist.php</filename><filename>index.html</filename><filename>list.php</filename><filename>menuitemhierarchy.php</filename><filename>modalarticle.php</filename><filename>modalcontentitem.php</filename><filename>notefixed.php</filename><filename>old_textareafixed.php</filename><filename>scriptary.php</filename><filename>textareafixed.php</filename><filename>toggler.php</filename><filename>usergroups.php</filename><filename>users.php</filename><filename>users_old.php</filename><filename>variablefield.php</filename><filename>version.php</filename></files>

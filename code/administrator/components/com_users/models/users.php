@@ -10,7 +10,7 @@
 defined('_JEXEC') or die;
 
 use Joomla\Utilities\ArrayHelper;
-use NotificationAry\Helpers\NotificationAryHelper;
+use NotificationAry\NotificationAry;
 
 /**
  * Methods supporting a list of user records.
@@ -47,12 +47,12 @@ class UsersModelUsers extends UsersModelUsersDefault
 				'lastvisitrange',
 				'state',
 			);
-			/* ##mygruz20170216154842 { Add filter to keep the search tools tab open if needed.
+			/** ##mygruz20170216154842 { Add filter to keep the search tools tab open if needed.
 			It was:
 			It became: */
 			$config['filter_fields'][] = 'naruleUniqID';
 			$config['filter_fields'][] = 'nacategory';
-			/* ##mygruz20170216154842 } */
+			/** ##mygruz20170216154842 } */
 		}
 
 		parent::__construct($config);
@@ -61,13 +61,16 @@ class UsersModelUsers extends UsersModelUsersDefault
 	/**
 	 * Build an SQL query to load the list data.
 	 *
+	 * This functions totally overrides the original one, but later, when needed, gets parent function result and
+	 * merges with prepared here.
+	 *
 	 * @return  JDatabaseQuery
 	 *
 	 * @since   1.6
 	 */
 	protected function getListQuery()
 	{
-		$session = JFactory::getSession();
+		$session = \JFactory::getSession();
 
 		// Here on some reason I cannot use getState/setState. The value is not stored between page load
 		// So I arrived at a decision to use Session instead
@@ -85,14 +88,16 @@ class UsersModelUsers extends UsersModelUsersDefault
 		if (empty($ruleUniqID))
 		{
 			$query = parent::getListQuery();
+
 			return $query;
 		}
 
 		$categoryID = $this->getState('filter.nacategory');
 
 		$db    = $this->getDbo();
-		$app = JFactory::getApplication();
-		// Pass the plugin object to be available in the field to have plugin params parsed there
+		$app = \JFactory::getApplication();
+
+		// ~ Pass the plugin object to be available in the field to have plugin params parsed there
 		$pluginObject = $app->get('plg_system_notificationary');
 
 		// Load NA subscribed options from the user profiles table
@@ -109,6 +114,7 @@ class UsersModelUsers extends UsersModelUsersDefault
 		if (empty($rule))
 		{
 			$query = parent::getListQuery();
+
 			return $query;
 		}
 
@@ -119,11 +125,11 @@ class UsersModelUsers extends UsersModelUsersDefault
 		$itemName = 'ausers_' . $paramName . 's';
 
 		$onGroupLevels = $rule->{$groupName};
-		$GroupLevels = $rule->{$groupName . 'selection'};
+		$groupLevels = $rule->{$groupName . 'selection'};
 
-		if (!is_array($GroupLevels))
+		if (!is_array($groupLevels))
 		{
-			$GroupLevels = explode(',', $GroupLevels);
+			$groupLevels = explode(',', $groupLevels);
 		}
 
 		/*
@@ -191,7 +197,7 @@ class UsersModelUsers extends UsersModelUsersDefault
 				// If a filters for a group is set, we just pass the list of groups to be included only
 				if (!empty($groupId) || !empty($groups))
 				{
-					$this->setState('filter.groups', $GroupLevels);
+					$this->setState('filter.groups', $groupLevels);
 					$query = parent::getListQuery();
 				}
 				else
@@ -217,7 +223,7 @@ class UsersModelUsers extends UsersModelUsersDefault
 							)
 						);
 
-						$query->where('mapNA.group_id IN (' . implode(',', $GroupLevels) . ')');
+						$query->where('mapNA.group_id IN (' . implode(',', $groupLevels) . ')');
 				}
 
 				break;
@@ -245,7 +251,7 @@ class UsersModelUsers extends UsersModelUsersDefault
 							)
 						);
 
-						$query->where('mapNA.group_id NOT IN (' . implode(',', $GroupLevels) . ')');
+						$query->where('mapNA.group_id NOT IN (' . implode(',', $groupLevels) . ')');
 
 				break;
 			default :
@@ -255,11 +261,11 @@ class UsersModelUsers extends UsersModelUsersDefault
 
 		// Now we prepare user id's to be included/excluded
 		$onItems = $rule->{$itemName};
-		$UserIds = $rule->{$itemName . 'selection'};
+		$userIds = $rule->{$itemName . 'selection'};
 
-		if (is_string($UserIds))
+		if (is_string($userIds))
 		{
-			$UserIds = array_map('trim', explode(PHP_EOL, $rule->{$itemName . 'selection'}));
+			$userIds = array_map('trim', explode(PHP_EOL, $rule->{$itemName . 'selection'}));
 		}
 
 		$userIdsToInclude = array();
@@ -271,8 +277,9 @@ class UsersModelUsers extends UsersModelUsersDefault
 
 		foreach ($includeEmails as $k => $v)
 		{
-			$user = NotificationAryHelper::getUserByEmail($v);
-			if ($user->id != 0)
+			$user = plgSystemNotificationary::getUserByEmail($v);
+
+			if (0 !== $user->id)
 			{
 				$userIdsToInclude[] = $user->id;
 			}
@@ -280,14 +287,15 @@ class UsersModelUsers extends UsersModelUsersDefault
 
 		foreach ($excludeEmails as $k => $v)
 		{
-			$user = NotificationAryHelper::getUserByEmail($v);
-			if ($user->id != 0)
+			$user = plgSystemNotificationary::getUserByEmail($v);
+
+			if (0 !== $user->id)
 			{
 				$userIdsToExclude[] = $user->id;
 			}
 		}
 
-		/*
+		/**
 		Which items to be notified - all, none, selected
 		Items here means articles or users
 				<field name="ausers_notifyusers" maxrepeatlength="1" type="variablefield" basetype="list" default="0"
@@ -307,12 +315,12 @@ class UsersModelUsers extends UsersModelUsersDefault
 
 			// Selected some ids
 			case '1':
-				$userIdsToInclude = array_merge($UserIds, $userIdsToInclude);
+				$userIdsToInclude = array_merge($userIds, $userIdsToInclude);
 				break;
 
 			// Deselected some ids
 			case '2':
-				$userIdsToExclude = array_merge($UserIds, $userIdsToExclude);
+				$userIdsToExclude = array_merge($userIds, $userIdsToExclude);
 				break;
 			default :
 
@@ -333,7 +341,7 @@ class UsersModelUsers extends UsersModelUsersDefault
 		{
 			$query->join('LEFT', '#__user_profiles AS profileNA ON profileNA.user_id = a.id');
 
-			/*
+			/**
 				<field name="allow_subscribe_default" maxrepeatlength="1" type="gjfields.variablefield" basetype="list"
 						default="1" label="PLG_SYSTEM_NOTIFICATIONARY_FIELD_PER_CATEGORY_SUBSCRIBE_DEFAULT"
 						description="PLG_SYSTEM_NOTIFICATIONARY_FIELD_PER_CATEGORY_SUBSCRIBE_DEFAULT_DESC">
@@ -342,37 +350,39 @@ class UsersModelUsers extends UsersModelUsersDefault
 				</field>
 			*/
 
-			/* Here is the subquery we try to build below
-        SELECT user_id FROM `a8rtd_user_profiles`
-        WHERE
-            user_id NOT IN (
-              ( SELECT user_id FROM `a8rtd_user_profiles`
-                WHERE
-                    profile_key = 'notificationary.57b86a9395123.21'
-                    OR
-                    (
-                        profile_key = 'notificationary.57b86a9395123.all'
-                        AND
-                        profile_value = 'subscribed'
+			/** Here is the subquery we try to build below
+			SELECT user_id FROM `a8rtd_user_profiles`
+			WHERE
+			user_id NOT IN (
+			  ( SELECT user_id FROM `a8rtd_user_profiles`
+				WHERE
+					profile_key = 'notificationary.57b86a9395123.21'
+					OR
+					(
+						profile_key = 'notificationary.57b86a9395123.all'
+						AND
+						profile_value = 'subscribed'
 
-                    )
-               )
+					)
+			   )
 
-            )
-            AND
-            profile_key LIKE 'notificationary.57b86a9395123.%'
-			 **/
-			$db    = $this->getDbo();
+			)
+			AND
+			profile_key LIKE 'notificationary.57b86a9395123.%'
+			*/
+			$db        = $this->getDbo();
 			$subQuery0 = $db->getQuery(true);
 			$subQuery1 = $db->getQuery(true);
 
 			$subQuery0->select('user_id');
 			$subQuery0->from($db->qn('#__user_profiles'));
 			$subQuery0->where($db->qn('profile_key') . '=' . $db->q('notificationary.' . $ruleUniqID . '.' . $categoryID));
-			$subQuery0->orWhere(array(
-				$db->qn('profile_key') . ' = ' . $db->q('notificationary.' . $ruleUniqID . '.all'),
-				$db->qn('profile_value') . ' = ' . $db->q('subscribed')
-			));
+			$subQuery0->orWhere(
+				[
+					$db->qn('profile_key') . ' = ' . $db->q('notificationary.' . $ruleUniqID . '.all'),
+					$db->qn('profile_value') . ' = ' . $db->q('subscribed')
+				]
+			);
 
 			$subQuery1->select('user_id');
 			$subQuery1->from($db->qn('#__user_profiles'));
@@ -380,7 +390,7 @@ class UsersModelUsers extends UsersModelUsersDefault
 			$subQuery1->where($db->qn('profile_key') . ' LIKE ' . $db->q('notificationary.' . $ruleUniqID . '.%'));
 
 			// Is users are subscribed by default
-			if ($rule->allow_subscribe_default == 1)
+			if (1 == $rule->allow_subscribe_default)
 			{
 				$query->where('a.id NOT IN (' . $subQuery1 . ')');
 			}

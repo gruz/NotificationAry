@@ -12,7 +12,7 @@
 // No direct access
 defined('_JEXEC') or die;
 
-$rows = array(
+$rows = [
 	'Context',
 	'Item table class',
 	'View link',
@@ -20,23 +20,24 @@ $rows = array(
 	'Backend edit link',
 	'Category table class',
 	'Category context',
-	);
-$functionsToBeAliased = array(
+	];
+$functionsToBeAliased = [
 	'onContentAfterSave',
 	'onContentBeforeSave',
 	'onContentChangeState',
 	'onContentPrepareForm',
-);
-$contextAliases = array(
-	'contextAliases'
-);
-$otherParams = array(
+];
+$contextAliases = [
+	// JForm object may have different naming, then context, So alias may be needed.
+	'contextAliases' 
+];
+$otherParams = [
 	'RouterClass::RouterMethod',
-);
+];
 $rows = array_merge($rows, $functionsToBeAliased, $contextAliases, $otherParams);
 
-$predefined_context_templates = array(
-	'com_hotspots.marker' => array(
+$predefinedContextTemplates = [
+	'com_hotspots.marker' => [
 		'Title' => 'HotSpots Marker',
 		'Item table class' => 'TableMarker',
 		'View link'=> 'index.php?option=com_hotspots&view=hotspot&id=##ID##',
@@ -49,10 +50,8 @@ $predefined_context_templates = array(
 		'onContentBeforeSave' => 'onBeforeHotspotSave', // Just an alias name of the function which is used by the extension. It's assumed the the extension function uses the same parameters and core joomla plugin event function
 		'contextAliases' => 'com_hotspots.hotspot', // may be comma separated, here it's used when publishing/unpublishing an Marker'
 		'RouterClass::RouterMethod' => 'HotspotsHelperRoute::getHotspotRoute',
-
-
-		),
-	'com_k2.item' => array(
+	],
+	'com_k2.item' => [
 		'Title' => 'K2 Item',
 		'Item table class' => 'TableK2Item',
 		'View link'=> 'index.php?option=com_k2&view=item&layout=item&id=##ID##',
@@ -62,8 +61,8 @@ $predefined_context_templates = array(
 		'Category context' => 'com_k2.category',
 		'onContentChangeState' => 'onFinderChangeState', // Just an alias name of the function which is used by the extension. It's assumed the the extension function uses the same parameters and core joomla plugin event function
 		'RouterClass::RouterMethod' => 'K2HelperRoute::getItemRoute',
-		),
-	'com_dpcalendar.event' => array(
+	],
+	'com_dpcalendar.event' => [
 		'Title' => 'DP Calendar Event',
 		'Item table class' => null,
 		'View link'=> 'index.php?option=com_dpcalendar&view=event&id=##ID##',
@@ -71,8 +70,8 @@ $predefined_context_templates = array(
 		'Backend edit link'=> 'index.php?option=com_dpcalendar&task=event.edit&id=##ID##',
 		//'Category table class' => '',
 		//'RouterClass::RouterMethod' => 'DPCalendarHelperRoute::getEventRoute',
-		),
-	'com_jdownloads.download' => array(
+	],
+	'com_jdownloads.download' => [
 		'Title' => 'JDownloads Download',
 		//~ 'Item table class' => null,
 		'View link'=> 'index.php?option=com_jdownloads&view=download&id=##ID##',
@@ -80,8 +79,8 @@ $predefined_context_templates = array(
 		'Backend edit link'=> 'index.php?option=com_jdownloads&task=download.edit&file_id=##ID##',
 		//'Category table class' => '',
 		//~ 'RouterClass::RouterMethod' => 'DPCalendarHelperRoute::getEventRoute',
-		),
-	'jevents.edit.icalevent' => array(
+	],
+	'jevents.edit.icalevent' => [
 		'Title' => 'JEvent Event',
 		'Item table class' => 'iCalEvent',
 		'View link'=> 'index.php?option=com_jevents&task=icalevent.detail&evid=##ID##',
@@ -90,13 +89,13 @@ $predefined_context_templates = array(
 		'Category table class' => 'CategoriesTableCategory ',
 		'Category context' => 'com_jevents.category',
 		//~ 'RouterClass::RouterMethod' => 'DPCalendarHelperRoute::getEventRoute',
-		//~ 'onContentBeforeSave' => 'jevents/function o1nBeforeSaveEvent (&$vevent, $dryrun) { if ($dryrun) { return; } dump ($vevent,"vevent"); return;return $this->onContentBeforeSave($context = \'jevents.edit.icalevent\', $contentItem = $vevent, $isNew = false);	}',
+		//~ 'onContentBeforeSave' => 'jevents/function o1nBeforeSaveEvent (&$vevent, $dryrun) { if ($dryrun) { return; } dump ($vevent,"vevent"]; return;return $this->onContentBeforeSave($context = \'jevents.edit.icalevent\', $contentItem = $vevent, $isNew = false];	}',
 		'onContentAfterSave' => 'jevents/onAfterSaveEvent.php', // The extension uses own function with own parameters. Have to catch the parametes, rework them to the form accepted by the regural joomla event, and pass to the regular joomla event
 		'onContentBeforeSave' => 'jevents/onBeforeSaveEvent.php', // The extension uses own function with own parameters. Have to catch the parametes, rework them to the form accepted by the regural joomla event, and pass to the regular joomla event
 		'onContentChangeState' => 'jevents/onPublishEvent.php', // The extension uses own function with own parameters. Have to catch the parametes, rework them to the form accepted by the regural joomla event, and pass to the regular joomla event
 		'onContentPrepareForm' => 'jevents/onEventEdit.php', // The extension uses own function with own parameters. Have to catch the parametes, rework them to the form accepted by the regural joomla event, and pass to the regular joomla event
-		),
-	'com_zoo.item' => array(
+	],
+	'com_zoo.item' => [
 		'Title' => 'Zoo item',
 		'Item table class' => 'plugins/system/notificationary/helpers/components/zoo/tables/:ZooTableItem',
 		'View link'=> 'index.php?option=com_zoo&task=item&item_id=##ID##',
@@ -109,8 +108,8 @@ $predefined_context_templates = array(
 		'onContentBeforeSave' => 'zoo/onBeforeSaveZooItem.php', // The extension uses own function with own parameters. Have to catch the parametes, rework them to the form accepted by the regural joomla event, and pass to the regular joomla event
 		// ~ 'onContentChangeState' => 'zoo/onStateChangedZooItem.php', // The extension uses own function with own parameters. Have to catch the parametes, rework them to the form accepted by the regural joomla event, and pass to the regular joomla event
 		'onContentPrepareForm' => 'zoo/onEditZooItem.php', // The extension uses own function with own parameters. Have to catch the parametes, rework them to the form accepted by the regural joomla event, and pass to the regular joomla event
-		),
-	'com_menus.item' => array(
+	],
+	'com_menus.item' => [
 		'Title' => 'Joomla menu',
 		'Item table class' => 'MenusTableMenu',
 		// 'View link'=> 'index.php?option=com_zoo&task=item&item_id=##ID##',
@@ -123,7 +122,23 @@ $predefined_context_templates = array(
 		// 'onContentBeforeSave' => 'zoo/onBeforeSaveZooItem.php', // The extension uses own function with own parameters. Have to catch the parametes, rework them to the form accepted by the regural joomla event, and pass to the regular joomla event
 		// ~ 'onContentChangeState' => 'zoo/onStateChangedZooItem.php', // The extension uses own function with own parameters. Have to catch the parametes, rework them to the form accepted by the regural joomla event, and pass to the regular joomla event
 		// 'onContentPrepareForm' => 'zoo/onEditZooItem.php', // The extension uses own function with own parameters. Have to catch the parametes, rework them to the form accepted by the regural joomla event, and pass to the regular joomla event
-		),
-);
+	],
+	'com_phocadownload.upload' => [
+		'Title' => 'PhocaDownload',
+		'Item table class' => 'TablePhocaDownload',
+		'View link'=> 'index.php?option=com_phocadownload&view=category&download=##ID##:##alias##&id=##catid##&Itemid=-1',
+		// 'Frontend edit link'=> 'index.php?option=com_zoo&view=submission&layout=submission&submission_id=&type_id=article&item_id=##ID##&redirect=itemedit&submission_hash=##SUBMISSION_HASH##',
+		// 'Backend edit link'=> 'index.php?option=com_menus&task=item.edit&id=##ID##',
+		'Category table class' => 'administrator/components/com_phocadownload/libraries/phocadownload/category/:PhocaDownloadCategory',
+		// ~ 'Category context' => 'com_jevents.category',
+		// 'onContentAfterSave' => 'zoo/onAfterSaveZooItem.php', // The extension uses own function with own parameters. Have to catch the parametes, rework them to the form accepted by the regural joomla event, and pass to the regular joomla event
+		// 'onContentBeforeSave' => 'zoo/onBeforeSaveZooItem.php', // The extension uses own function with own parameters. Have to catch the parametes, rework them to the form accepted by the regural joomla event, and pass to the regular joomla event
+		// ~ 'onContentChangeState' => 'zoo/onStateChangedZooItem.php', // The extension uses own function with own parameters. Have to catch the parametes, rework them to the form accepted by the regural joomla event, and pass to the regular joomla event
+		// 'onContentPrepareForm' => 'zoo/onEditZooItem.php', // The extension uses own function with own parameters. Have to catch the parametes, rework them to the form accepted by the regural joomla event, and pass to the regular joomla event
+		// 'RouterClass::RouterMethod' => 'administrator/components/com_phocadownload/libraries/phocadownload/path/:PhocaDownloadRoute::getFileRoute',
+		'contextAliases' => 'phocadownloadfile',
+		
+	],
+];
 
-ksort($predefined_context_templates);
+ksort($predefinedContextTemplates);

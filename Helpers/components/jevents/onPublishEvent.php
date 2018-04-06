@@ -12,14 +12,14 @@
 defined('_JEXEC') or die('Restricted access');
 function onPublishEvent($pks, $state)
 {
-	$jinput = JFactory::getApplication()->input;
+	$jinput = \JFactory::getApplication()->input;
 
 	if ($jinput->get('option', null) == 'com_dump')
 	{
 		return;
 	}
 
-	$this->_prepareParams();
+	$this->prepareParams();
 	$context = 'jevents.edit.icalevent';
 
 	if (!in_array($context, $this->allowedContexts))
@@ -33,9 +33,9 @@ function onPublishEvent($pks, $state)
 	{
 		$dataModel                    = new JEventsDataModel;
 		$contentItem                  = $dataModel->queryModel->getEventById(intval($id), 1, "icaldb");
-		$contentItem->{'modified_by'} = JFactory::getUser()->id;
+		$contentItem->{'modified_by'} = \JFactory::getUser()->id;
 
-		$db    = JFactory::getDbo();
+		$db    = \JFactory::getDbo();
 		$query = $db->getQuery(true)
 			->select($db->quoteName('rawdata'))
 			->from($db->quoteName('#__jevents_vevent'))

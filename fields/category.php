@@ -21,7 +21,7 @@ if (!class_exists('GJFieldsFormField'))
  * @author  Gruz <arygroup@gmail.com>
  * @since   0.0.1
  */
-class NAFormFieldCategory extends JFormFieldList
+class NAFormFieldCategory extends \JFormFieldList
 {
 	/**
 	 * The form field type.
@@ -57,16 +57,16 @@ class NAFormFieldCategory extends JFormFieldList
 	 */
 	public function getOptions()
 	{
-		$items_model = JModelLegacy::getInstance('Users', 'UsersModel');
-		$ruleUniqID = $items_model->getState('filter.naruleUniqID');
+		$itemsModel = \JModelLegacy::getInstance('Users', 'UsersModel');
+		$ruleUniqID = $itemsModel->getState('filter.naruleUniqID');
 
 		if (empty($ruleUniqID))
 		{
-			return;
-			// ~ return parent::getOptions();
+			return [];
 		}
 
-		$app = JFactory::getApplication();
+		$app = \JFactory::getApplication();
+
 		// Pass the plugin object to be available in the field to have plugin params parsed there
 		$pluginObject = $app->get('plg_system_notificationary');
 
@@ -91,24 +91,20 @@ class NAFormFieldCategory extends JFormFieldList
 		}
 
 		// Now $rule contains the needed rule options
-
-		$onGroupLevels = $rule->{$groupName};
-		$GroupLevels = $rule->{$groupName . 'selection'};
-
 		$pluginObject->rule = $rule;
 
 		// Per category subscribe - 1
-		if ($rule->allow_subscribe != 1)
+		if (1 !== $rule->allow_subscribe)
 		{
-			return null;
+			return [];
 		}
 
 		$scope = $rule->{$rule->context_or_contenttype};
 
 		// We load the field just to reuse the getOptions function
-		JForm::addFieldPath(JPATH_LIBRARIES . '/gjfields');
+		\JForm::addFieldPath(JPATH_LIBRARIES . '/gjfields');
 
-		$formfield = JFormHelper::loadFieldType('gjfields.categoryext');
+		$formfield = \JFormHelper::loadFieldType('gjfields.categoryext');
 		$element = simplexml_load_string(
 			'
 				<field name="subscribe_categories" maxrepeatlength="1" type="gjfields.variablefield"
@@ -139,10 +135,10 @@ class NAFormFieldCategory extends JFormFieldList
 		// Iterate categories and and add only needed ones and checked if needed.
 		foreach ($categories as $k => $category)
 		{
-			/*
+			/**
 					<field name="ausers_articlegroups" maxrepeatlength="1"
-					 		type="gjfields.variablefield" basetype="list" default="0"
-					 		label="PLG_SYSTEM_NOTIFICATIONARY_FIELD_CATEGORIES" description="PLG_SYSTEM_NOTIFICATIONARY_FIELD_NOTIFY_ON_DESC">
+							type="gjfields.variablefield" basetype="list" default="0"
+							label="PLG_SYSTEM_NOTIFICATIONARY_FIELD_CATEGORIES" description="PLG_SYSTEM_NOTIFICATIONARY_FIELD_NOTIFY_ON_DESC">
 						<option value="1">PLG_SYSTEM_NOTIFICATIONARY_FIELD_SELECTION</option>
 						<option value="2">PLG_SYSTEM_NOTIFICATIONARY_FIELD_EXCLUDE_SELECTION</option>
 						<option value="0">JALL</option>

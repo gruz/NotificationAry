@@ -125,7 +125,34 @@ class GJFieldsFormFieldCategoryext extends JFormFieldCategory
 						);
 					}
 					break;
+				case 'com_phocadownload':
+					if (! class_exists('\PhocaDownloadCategory'))
+					{
+						require JPATH_ADMINISTRATOR . '/components/com_phocadownload/libraries/phocadownload/category/category.php';
+					}
+
+					$db = \JFactory::getDBO();
+
+					// Build the list of categories
+					$query = 'SELECT a.title AS text, a.id AS value, a.parent_id as parentid'
+					. ' FROM #__phocadownload_categories AS a'
+					. ' WHERE a.published = 1'
+					. ' ORDER BY a.ordering';
+					$db->setQuery($query);
+					$data = $db->loadObjectList();
+
+					$catId	= -1;
+
+					$tree = array();
+					$text = '';
+					$tree = \PhocaDownloadCategory::CategoryTreeOption($data, $tree, 0, $text, $catId);
+
+					$options = $tree;
+
+					break;
+
 				case 'com_jdownloads':
+
 					$file = JPATH_ADMINISTRATOR . '/components/' . $extension . '/models/fields/jdcategoryselect.php';
 
 					if (!file_exists($file))

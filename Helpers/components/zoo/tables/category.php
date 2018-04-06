@@ -14,7 +14,7 @@ defined('_JEXEC') or die;
  *
  * @since  1.6
  */
-class ZooTableCategory extends JTable
+class ZooTableCategory extends \JTable
 {
 	/**
 	 * Constructor

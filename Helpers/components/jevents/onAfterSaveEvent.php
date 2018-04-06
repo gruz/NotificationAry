@@ -20,7 +20,7 @@ static function onAfterSaveEvent(&$vevent, $dryrun)
 
 	$contentItem = clone $vevent;
 	$context     = 'jevents.edit.icalevent';
-	$this->_prepareParams();
+	$this->prepareParams();
 
 	$rules = $this->_leaveOnlyRulesForCurrentItem($context, $contentItem, 'showSwitch');
 
@@ -31,7 +31,7 @@ static function onAfterSaveEvent(&$vevent, $dryrun)
 		if (!empty($vevent->data['custom_runnotificationary']))
 		{
 			$jform['params']['runnotificationary'] = $vevent->data['custom_runnotificationary'];
-			$jinput                                = JFactory::getApplication()->input;
+			$jinput                                = \JFactory::getApplication()->input;
 			$jform                                 = $jinput->set('jform', $jform);
 			$jform                                 = $jinput->get('jform', null, null);
 		}
@@ -47,7 +47,7 @@ static function onAfterSaveEvent(&$vevent, $dryrun)
 		$contentItem->fulltext = $contentItem->data['DESCRIPTION'];
 	}
 
-	$jinput = JFactory::getApplication()->input;
+	$jinput = \JFactory::getApplication()->input;
 	$evid   = $jinput->post->get('evid');
 	$isNew  = true;
 
