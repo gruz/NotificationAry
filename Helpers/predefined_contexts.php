@@ -126,7 +126,7 @@ $predefinedContextTemplates = [
 	'com_phocadownload.upload' => [
 		'Title' => 'PhocaDownload',
 		'Item table class' => 'TablePhocaDownload',
-		'View link'=> 'index.php?option=com_phocadownload&view=category&download=##ID##:##alias##&id=##catid##',
+		'View link'=> 'index.php?option=com_phocadownload&view=category&download=##ID##:##alias##&id=##catid##&Itemid=-1',
 		// 'Frontend edit link'=> 'index.php?option=com_zoo&view=submission&layout=submission&submission_id=&type_id=article&item_id=##ID##&redirect=itemedit&submission_hash=##SUBMISSION_HASH##',
 		// 'Backend edit link'=> 'index.php?option=com_menus&task=item.edit&id=##ID##',
 		'Category table class' => 'administrator/components/com_phocadownload/libraries/phocadownload/category/:PhocaDownloadCategory',
@@ -135,7 +135,7 @@ $predefinedContextTemplates = [
 		// 'onContentBeforeSave' => 'zoo/onBeforeSaveZooItem.php', // The extension uses own function with own parameters. Have to catch the parametes, rework them to the form accepted by the regural joomla event, and pass to the regular joomla event
 		// ~ 'onContentChangeState' => 'zoo/onStateChangedZooItem.php', // The extension uses own function with own parameters. Have to catch the parametes, rework them to the form accepted by the regural joomla event, and pass to the regular joomla event
 		// 'onContentPrepareForm' => 'zoo/onEditZooItem.php', // The extension uses own function with own parameters. Have to catch the parametes, rework them to the form accepted by the regural joomla event, and pass to the regular joomla event
-		'RouterClass::RouterMethod' => 'PhocaDownloadRoute::getFileRoute',
+		// 'RouterClass::RouterMethod' => 'administrator/components/com_phocadownload/libraries/phocadownload/path/:PhocaDownloadRoute::getFileRoute',
 		'contextAliases' => 'phocadownloadfile',
 		
 	],
