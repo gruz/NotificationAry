@@ -277,6 +277,55 @@ trait Main
 			return;
 		}
 
+		/** 2018-04-07 02:31:45
+		 * There was a try to autooverride only if manually allowed. But this makes thing too complicated.
+		 * So I need not only add an overrider class, but also to add some logic to load it here. 
+		 * To avoid it we comment the code, but this will run overrides at any page loaded.
+		 * 
+		 * The array below was written as an example, but never implemented as logic
+		 * 
+		$allowedQueries = [
+			'admin' => [
+				[
+					'option' => 'com_users',
+					'view' => 'users',
+				]
+			],
+			'site' => [
+				[
+					'option' => 'com_phocadownloads',
+				]
+			]
+		];
+
+		if (\JFactory::getApplication()->isAdmin())
+		{
+			$ss = $allowedQueries['admin'];
+		} 
+		else
+		{
+			$ss = $allowedQueries['site'];				
+		}
+
+		$allowed = true;
+		foreach ($ss as $key => $value) 
+		{
+			
+			if (!isset($parsed[$key]) 
+			{
+				$allowed = false;
+				return;
+
+			}
+				&& $parsed['option'] == 'com_users')
+		}
+		
+		if (!$allowed) 
+		{
+			return;
+		}
+
+
 		// Add compatibility with Ajax Module Loader
 		if (isset($parsed['option']) && $parsed['option'] == 'com_users'
 			&&	isset($parsed['view']) && $parsed['view'] == 'users'
@@ -289,6 +338,8 @@ trait Main
 			// Do not override - not our case
 			return;
 		}
+		*/
+
 
 		jimport('joomla.filesystem.file');
 		jimport('joomla.filesystem.folder');
@@ -309,35 +360,6 @@ trait Main
 		if (\JFactory::getApplication()->isAdmin())
 		{
 			$scope = 'administrator';
-		}
-
-		// Do not override wrong scope for components
-		foreach ($filesToOverride as $fileToOverride => $overriderFolder)
-		{
-			if (\JFactory::getApplication()->isAdmin())
-			{
-				if (strpos($fileToOverride, '/com_') === 0)
-				{
-					unset($filesToOverride[$fileToOverride]);
-				}
-
-				if (strpos($fileToOverride, '/components/com_') === 0)
-				{
-					unset($filesToOverride[$fileToOverride]);
-				}
-			}
-			else
-			{
-				if (strpos($fileToOverride, '/administrator/com_') === 0)
-				{
-					unset($filesToOverride[$fileToOverride]);
-				}
-
-				if (strpos($fileToOverride, '/administrator/components/com_') === 0)
-				{
-					unset($filesToOverride[$fileToOverride]);
-				}
-			}
 		}
 
 		$overridden = false;
@@ -414,6 +436,9 @@ trait Main
 
 			// Replace original class name by default
 			$bufferContent = str_replace($originalClass, $replaceClass, $bufferFile);
+			$bufferContent = trim($bufferContent);
+			$bufferContent = preg_replace('/.*(\?>)$/', '', $bufferContent);		
+
 
 			// Replace JPATH_COMPONENT constants if found, because we are loading before define these constants
 			if (count($definesSource[0]))
