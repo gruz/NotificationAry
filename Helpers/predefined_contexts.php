@@ -126,7 +126,7 @@ $predefinedContextTemplates = [
 	'com_phocadownload.upload' => [
 		'Title' => 'PhocaDownload',
 		'Item table class' => 'TablePhocaDownload',
-		// 'View link'=> 'index.php?option=com_zoo&task=item&item_id=##ID##',
+		'View link'=> 'index.php?option=com_phocadownload&view=category&download=##ID##:##alias##&id=##catid##',
 		// 'Frontend edit link'=> 'index.php?option=com_zoo&view=submission&layout=submission&submission_id=&type_id=article&item_id=##ID##&redirect=itemedit&submission_hash=##SUBMISSION_HASH##',
 		// 'Backend edit link'=> 'index.php?option=com_menus&task=item.edit&id=##ID##',
 		'Category table class' => 'administrator/components/com_phocadownload/libraries/phocadownload/category/:PhocaDownloadCategory',

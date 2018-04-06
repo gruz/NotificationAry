@@ -78,7 +78,7 @@ trait BuildLinks
 							break;
 						*/
 						default :
-							if ($this->rule->extensionInfo['Frontend edit link'] === false)
+							if (false === $this->rule->extensionInfo['Frontend edit link'])
 							{
 								$link = false;
 							}
@@ -89,7 +89,7 @@ trait BuildLinks
 							}
 							else
 							{
-								$link = str_replace('##ID##', $this->contentItem->id, $this->rule->extensionInfo['Frontend edit link']);
+								$link = $this->replaceLinkPlaceHolders($this->rule->extensionInfo['Frontend edit link']);
 
 								/** For ZOO frontend edit link
 									* Check /administrator/components/com_zoo/Helpers/route.php line 394
@@ -123,7 +123,7 @@ trait BuildLinks
 							$link .= '&Itemid=' . $this->link_itemid[$zone]['view'][$lang];
 						}
 
-						$link = $this->_makeSEF($link);
+						$link = $this->makeSEF($link);
 					}
 				}
 				elseif ($zone == 'admin')
@@ -153,7 +153,7 @@ trait BuildLinks
 							}
 							else
 							{
-								$link = str_replace('##ID##', $this->contentItem->id, $this->rule->extensionInfo['Backend edit link']);
+								$link = $this->replaceLinkPlaceHolders($this->rule->extensionInfo['Backend edit link']);
 							}
 							break;
 					}
@@ -184,7 +184,7 @@ trait BuildLinks
 						}
 						elseif (!empty($extension_info['View link']))
 						{
-							$link = str_replace('##ID##', $this->contentItem->id, $extension_info['View link']);
+							$link = $this->replaceLinkPlaceHolders($this->rule->extensionInfo['View link']);
 
 							// Need to find Itemid at backend
 							if ($app->isAdmin() && strpos($link, 'Itemid=') === false)
@@ -217,7 +217,7 @@ trait BuildLinks
 							}
 							else
 							{
-								$link = str_replace('##ID##', $this->contentItem->id, $this->rule->extensionInfo['View link']);
+								$link = $this->replaceLinkPlaceHolders($this->rule->extensionInfo['View link']);
 							}
 						}
 						else
@@ -324,7 +324,7 @@ trait BuildLinks
 						$link = \JURI::ROOT() . \JRoute::_($link);
 					}
 					else {
-						$link = $this->_makeSEF($link);
+						$link = $this->makeSEF($link);
 					}
 				}
 
@@ -350,7 +350,7 @@ trait BuildLinks
 	 *
 	 * @return   string  SEF joomla link if is possible or needed to be SEF
 	 */
-	private function _makeSEF($link)
+	private function makeSEF($link)
 	{
 		$conf = \JFactory::getConfig();
 
@@ -459,6 +459,22 @@ trait BuildLinks
 				$submit_url = \JRoute::_('index.php?Itemid=' . $jinput->get('Itemid', null));
 				$submit_url = \JPath::clean($live_site_host . $submit_url);
 				$link = str_replace($submit_url, $live_site_host, $link);
+			}
+		}
+
+		return $link;
+	}
+
+	private function replaceLinkPlaceHolders($link) {
+		$obj = $this->contentItem;
+
+		$link = str_replace('##ID##', $obj->id, $link);
+
+		preg_match_all('/##([a-zA-Z0-9\-_]*)##/Ui', $link, $matches);
+
+		foreach ($matches[1] as $key => $property) {
+			if (isset($obj->$property)) {
+				$link = str_replace($matches[0][$key], (string) $obj->$property, $link);
 			}
 		}
 

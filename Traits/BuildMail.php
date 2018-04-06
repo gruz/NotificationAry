@@ -1023,6 +1023,34 @@ trait BuildMail
 
 				return;
 				break;
+			case 'phocadownload':
+				if (! class_exists('PhocaDownloadCategory'))
+				{
+					require JPATH_ADMINISTRATOR . '/components/com_phocadownload/libraries/phocadownload/category/category.php';
+				}
+
+				$db = \JFactory::getDBO();
+
+				// Build the list of categories
+				$query = 'SELECT a.title AS text, a.id AS value, a.parent_id as parentid'
+				. ' FROM #__phocadownload_categories AS a'
+				. ' WHERE a.published = 1'
+				. ' ORDER BY a.ordering';
+				$db->setQuery($query);
+				$data = $db->loadObjectList();
+
+				$tree = array();
+				$text = '';
+				$tree = \PhocaDownloadCategory::CategoryTreeOption($data, $tree, 0, $text, $catid);
+
+				$this->categoryTree = [];
+
+				foreach ($tree as $key => $obj) {
+					$this->categoryTree[] = $obj->text;
+				}
+				
+				return;
+				break;
 			default :
 				if (isset($this->rule->extensionInfo) && !empty($this->rule->extensionInfo['Category table class'])) {
 
