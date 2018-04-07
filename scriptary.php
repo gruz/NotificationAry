@@ -252,32 +252,35 @@ class ScriptAry
 		$plugin = JPluginHelper::getPlugin($plg_type, $plg_name);
 		$pluginIsPublished = empty($plugin);
 		$success = true;
-file_put_contents(microtime(), $pluginIsPublished . ' | ' . $state);
-		if (($pluginIsPublished && -1 === $state) || (!$pluginIsPublished && 1 === $state) )
-		{
-			// Get the smallest order value
-			$db = jfactory::getdbo();
 
-			// Publish plugin
-			$query = $db->getquery(true);
-
-			// Fields to update.
-			$fields = array(
-				$db->quotename('enabled') . '=' . (int) $db->quote($state)
-			);
-
-			// Conditions for which records should be updated.
-			$conditions = array(
-				$db->quotename('type') . '=' . $db->quote('plugin'),
-				$db->quotename('folder') . '=' . $db->quote($plg_type),
-				$db->quotename('element') . '=' . $db->quote($plg_name),
-			);
-			$query->update($db->quotename('#__extensions'))->set($fields)->where($conditions);
-			$db->setquery($query);
-			$result = $db->execute();
-			$getaffectedrows = $db->getAffectedRows();
-			$success = $getaffectedrows;
+		if (($pluginIsPublished && 1 === $state) || ($pluginIsPublished && 1 !== $state))
+		{ 
+			return;
 		}
+
+		// Get the smallest order value
+		$db = jfactory::getdbo();
+
+		// Publish plugin
+		$query = $db->getquery(true);
+
+		// Fields to update.
+		$fields = array(
+			$db->quotename('enabled') . '=' . (int) $db->quote($state)
+		);
+
+		// Conditions for which records should be updated.
+		$conditions = array(
+			$db->quotename('type') . '=' . $db->quote('plugin'),
+			$db->quotename('folder') . '=' . $db->quote($plg_type),
+			$db->quotename('element') . '=' . $db->quote($plg_name),
+		);
+		$query->update($db->quotename('#__extensions'))->set($fields)->where($conditions);
+		$db->setquery($query);
+		$result = $db->execute();
+		$getaffectedrows = $db->getAffectedRows();
+		$success = $getaffectedrows;
+
 
 		if (empty($plg_full_name))
 		{
