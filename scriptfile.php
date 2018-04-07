@@ -68,6 +68,8 @@ class plgSystemNotificationaryInstallerScript extends ScriptAry
 			return false;
 		}
 
+		$this->_publishPlugin($this->ext_name, $this->ext_group, $this->ext_full_name, 0);
+		
 		$db = \JFactory::getDbo();
 
 		// Remove NAS langpacks
@@ -185,7 +187,7 @@ class plgSystemNotificationaryInstallerScript extends ScriptAry
 	 *
 	 * @return void
 	 */
-	function postflight( $type, $parent )
+	function postflight( $type, $parent, $publishPlugin = true )
 	{
 		$manifest = $parent->getParent()->getManifest();
 
