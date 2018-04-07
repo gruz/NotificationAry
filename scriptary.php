@@ -262,7 +262,7 @@ class ScriptAry
 
 		if (($pluginIsPublished && 1 === $state) || (!$pluginIsPublished && 1 !== $state))
 		{ 
-			//return;
+			return;
 		}
 
 

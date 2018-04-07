@@ -68,7 +68,10 @@ class plgSystemNotificationaryInstallerScript extends ScriptAry
 			return false;
 		}
 
-		$this->_publishPlugin($this->ext_name, $this->ext_group, $this->ext_full_name, 0);
+		if ('update' === $type) 
+		{
+			$this->_publishPlugin($this->ext_name, $this->ext_group, $this->ext_full_name, $state = 0);
+		}
 		
 		$db = \JFactory::getDbo();
 
@@ -292,6 +295,11 @@ class plgSystemNotificationaryInstallerScript extends ScriptAry
 		}
 
 		parent::postflight($type, $parent, $publishPlugin = true);
+
+		if ('update' === $type) 
+		{
+			$this->_publishPlugin($this->ext_name, $this->ext_group, $this->ext_full_name);
+		}
 
 	}
 
