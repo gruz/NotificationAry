@@ -250,7 +250,15 @@ class ScriptAry
 	public function _publishPlugin($plg_name, $plg_type, $plg_full_name = null, $state = 1)
 	{
 		$plugin = JPluginHelper::getPlugin($plg_type, $plg_name);
-		$pluginIsPublished = !empty($plugin);
+		$pluginIsInstalled = !empty($plugin);
+		
+		if (!$pluginIsInstalled) 
+		{
+			return;
+		}
+		
+		$pluginIsPublished = JPluginHelper::isEnabled($plg_type, $plg_name);
+
 		$success = true;
 
 		static $first = 'first';
@@ -307,7 +315,7 @@ class ScriptAry
 		}
 		else
 		{
-			$msg .= '<b style="color:red">' . JText::_('error') . '</b>';
+			// $msg .= '<b style="color:red">' . JText::_('error') . '</b>';
 		}
 
 		$this->messages[] = $msg;
