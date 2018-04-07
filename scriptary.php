@@ -282,15 +282,19 @@ class ScriptAry
 			$plg_full_name = $plg_name;
 		}
 
-		$msg = jtext::_('jglobal_fieldset_publishing') . ': <b style="color:blue;"> ' . JText::_($plg_full_name) . '</b> ... ';
+		$msg = JText::_('jglobal_fieldset_publishing') . ': <b style="color:blue;"> ' . JText::_($plg_full_name) . '</b> ... ';
 
-		if ($success)
+		if ($success && $state)
 		{
-			$msg .= '<b style="color:green">' . jtext::_('jpublished') . '</b>';
+			$msg .= '<b style="color:green">' . JText::_('JPUBLISHED') . '</b>';
+		}
+		if ($success && !$state)
+		{
+			$msg .= '<b style="color:green">' . JText::_('JUNPUBLISHED') . '</b>';
 		}
 		else
 		{
-			$msg .= '<b style="color:red">' . jtext::_('error') . '</b>';
+			$msg .= '<b style="color:red">' . JText::_('error') . '</b>';
 		}
 
 		$this->messages[] = $msg;
