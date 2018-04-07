@@ -257,7 +257,7 @@ class ScriptAry
 		{ 
 			return;
 		}
-file_put_contents(microtime(), $pluginIsPublished . '"' . $state);
+file_put_contents(uniqid() . '.txt', $pluginIsPublished . '|' . $state);
 		// Get the smallest order value
 		$db = jfactory::getdbo();
 
