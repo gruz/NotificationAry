@@ -253,7 +253,7 @@ class ScriptAry
 		$pluginIsPublished = empty($plugin);
 		$success = true;
 
-		if (($pluginIsPublished && 1 === $state) || ($pluginIsPublished && 1 !== $state))
+		if (($pluginIsPublished && 1 === $state) || (!$pluginIsPublished && 1 !== $state))
 		{ 
 			return;
 		}
