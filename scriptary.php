@@ -261,7 +261,7 @@ class ScriptAry
 
 			// Fields to update.
 			$fields = array(
-				$db->quotename('enabled') . '=' . $db->quote($state)
+				$db->quotename('enabled') . '=' . (int) $db->quote($state)
 			);
 
 			// Conditions for which records should be updated.
@@ -284,11 +284,11 @@ class ScriptAry
 
 		$msg = JText::_('jglobal_fieldset_publishing') . ': <b style="color:blue;"> ' . JText::_($plg_full_name) . '</b> ... ';
 
-		if ($success && $state)
+		if ($success && 1 === $state)
 		{
 			$msg .= '<b style="color:green">' . JText::_('JPUBLISHED') . '</b>';
 		}
-		if ($success && !$state)
+		if ($success && 1 !== $state)
 		{
 			$msg .= '<b style="color:green">' . JText::_('JUNPUBLISHED') . '</b>';
 		}
