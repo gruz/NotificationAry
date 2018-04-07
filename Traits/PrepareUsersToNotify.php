@@ -662,25 +662,32 @@ trait PrepareUsersToNotify
 	 */
 	static public function getUserByEmail ($email)
 	{
-		$db = \JFactory::getDbo();
+        if (empty($email)) 
+        {
+			$user = \JFactory::getUser(0);
+			$user->email = $email;
+        }
+        
+        $db = \JFactory::getDbo();
 
-		$query = $db->getQuery(true)
-			->select($db->quoteName('id'))
-			->from($db->quoteName('#__users'))
-			->where($db->quoteName('email') . ' = ' . $db->quote($email));
+        $query = $db->getQuery(true)
+            ->select($db->quoteName('id'))
+            ->from($db->quoteName('#__users'))
+            ->where($db->quoteName('email') . ' = ' . $db->quote($email));
 
-		$db->setQuery($query, 0, 1);
+        $db->setQuery($query, 0, 1);
 
-		$result = $db->loadResult();
+        $result = $db->loadResult();
 
 		if (empty($result))
 		{
+		
 			$user = \JFactory::getUser(0);
 			$user->email = $email;
 		}
 		else
 		{
-			$user = \JFactory::getUser($db->loadResult());
+			$user = \JFactory::getUser($result);
 		}
 
 		return $user;

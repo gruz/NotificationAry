@@ -19,7 +19,7 @@ class TablePhocaDownload extends TablePhocaDownloadDefault
 
 		if ($result) 
 		{
-			$isNew = empty($this->id) ? false : true;
+			$isNew = empty($this->id) ? true : false;
 			JPluginHelper::importPlugin( 'system' );
 			$dispatcher = JEventDispatcher::getInstance();
 			$dispatcher->trigger( 'onContentBeforSave', array('com_phocadownload.upload', $this, $isNew ) );
@@ -30,7 +30,7 @@ class TablePhocaDownload extends TablePhocaDownloadDefault
 
 	public function store($updateNulls = false)
 	{
-		$isNew = empty($this->id) ? false : true;
+		$isNew = empty($this->id) ? true : false;
 
 		$result = parent::store($updateNulls);
 
