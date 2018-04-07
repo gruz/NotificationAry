@@ -252,7 +252,7 @@ class ScriptAry
 		$plugin = JPluginHelper::getPlugin($plg_type, $plg_name);
 		$pluginIsPublished = empty($plugin);
 		$success = true;
-
+file_put_contents(microtime(), $pluginIsPublished . ' | ' . $state);
 		if (($pluginIsPublished && -1 === $state) || (!$pluginIsPublished && 1 === $state) )
 		{
 			// Get the smallest order value
