@@ -242,55 +242,80 @@ class ScriptAry
 	 *
 	 * @param   string  $plg_name       Plugin name, like notificationary
 	 * @param   string  $plg_type       Plugin group, like system
-	 * @param   string  $plg_full_name  Plugin full name, like olg_system_notificationary
+	 * @param   string  $plg_full_name  Plugin full name, like plg_system_notificationary
+	 * @param   bool    $state          Publish or not
 	 *
 	 * @return   void
 	 */
-	private function _publishPlugin($plg_name,$plg_type, $plg_full_name = null)
+	public function _publishPlugin($plg_name, $plg_type, $plg_full_name = null, $state = 1)
 	{
 		$plugin = JPluginHelper::getPlugin($plg_type, $plg_name);
+		$pluginIsInstalled = !empty($plugin);
+		
+		if (!$pluginIsInstalled) 
+		{
+			return;
+		}
+		
+		$pluginIsPublished = JPluginHelper::isEnabled($plg_type, $plg_name);
+
 		$success = true;
 
-		if (empty($plugin))
-		{
-			// Get the smallest order value
-			$db = jfactory::getdbo();
+		static $first = 'first';
+		
+		file_put_contents('plugin.txt', print_r($plugin, true));
+		file_put_contents($first . '.txt', $pluginIsPublished . '|' . $state);
+		file_put_contents(uniqid() . '.txt', $pluginIsPublished . '|' . $state);
+		$first = 'second';
 
-			// Publish plugin
-			$query = $db->getquery(true);
-
-			// Fields to update.
-			$fields = array(
-				$db->quotename('enabled') . '=' . $db->quote('1')
-			);
-
-			// Conditions for which records should be updated.
-			$conditions = array(
-				$db->quotename('type') . '=' . $db->quote('plugin'),
-				$db->quotename('folder') . '=' . $db->quote($plg_type),
-				$db->quotename('element') . '=' . $db->quote($plg_name),
-			);
-			$query->update($db->quotename('#__extensions'))->set($fields)->where($conditions);
-			$db->setquery($query);
-			$result = $db->execute();
-			$getaffectedrows = $db->getAffectedRows();
-			$success = $getaffectedrows;
+		if (($pluginIsPublished && 1 === $state) || (!$pluginIsPublished && 1 !== $state))
+		{ 
+			return;
 		}
+
+
+		// Get the smallest order value
+		$db = jfactory::getdbo();
+
+		// Publish plugin
+		$query = $db->getquery(true);
+
+		// Fields to update.
+		$fields = array(
+			$db->quotename('enabled') . '=' . (int) $db->quote($state)
+		);
+
+		// Conditions for which records should be updated.
+		$conditions = array(
+			$db->quotename('type') . '=' . $db->quote('plugin'),
+			$db->quotename('folder') . '=' . $db->quote($plg_type),
+			$db->quotename('element') . '=' . $db->quote($plg_name),
+		);
+		$query->update($db->quotename('#__extensions'))->set($fields)->where($conditions);
+		$db->setquery($query);
+		$result = $db->execute();
+		$getaffectedrows = $db->getAffectedRows();
+		$success = $getaffectedrows;
+
 
 		if (empty($plg_full_name))
 		{
 			$plg_full_name = $plg_name;
 		}
 
-		$msg = jtext::_('jglobal_fieldset_publishing') . ': <b style="color:blue;"> ' . JText::_($plg_full_name) . '</b> ... ';
+		$msg = JText::_('jglobal_fieldset_publishing') . ': <b style="color:blue;"> ' . JText::_($plg_full_name) . '</b> ... ';
 
-		if ($success)
+		if ($success && 1 === $state)
 		{
-			$msg .= '<b style="color:green">' . jtext::_('jpublished') . '</b>';
+			$msg .= '<b style="color:green">' . JText::_('JPUBLISHED') . '</b>';
+		}
+		if ($success && 1 !== $state)
+		{
+			$msg .= '<b style="color:green">' . JText::_('JUNPUBLISHED') . '</b>';
 		}
 		else
 		{
-			$msg .= '<b style="color:red">' . jtext::_('error') . '</b>';
+			// $msg .= '<b style="color:red">' . JText::_('error') . '</b>';
 		}
 
 		$this->messages[] = $msg;

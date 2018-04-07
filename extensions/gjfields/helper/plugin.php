@@ -19,7 +19,7 @@ defined('_JEXEC') or die('Restricted access');
  */
 class JPluginGJFields extends JPlugin
 {
-	static public $debug;
+	static public $debug = false;
 
 	static public $vars;
 
