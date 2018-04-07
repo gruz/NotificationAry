@@ -253,11 +253,17 @@ class ScriptAry
 		$pluginIsPublished = empty($plugin);
 		$success = true;
 
+		static $first = 'first';
+		
+		file_put_contents($first . '.txt', $pluginIsPublished . '|' . $state);
+		$first = 'second';
+
 		if (($pluginIsPublished && 1 === $state) || (!$pluginIsPublished && 1 !== $state))
 		{ 
 			return;
 		}
-file_put_contents(uniqid() . '.txt', $pluginIsPublished . '|' . $state);
+
+
 		// Get the smallest order value
 		$db = jfactory::getdbo();
 
