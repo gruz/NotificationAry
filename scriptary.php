@@ -242,16 +242,18 @@ class ScriptAry
 	 *
 	 * @param   string  $plg_name       Plugin name, like notificationary
 	 * @param   string  $plg_type       Plugin group, like system
-	 * @param   string  $plg_full_name  Plugin full name, like olg_system_notificationary
+	 * @param   string  $plg_full_name  Plugin full name, like plg_system_notificationary
+	 * @param   bool    $state          Publish or not
 	 *
 	 * @return   void
 	 */
 	public function _publishPlugin($plg_name, $plg_type, $plg_full_name = null, $state = 1)
 	{
 		$plugin = JPluginHelper::getPlugin($plg_type, $plg_name);
+		$pluginIsPublished = empty($plugin);
 		$success = true;
 
-		if (empty($plugin) || ! $state )
+		if (($pluginIsPublished && -1 === $state) || (!$pluginIsPublished && 1 === $state) )
 		{
 			// Get the smallest order value
 			$db = jfactory::getdbo();
