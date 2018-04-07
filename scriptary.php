@@ -246,12 +246,12 @@ class ScriptAry
 	 *
 	 * @return   void
 	 */
-	public function _publishPlugin($plg_name,$plg_type, $plg_full_name = null, $state = 1)
+	public function _publishPlugin($plg_name, $plg_type, $plg_full_name = null, $state = 1)
 	{
 		$plugin = JPluginHelper::getPlugin($plg_type, $plg_name);
 		$success = true;
 
-		if (empty($plugin))
+		if (empty($plugin) || ! $state )
 		{
 			// Get the smallest order value
 			$db = jfactory::getdbo();
