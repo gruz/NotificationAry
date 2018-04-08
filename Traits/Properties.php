@@ -24,13 +24,6 @@ trait Properties {
 	public static $componentBridgesFolder = __DIR__ . '/../Helpers/components/';
 
 	/**
-	 * Enable this variable to load local non-minified JS and CSS
-	 *
-	 * @var boolean
-	 */
-	static public $debug = false;
-
-	/**
 	 * Stores previous content object state
 	 *
 	 * @var string

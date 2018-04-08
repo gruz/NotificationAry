@@ -68,6 +68,11 @@ class plgSystemNotificationaryInstallerScript extends ScriptAry
 			return false;
 		}
 
+		if ('update' === $type) 
+		{
+			$this->_publishPlugin($this->ext_name, $this->ext_group, $this->ext_full_name, $state = 0);
+		}
+		
 		$db = \JFactory::getDbo();
 
 		// Remove NAS langpacks
@@ -185,7 +190,7 @@ class plgSystemNotificationaryInstallerScript extends ScriptAry
 	 *
 	 * @return void
 	 */
-	function postflight( $type, $parent )
+	function postflight( $type, $parent, $publishPlugin = true )
 	{
 		$manifest = $parent->getParent()->getManifest();
 
@@ -290,6 +295,11 @@ class plgSystemNotificationaryInstallerScript extends ScriptAry
 		}
 
 		parent::postflight($type, $parent, $publishPlugin = true);
+
+		if ('update' === $type) 
+		{
+			$this->_publishPlugin($this->ext_name, $this->ext_group, $this->ext_full_name);
+		}
 
 	}
 

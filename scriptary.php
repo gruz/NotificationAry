@@ -113,7 +113,7 @@ class ScriptAry
 				$msg = \JText::sprintf("You don't have the minimum Joomla version requirement of J%s", $this->minimumJoomla);
 			}
 
-			JLog::add($msg, JLog::WARNING, 'jerror');
+			\JLog::add($msg, \JLog::WARNING, 'jerror');
 
 			return false;
 		}

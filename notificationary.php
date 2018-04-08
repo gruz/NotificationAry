@@ -176,7 +176,7 @@ else
 		 */
 		public function onContentChangeState($context, $pks, $value)
 		{
-			// ~ dumpMessage('onContentChangeState');
+			// dumpMessage('onContentChangeState');
 			$jinput = \JFactory::getApplication()->input;
 
 			if ($jinput->get('option', null) == 'com_dump')

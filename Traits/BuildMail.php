@@ -346,7 +346,7 @@ trait BuildMail
 			if ($IncludeCreatedDate && !empty($this->contentItem->created) )
 			{
 				$place_holders_body['%CREATED DATE%']  = "<b>" . \JText::_('PLG_SYSTEM_NOTIFICATIONARY_CREATED') . '</b>: '
-					. slef::getCorrectDate($this->contentItem->created);
+					. self::getCorrectDate($this->contentItem->created);
 			}
 
 			if ($IncludeModifiedDate)

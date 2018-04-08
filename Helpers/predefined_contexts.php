@@ -136,7 +136,7 @@ $predefinedContextTemplates = [
 		// ~ 'onContentChangeState' => 'zoo/onStateChangedZooItem.php', // The extension uses own function with own parameters. Have to catch the parametes, rework them to the form accepted by the regural joomla event, and pass to the regular joomla event
 		// 'onContentPrepareForm' => 'zoo/onEditZooItem.php', // The extension uses own function with own parameters. Have to catch the parametes, rework them to the form accepted by the regural joomla event, and pass to the regular joomla event
 		// 'RouterClass::RouterMethod' => 'administrator/components/com_phocadownload/libraries/phocadownload/path/:PhocaDownloadRoute::getFileRoute',
-		'contextAliases' => 'phocadownloadfile',
+		'contextAliases' => 'phocadownloadfile,com_phocadownload.phocadownloadfile',
 		
 	],
 ];

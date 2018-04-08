@@ -377,7 +377,7 @@ trait Main
 			}
 			else
 			{
-				JLog::add("Can see an overrider file ($overriderFolder $fileToOverride) , but cannot find what to override", JLog::INFO, 'notificationary');
+				\JLog::add("Can see an overrider file ($overriderFolder $fileToOverride) , but cannot find what to override", \JLog::INFO, 'notificationary');
 
 				continue;
 			}
