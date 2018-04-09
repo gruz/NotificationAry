@@ -14,15 +14,27 @@ if (!class_exists('JPluginGJFields'))
 	include 'helper/plugin.php';
 }
 
+/** ##mygruz20180410015059 { Add Fabrik compatibility
+ *  Fabrik overrides basic joomla Joomla\CMS\Form\FormField class with own.
+ * GJFields, if loaded before fabrik, loads the core class.
+ * And then Fabrik tries to load own, causing redeclare fatal error.
+ * The code below is copied from libraries/gjfields/helper/plugin.php
+ */
+$app     = JFactory::getApplication();
+$version = new JVersion;
+$base    = 'components.com_fabrik.classes.' . str_replace('.', '', $version->RELEASE);
+$loaded = JLoader::import($base . '.FormField', JPATH_SITE . '/administrator', 'administrator.');
+/** ##mygruz20180410015059 } */
+
 /**
  * Base class to extend with gjfields fileds
  *
  * @since  0.0.1
  */
-class GJFieldsFormField extends JFormField
+class GJFieldsFormField extends Joomla\CMS\Form\FormField
 {
-	static public $debug = false;
-	static public $lib_name = 'lib_gjfields';
+	static public $debug = false; // phpcs:ignore
+	static public $libName = 'lib_gjfields'; // phpcs:ignore
 	/**
 	 * Constructor
 	 *
@@ -41,32 +53,32 @@ class GJFieldsFormField extends JFormField
 		{
 			$app->set($this->type . '_initialized', true);
 
-			$path_to_assets = JPATH_ROOT . '/libraries/gjfields/';
+			$pathToAssets = JPATH_ROOT . '/libraries/gjfields/';
 			$doc = JFactory::getDocument();
 
-			$cssname_path = $path_to_assets . 'css/common.css';
+			$cssNamePath = $pathToAssets . 'css/common.css';
 
-			if (file_exists($cssname_path))
+			if (file_exists($cssNamePath))
 			{
-				JPluginGJFields::addJSorCSS('common.css', static::$lib_name, static::$debug);
+				JPluginGJFields::addJSorCSS('common.css', static::$libName, static::$debug);
 			}
 
 			$this->type = JString::strtolower($this->type);
 
-			$cssname_path = $path_to_assets . 'css/' . $this->type . '.css';
+			$cssNamePath = $pathToAssets . 'css/' . $this->type . '.css';
 
-			if (file_exists($cssname_path))
+			if (file_exists($cssNamePath))
 			{
-				JPluginGJFields::addJSorCSS($this->type . '.css', static::$lib_name, static::$debug);
+				JPluginGJFields::addJSorCSS($this->type . '.css', static::$libName, static::$debug);
 			}
 
-			JPluginGJFields::addJSorCSS('script.js', static::$lib_name, static::$debug);
+			JPluginGJFields::addJSorCSS('script.js', static::$libName, static::$debug);
 
-			$scriptname_path = $path_to_assets . 'js/' . $this->type . '.js';
+			$scriptNamePath = $pathToAssets . 'js/' . $this->type . '.js';
 
-			if (file_exists($scriptname_path))
+			if (file_exists($scriptNamePath))
 			{
-				JPluginGJFields::addJSorCSS($this->type . '.js', static::$lib_name, static::$debug);
+				JPluginGJFields::addJSorCSS($this->type . '.js', static::$libName, static::$debug);
 			}
 		}
 
@@ -77,13 +89,13 @@ class GJFieldsFormField extends JFormField
 			$this->HTMLtype = 'li';
 		}
 
-		$var_name = basename(__FILE__, '.php') . '_HTMLtype';
+		$varName = basename(__FILE__, '.php') . '_HTMLtype';
 
-		if (!$app->get($var_name, false))
+		if (!$app->get($varName, false))
 		{
-			$app->set($var_name, true);
+			$app->set($varName, true);
 			$doc = JFactory::getDocument();
-			$doc->addScriptDeclaration('var ' . $var_name . ' = "' . $this->HTMLtype . '";');
+			$doc->addScriptDeclaration('var ' . $varName . ' = "' . $this->HTMLtype . '";');
 			$doc->addScriptDeclaration('var lang_reset = "' . JText::_('JSEARCH_RESET') . '?";');
 		}
 	}
@@ -119,11 +131,11 @@ class GJFieldsFormField extends JFormField
 	 */
 	static public function _getGJFieldsVersion ()
 	{
-		$gjfields_version = file_get_contents(dirname(__FILE__) . '/gjfields.xml');
-		preg_match('~<version>(.*)</version>~Ui', $gjfields_version, $gjfields_version);
-		$gjfields_version = $gjfields_version[1];
+		$gjfieldsVersion = file_get_contents(dirname(__FILE__) . '/gjfields.xml');
+		preg_match('~<version>(.*)</version>~Ui', $gjfieldsVersion, $gjfieldsVersion);
+		$gjfieldsVersion = $gjfieldsVersion[1];
 
-		return $gjfields_version;
+		return $gjfieldsVersion;
 	}
 
 	/**
@@ -145,7 +157,7 @@ if (!class_exists('JFormFieldGJFields'))
 	 *
 	 * @since  1.2.0
 	 */
-				class JFormFieldGJFields extends GJFieldsFormField
-				{
-				}
+	class JFormFieldGJFields extends GJFieldsFormField
+	{
+	}
 }
