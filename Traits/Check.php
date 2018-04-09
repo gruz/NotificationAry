@@ -31,7 +31,7 @@ trait Check
 	 *
 	 * @return   type  Description
 	 */
-	public function _leaveOnlyRulesForCurrentItem($context, $contentItem, $task, $isNew = false)
+	public function leaveOnlyRulesForCurrentItem($context, $contentItem, $task, $isNew = false)
 	{
 		$this->task = $task;
 
@@ -61,14 +61,14 @@ trait Check
 			dump($contentItem, '$contentItem');
 		}
 
-		foreach ($this->pparams as $rule_number => $rule)
+		foreach ($this->pparams as $ruleNumber => $rule)
 		{
 			// Pass rule to _checkAllowed
 			$this->rule = $rule;
 
 			if ($debug)
 			{
-				dump($rule, '$rule ' . $rule_number);
+				dump($rule, '$rule ' . $ruleNumber);
 			}
 
 			if ($task == 'saveItem')
@@ -233,7 +233,7 @@ trait Check
 				}
 			}
 
-			$rules[$task][$rule_number] = $rule;
+			$rules[$task][$ruleNumber] = $rule;
 		}
 
 		unset($this->task);

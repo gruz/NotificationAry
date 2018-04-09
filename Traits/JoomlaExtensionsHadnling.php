@@ -131,10 +131,17 @@ trait JoomlaExtensionsHadnling
 	 */
 	public function getContentItemTable($context, $getCategoryTable = false)
 	{
+
+		// foreach ($rules as $ruleNumber => $rule)
+		// {
+		// 	//$rule->
+			
+		// }
 		// Parse context var in case it's an extension template textarea field
 		$extensionInfo = self::parseManualContextTemplate($context);
+		$extensionInfo = array_filter($extensionInfo);
 
-		if (!is_array($extensionInfo))
+		if (!is_array($extensionInfo) || count($extensionInfo) === 1 )
 		{
 			if (isset($this->predefinedContextTemplates) && isset($this->predefinedContextTemplates[$context]))
 			{

@@ -25,7 +25,7 @@ trait Attachments
 	 *
 	 * @return   void
 	 */
-	protected function _cleanAttachments ()
+	protected function cleanAttachments ()
 	{
 		$session = \JFactory::getSession();
 		$session->set('Attachments', null, $this->plgName);

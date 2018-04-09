@@ -103,7 +103,15 @@ else
 		use Traits\SmallFunctions;
 		use Traits\Subscribe;
 
-		public function __construct(& $subject, $config)
+
+		/**
+		 * Constructor.
+		 *
+		 * @param   object  $subject  The object to observe
+		 * @param   array   $config   An optional associative array of configuration settings.
+		 *
+		 */
+		public function __construct(&$subject, $config)
 		{
 			\JLoader::registerNamespace('Html2Text', self::$helpersFolder, false, false, 'psr4');
 			$jinput = \JFactory::getApplication()->input;
@@ -193,14 +201,14 @@ else
 				return true;
 			}
 
-			/* ##mygruz20180313030701 {
+			/** ##mygruz20180313030701 {
 			if ($context == 'com_categories.category')
 			{
 				$context .= $jinput->get('extension', null);
 			}
 			It was:
 			It became: */
-			/* ##mygruz20180313030701 } */
+			/** ##mygruz20180313030701 } */
 
 			$this->onContentChangeStateFired = true;
 
@@ -368,7 +376,7 @@ else
 
 			$this->noDiffFound = false;
 
-			foreach ($this->pparams as $rule_number => $rule)
+			foreach ($this->pparams as $ruleNumber => $rule)
 			{
 				// Prepare global list of DIFFs to be generated, stored in $this->DIFFsToBePreparedGlobally {
 				// If all possible DIFFs are already set to be generated, then don't check, else go:
@@ -721,7 +729,7 @@ else
 
 			$this->_debug('Rules which allow this content item STARTED');
 
-			$rules = $this->_leaveOnlyRulesForCurrentItem($context, $this->contentItem, 'saveItem', $isNew);
+			$rules = $this->leaveOnlyRulesForCurrentItem($context, $this->contentItem, 'saveItem', $isNew);
 
 			$this->task = 'saveItem';
 
@@ -827,7 +835,7 @@ else
 
 			$this->isAjax = $this->paramGet('useajax');
 
-			foreach ($rules as $rule_number => $rule)
+			foreach ($rules as $ruleNumber => $rule)
 			{
 				$this->rule = $rule;
 
@@ -936,7 +944,7 @@ else
 
 			if (!$this->isAjax)
 			{
-				$this->_cleanAttachments();
+				$this->cleanAttachments();
 			}
 			else
 			{
@@ -1179,7 +1187,7 @@ else
 				// Prepare to imitate onContentPrepareForm }
 
 				$this->onContentPrepareForm($form, $contentItem);
-				$rules = $this->_leaveOnlyRulesForCurrentItem($context, $contentItem, 'showSwitch');
+				$rules = $this->leaveOnlyRulesForCurrentItem($context, $contentItem, 'showSwitch');
 
 				if (empty($rules))
 				{
@@ -1671,7 +1679,7 @@ else
 				$contentItem = $this->_contentItemPrepare($contentItem);
 			}
 
-			$rules = $this->_leaveOnlyRulesForCurrentItem($context, $contentItem, 'showSwitch');
+			$rules = $this->leaveOnlyRulesForCurrentItem($context, $contentItem, 'showSwitch');
 
 			if (empty($rules))
 			{
@@ -1723,7 +1731,7 @@ else
 			else
 			{
 				// If at lease one active rules has default switch status on
-				foreach ($rules as $rule_number => $rule)
+				foreach ($rules as $ruleNumber => $rule)
 				{
 					if ($rule->notificationswitchdefault == 1)
 					{
@@ -1792,7 +1800,7 @@ else
 				$form_selector   = 'adminForm';
 			}
 
-			foreach ($rules as $rule_number => $rule)
+			foreach ($rules as $ruleNumber => $rule)
 			{
 				if ($rule->notificationswitchaddconfirmation)
 				{
