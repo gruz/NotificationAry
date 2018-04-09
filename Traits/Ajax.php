@@ -364,7 +364,7 @@ trait Ajax
 
 		if (empty($files))
 		{
-			$this->_cleanAttachments();
+			$this->cleanAttachments();
 			$session->clear('AjaxHashCounter' . $hash, $this->plgName);
 
 			// ~ $counter = $counter-1;

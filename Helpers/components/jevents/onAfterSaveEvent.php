@@ -22,7 +22,7 @@ static function onAfterSaveEvent(&$vevent, $dryrun)
 	$context     = 'jevents.edit.icalevent';
 	$this->prepareParams();
 
-	$rules = $this->_leaveOnlyRulesForCurrentItem($context, $contentItem, 'showSwitch');
+	$rules = $this->leaveOnlyRulesForCurrentItem($context, $contentItem, 'showSwitch');
 
 	if (!empty($rules))
 	{
