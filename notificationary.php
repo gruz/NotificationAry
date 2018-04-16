@@ -231,7 +231,7 @@ else
 		}
 
 		/**
-		 * Save previous state  to a variable to check if it has been changed after content save
+		 * Save previous state to a variable to check if it has been changed after content save
 		 *
 		 * @param   string  $context      Context
 		 * @param   object  $contentItem  Content item object, e.g. Joomla article
@@ -263,13 +263,13 @@ else
 			$this->contentItem  = $this->_contentItemPrepare($contentItem);
 
 			$session           = \JFactory::getSession();
-			$CustomReplacement = $session->get('CustomReplacement', null, $this->plgName);
+			$customReplacement = $session->get('CustomReplacement', null, $this->plgName);
 
 			switch ($context)
 			{
-				case $CustomReplacement['context']:
-					$this->previousArticle = $CustomReplacement['previous_item'];
-					$this->previousState   = $CustomReplacement['previous_state'];
+				case $customReplacement['context']:
+					$this->previousArticle = $customReplacement['previous_item'];
+					$this->previousState   = $customReplacement['previous_state'];
 
 					break;
 				case 'jevents.edit.icalevent':
@@ -342,17 +342,17 @@ else
 						break;
 					case 'sql':
 						$db                = \JFactory::getDBO();
-						$empty_contentItem = clone $this->previousArticle;
-						$empty_contentItem->reset();
+						$emptyContentItem = clone $this->previousArticle;
+						$emptyContentItem->reset();
 
-						// $empty_contentItem = $this->getContentItemTable($context);
-						$tablename = str_replace('#__', $db->getPrefix(), $empty_contentItem->get('_tbl'));
+						// $emptyContentItem = $this->getContentItemTable($context);
+						$tablename = str_replace('#__', $db->getPrefix(), $emptyContentItem->get('_tbl'));
 						$text      = 'UPDATE ' . $tablename . ' SET ';
 						$parts     = array();
 
 						foreach ($this->previousArticle as $field => $value)
 						{
-							if (is_string($value) && property_exists($empty_contentItem, $field))
+							if (is_string($value) && property_exists($emptyContentItem, $field))
 							{
 								$parts[] = $db->quoteName($field) . '=' . $db->quote($value);
 							}
@@ -1247,7 +1247,7 @@ else
 				// $active_no=' active btn-danger';
 			}
 
-			$CustomReplacement = $session->get('CustomReplacement', null, $this->plgName);
+			$customReplacement = $session->get('CustomReplacement', null, $this->plgName);
 
 			$replacement_label = '
 					<label title="" data-original-title="<strong>' . \JText::_('PLG_SYSTEM_NOTIFICATIONARY_NOTIFY') . '</strong><br />'
@@ -1255,10 +1255,10 @@ else
 					. '" class="hasTip hasTooltip required" for="jform_runnotificationary" id="jform_attribs_runnotificationary-lbl">'
 					. \JText::_('PLG_SYSTEM_NOTIFICATIONARY_NOTIFY') . '</label>';
 
-			if (!empty($CustomReplacement) && $CustomReplacement['context'] == $this->context['full'])
+			if (!empty($customReplacement) && $customReplacement['context'] == $this->context['full'])
 			{
-				$possible_tag_ids     = $CustomReplacement['possible_tag_ids'];
-				$replacement_fieldset = $CustomReplacement['replacement_fieldset'];
+				$possible_tag_ids     = $customReplacement['possible_tag_ids'];
+				$replacement_fieldset = $customReplacement['replacement_fieldset'];
 
 				$replace = array(
 					'{{$this->attribsField}}' => $this->attribsField,
@@ -1274,7 +1274,7 @@ else
 			}
 			else
 			{
-				$CustomReplacement = array('option' => false);
+				$customReplacement = array('option' => false);
 
 				if (!$app->isAdmin() && $this->paramGet('replacement_type') === 'simple')
 				{
@@ -1396,7 +1396,7 @@ else
 
 			switch ($this->context['option'])
 			{
-				case $CustomReplacement['option'] :
+				case $customReplacement['option'] :
 					break;
 				case 'com_jdownloads':
 					if ($app->isAdmin())
@@ -1787,12 +1787,12 @@ else
 			$this->attribsField              = $attribs;
 			$this->shouldShowSwitchCheckFlag = true;
 
-			$CustomReplacement = $session->get('CustomReplacement', null, $this->plgName);
+			$customReplacement = $session->get('CustomReplacement', null, $this->plgName);
 
-			if (!empty($CustomReplacement) && $CustomReplacement['context'] == $this->context['full'])
+			if (!empty($customReplacement) && $customReplacement['context'] == $this->context['full'])
 			{
-				$switch_selector = $CustomReplacement['switch_selector'];
-				$form_selector   = $CustomReplacement['form_selector'];
+				$switch_selector = $customReplacement['switch_selector'];
+				$form_selector   = $customReplacement['form_selector'];
 			}
 			else
 			{
@@ -1884,9 +1884,10 @@ else
 		 */
 		public function onAfterInitialise()
 		{
-			self::autoOverride($this);
-
 			$this->prepareParams();
+
+
+			$dont_override = [];
 
 			foreach ($this->pparams as $k => $param)
 			{
@@ -1898,10 +1899,23 @@ else
 				if ($param->context_or_contenttype == "context" && $param->context == "com_zoo.item" && \JComponentHelper::getComponent('com_zoo', true)->enabled)
 				{
 					self::loadZoo();
+				}
 
-					break;
+				if ($param->context_or_contenttype == "context" && false !== strpos($param->context, 'phocagallery') && \JComponentHelper::getComponent('com_phocagallery', true)->enabled)
+				{
+					// ##mygruz20180415235109  TOFIX make conditional only if PG is installed and used
+					if (! class_exists('PhocaGalleryLoader')) {
+						require_once( JPATH_ADMINISTRATOR.'/components/com_phocagallery/libraries/loader.php');
+					}
+
+					$dont_override['/components/com_phocagallery/controllers/category.php'] = false;
+				}
+				else {
+					$dont_override['/components/com_phocagallery/controllers/category.php'] = true;
 				}
 			}
+
+			self::autoOverride($this, $dont_override);
 		}
 	}
 
