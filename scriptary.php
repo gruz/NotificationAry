@@ -70,7 +70,7 @@ class ScriptAry
 
 		return true;
 		// $parent is the class calling this method
-		// E.g. echo '<p>' . \JText::_('COM_HELLOWORLD_UPDATE_TEXT') . '</p>';
+		// E.g. echo '<p>' . JText::_('COM_HELLOWORLD_UPDATE_TEXT') . '</p>';
 	}
 
 	/**
@@ -105,15 +105,15 @@ class ScriptAry
 		// Check for the minimum Joomla version before continuing
 		if (!empty($this->minimumJoomla) && !version_compare(JVERSION, $this->minimumJoomla, '>'))
 		{
-			$msg = \JText::sprintf('JLIB_INSTALLER_MINIMUM_JOOMLA', $this->minimumJoomla);
+			$msg = JText::sprintf('JLIB_INSTALLER_MINIMUM_JOOMLA', $this->minimumJoomla);
 
 			// Older Joomlas don't have this line
 			if ($msg == 'JLIB_INSTALLER_MINIMUM_JOOMLA')
 			{
-				$msg = \JText::sprintf("You don't have the minimum Joomla version requirement of J%s", $this->minimumJoomla);
+				$msg = JText::sprintf("You don't have the minimum Joomla version requirement of J%s", $this->minimumJoomla);
 			}
 
-			\JLog::add($msg, \JLog::WARNING, 'jerror');
+			JLog::add($msg, JLog::WARNING, 'jerror');
 
 			return false;
 		}
@@ -160,8 +160,8 @@ class ScriptAry
 		}
 
 		$this->langShortCode = null;
-		$this->default_lang = \JComponentHelper::getParams('com_languages')->get('admin');
-		$language = \JFactory::getLanguage();
+		$this->default_lang = JComponentHelper::getParams('com_languages')->get('admin');
+		$language = JFactory::getLanguage();
 
 		$language->load($this->ext_full_name, dirname(__FILE__), 'en-GB');
 
@@ -208,23 +208,23 @@ class ScriptAry
 			{
 				$path = JPATH_ROOT . '/plugins/' . $this->ext_group . '/' . $this->ext_name . '/';
 				$pattern = '.*min\.' . $ftype . '';
-				$files = \JFolder::files($path, $pattern, true, true);
+				$files = JFolder::files($path, $pattern, true, true);
 
 				foreach ($files as $fll)
 				{
-					\JFile::delete($files);
+					JFile::delete($files);
 				}
 			}
 
-			$extensionTable = \JTable::getInstance('extension');
+			$extensionTable = JTable::getInstance('extension');
 
 			// Find plugin id
 			$pluginId = $extensionTable->find(array('element' => $this->ext_name, 'type' => 'plugin'));
 			$extensionTable->load($pluginId);
 
-			$this->messages[] = \JText::_('JOPTIONS')
+			$this->messages[] = JText::_('JOPTIONS')
 					. ': <a class="menu-' . $this->ext_name . ' " href="index.php?option=com_plugins&task=plugin.edit&extension_id=' . $pluginId . '">'
-					. \JText::_($this->ext_full_name) . '</a>';
+					. JText::_($this->ext_full_name) . '</a>';
 		}
 
 		if (!empty($this->messages))
@@ -234,7 +234,7 @@ class ScriptAry
 
 		return true;
 
-		// E.g.: echo '<p>' . \JText::_('COM_HELLOWORLD_POSTFLIGHT_' . $type . '_TEXT') . '</p>';
+		// E.g.: echo '<p>' . JText::_('COM_HELLOWORLD_POSTFLIGHT_' . $type . '_TEXT') . '</p>';
 	}
 
 	/**
@@ -242,55 +242,80 @@ class ScriptAry
 	 *
 	 * @param   string  $plg_name       Plugin name, like notificationary
 	 * @param   string  $plg_type       Plugin group, like system
-	 * @param   string  $plg_full_name  Plugin full name, like olg_system_notificationary
+	 * @param   string  $plg_full_name  Plugin full name, like plg_system_notificationary
+	 * @param   bool    $state          Publish or not
 	 *
 	 * @return   void
 	 */
-	private function _publishPlugin($plg_name,$plg_type, $plg_full_name = null)
+	public function _publishPlugin($plg_name, $plg_type, $plg_full_name = null, $state = 1)
 	{
-		$plugin = \JPluginHelper::getPlugin($plg_type, $plg_name);
+		$plugin = JPluginHelper::getPlugin($plg_type, $plg_name);
+		$pluginIsInstalled = !empty($plugin);
+		
+		if (!$pluginIsInstalled) 
+		{
+			return;
+		}
+		
+		$pluginIsPublished = JPluginHelper::isEnabled($plg_type, $plg_name);
+
 		$success = true;
 
-		if (empty($plugin))
-		{
-			// Get the smallest order value
-			$db = jfactory::getdbo();
+// static $first = 'first';
 
-			// Publish plugin
-			$query = $db->getquery(true);
+// file_put_contents('plugin.txt', print_r($plugin, true));
+// file_put_contents($first . '.txt', $pluginIsPublished . '|' . $state);
+// file_put_contents(uniqid() . '.txt', $pluginIsPublished . '|' . $state);
+// $first = 'second';
 
-			// Fields to update.
-			$fields = array(
-				$db->quotename('enabled') . '=' . $db->quote('1')
-			);
-
-			// Conditions for which records should be updated.
-			$conditions = array(
-				$db->quotename('type') . '=' . $db->quote('plugin'),
-				$db->quotename('folder') . '=' . $db->quote($plg_type),
-				$db->quotename('element') . '=' . $db->quote($plg_name),
-			);
-			$query->update($db->quotename('#__extensions'))->set($fields)->where($conditions);
-			$db->setquery($query);
-			$result = $db->execute();
-			$getaffectedrows = $db->getAffectedRows();
-			$success = $getaffectedrows;
+		if (($pluginIsPublished && 1 === $state) || (!$pluginIsPublished && 1 !== $state))
+		{ 
+			// return;
 		}
+
+
+		// Get the smallest order value
+		$db = jfactory::getdbo();
+
+		// Publish plugin
+		$query = $db->getquery(true);
+
+		// Fields to update.
+		$fields = array(
+			$db->quotename('enabled') . '=' . (int) $db->quote($state)
+		);
+
+		// Conditions for which records should be updated.
+		$conditions = array(
+			$db->quotename('type') . '=' . $db->quote('plugin'),
+			$db->quotename('folder') . '=' . $db->quote($plg_type),
+			$db->quotename('element') . '=' . $db->quote($plg_name),
+		);
+		$query->update($db->quotename('#__extensions'))->set($fields)->where($conditions);
+		$db->setquery($query);
+		$result = $db->execute();
+		$getaffectedrows = $db->getAffectedRows();
+		$success = $getaffectedrows;
+
 
 		if (empty($plg_full_name))
 		{
 			$plg_full_name = $plg_name;
 		}
 
-		$msg = \JText::_('jglobal_fieldset_publishing') . ': <b style="color:blue;"> ' . \JText::_($plg_full_name) . '</b> ... ';
+		$msg = JText::_('jglobal_fieldset_publishing') . ': <b style="color:blue;"> ' . JText::_($plg_full_name) . '</b> ... ';
 
-		if ($success)
+		if ($success && 1 === $state)
 		{
-			$msg .= '<b style="color:green">' . \JText::_('jpublished') . '</b>';
+			$msg .= '<b style="color:green">' . JText::_('JPUBLISHED') . '</b>';
+		}
+		if ($success && 1 !== $state)
+		{
+			$msg .= '<b style="color:green">' . JText::_('JUNPUBLISHED') . '</b>';
 		}
 		else
 		{
-			$msg .= '<b style="color:red">' . \JText::_('error') . '</b>';
+			// $msg .= '<b style="color:red">' . JText::_('error') . '</b>';
 		}
 
 		$this->messages[] = $msg;
@@ -310,7 +335,7 @@ class ScriptAry
 		jimport('joomla.filesystem.folder');
 		jimport('joomla.installer.installer');
 
-		\JLoader::register('LanguagesModelInstalled', JPATH_ADMINISTRATOR . '/components/com_languages/models/installed.php');
+		JLoader::register('LanguagesModelInstalled', JPATH_ADMINISTRATOR . '/components/com_languages/models/installed.php');
 		$lang = new LanguagesModelInstalled;
 		$current_languages = $lang->getData();
 		$locales = array();
@@ -327,7 +352,7 @@ class ScriptAry
 			return;
 		}
 
-		$folders = \JFolder::folders($extpath);
+		$folders = JFolder::folders($extpath);
 
 		foreach ($folders as $folder)
 		{
@@ -351,7 +376,7 @@ class ScriptAry
 			if ($installer->install($extpath . '/' . $folder))
 			{
 				$manifest = $installer->getManifest();
-				$this->messages[] = \JText::sprintf(
+				$this->messages[] = JText::sprintf(
 						'COM_INSTALLER_INSTALL_SUCCESS',
 						'<b style="color:#0055BB;">[' . $manifest->name . ']<span style="color:green;">'
 					)
@@ -359,7 +384,7 @@ class ScriptAry
 			}
 			else
 			{
-				$this->messages[] = '<span style="color:red;">' . $folder . ' ' . \JText::_('JERROR_AN_ERROR_HAS_OCCURRED') . '</span>';
+				$this->messages[] = '<span style="color:red;">' . $folder . ' ' . JText::_('JERROR_AN_ERROR_HAS_OCCURRED') . '</span>';
 			}
 		}
 	}
