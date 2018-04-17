@@ -26,16 +26,36 @@ class PhocaGalleryViewCategory extends PhocaGalleryViewCategoryDefault
 			// TODO Here prepare for onContentAfterSave
 			$session           = \JFactory::getSession();
 			$uploadedImages = $session->get($key, [], $namespace);
-			$uploadedImages = $session->set($key, $uploadedImages, $namespace);
 
-			\JEventDispatcher::getInstance()->trigger(
-				'onContentAfterSave',
-				array(
-					$context,
-					$contentItem,
-					$isNew
-				)
-			);
+			dump($uploadedImages, '$uploadedImages');
+
+			if (count($uploadedImages > 0)) {
+
+				$context     = 'com_phocagallery.multipleupload';
+				$isNew       = true;
+				$contentItem = (object) $uploadedImages[0];
+				$contentItem->title = $contentItem->filename;
+
+				for ($i=1; $i < count($uploadedImages); $i++) { 
+					$contentItem->title .= ', ' . $uploadedImages[$i]['filename'];
+				}
+
+				$contentItem->files = $uploadedImages;
+				
+	
+				\JEventDispatcher::getInstance()->trigger(
+					'onContentAfterSave',
+					array(
+						$context,
+						$contentItem,
+						$isNew
+					)
+				);
+			}
+			
+
+
+			$uploadedImages = $session->set($key, [], $namespace);
 		}
 
 	
