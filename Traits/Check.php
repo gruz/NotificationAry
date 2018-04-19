@@ -63,7 +63,7 @@ trait Check
 
 		foreach ($this->pparams as $ruleNumber => $rule)
 		{
-			// Pass rule to _checkAllowed
+			// Pass rule to checkAllowed
 			$this->rule = $rule;
 
 			if ($debug)
@@ -145,7 +145,7 @@ trait Check
 			}
 
 			// Check if allowed notifications for actions performed by this user
-			if (!$this->_checkAllowed($user, $paramName = 'allowuser'))
+			if (!$this->checkAllowed($user, $paramName = 'allowuser'))
 			{
 				if ($task == 'saveItem')
 				{
@@ -194,12 +194,12 @@ trait Check
 
 				/*
 				if (!$isNew) {
-					if (!$this->_checkAllowed($contentItem, $paramName = 'article')) { continue; }
+					if (!$this->checkAllowed($contentItem, $paramName = 'article')) { continue; }
 				}
 				*/
 
 				// Check if the user is allowed to show the switch
-				if (!$this->_checkAllowed($user, $paramName = 'allowswitchforuser'))
+				if (!$this->checkAllowed($user, $paramName = 'allowswitchforuser'))
 				{
 					continue;
 				}
@@ -216,7 +216,7 @@ trait Check
 					$this->_debug('Content allowed?   START CHECK');
 				}
 
-				if (!$this->_checkAllowed($contentItem, $paramName = 'article'))
+				if (!$this->checkAllowed($contentItem, $paramName = 'article'))
 				{
 					if ($task == 'saveItem')
 					{
@@ -285,7 +285,7 @@ trait Check
 		*	<field name="ausers_allowusers12}" maxrepeatlength="1" type="variablefield" basetype="toggler"/>
 		*	Function call to check if allowed:
 		* $user = \JFactory::getUser();
-		* if (!$this->_checkAllowed($user, $paramName = 'allowuser', $fieldNamePrefix='ausers' )) { return; }
+		* if (!$this->checkAllowed($user, $paramName = 'allowuser', $fieldNamePrefix='ausers' )) { return; }
 		*
 		* @param   object  &$object          Either content item object or Joomla user object
 		* @param   string  $paramName        Param name, example 'allowuser'
@@ -293,7 +293,7 @@ trait Check
 		*
 		* @return  bool  true if the object is allowed according to the group of options
 		*/
-		public function _checkAllowed(&$object, $paramName, $fieldNamePrefix='ausers')
+		public function checkAllowed(&$object, $paramName, $fieldNamePrefix='ausers')
 		{
 			$debug = true;
 			$debug = false;
@@ -349,8 +349,8 @@ trait Check
 	
 				\JFactory::getApplication()->enqueueMessage(
 					\JText::_(ucfirst($this->plgName))
-						. ' (line ' . __LINE__ . '): '
-						. ' _checkAllowed method cannot be run with an empty object<br/>' . $msg,
+						. ' ( ' . str_replace(JPATH_ROOT, '', __FILE__) . ':' . __LINE__ . '): '
+						. ' checkAllowed method cannot be run with an empty object<br/>' . $msg,
 					'error'
 				);
 	

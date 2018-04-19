@@ -1129,8 +1129,8 @@ else
 				$placeDebug = '';
 				$user        = \JFactory::getUser();
 
-				// Since the _checkAllowed checks the global settings, there is no $this->rule passed and used there
-				if ($this->paramGet('ajax_allow_to_cancel') && $this->_checkAllowed($user, $paramName = 'allowuser', $prefix = 'ajax'))
+				// Since the checkAllowed checks the global settings, there is no $this->rule passed and used there
+				if ($this->paramGet('ajax_allow_to_cancel') && $this->checkAllowed($user, $paramName = 'allowuser', $prefix = 'ajax'))
 				{
 					$placeDebug .= '<button type="button" id="' . $this->plgFullName . '_close">X</button>';
 				}
@@ -1147,7 +1147,7 @@ else
 				{
 					$placeDebug .= '<small>';
 
-					if ($this->paramGet('ajax_allow_to_cancel') && $this->_checkAllowed($user, $paramName = 'allowuser', $prefix = 'ajax'))
+					if ($this->paramGet('ajax_allow_to_cancel') && $this->checkAllowed($user, $paramName = 'allowuser', $prefix = 'ajax'))
 					{
 						$placeDebug .= \JText::_('PLG_SYSTEM_NOTIFICATIONARY_AJAX_TIME_TO_CANCEL');
 						$placeDebug .= '. ';
