@@ -10,14 +10,13 @@
  */
 defined('_JEXEC') or die();
 
-
 class PhocagalleryModelCategory extends PhocagalleryModelCategoryDefault
 {
 	function store($data, $return)
 	{
 		$return = parent::store($data, $return);
 
-		if ($return) 
+		if ($return && false ) 
 		{
 			dump($return, '$return');
 			dump($data, $return);

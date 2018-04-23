@@ -337,7 +337,7 @@ trait Check
 					}
 				}
 			}
-	
+
 			if (!in_array($className, ['\JUser', 'Joomla\CMS\User\User']) && empty($object->id))
 			{
 				$msg = '';

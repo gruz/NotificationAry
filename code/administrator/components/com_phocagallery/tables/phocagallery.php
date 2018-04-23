@@ -11,7 +11,7 @@
 defined('_JEXEC') or die('Restricted access');
 use Joomla\String\StringHelper;
 
-class TablePhocaGalleryc extends TablePhocaGallerycDefault {
+class TablePhocaGallery extends TablePhocaGalleryDefault {
 	public function check()
 	{
 		$result = parent::check();
@@ -30,20 +30,39 @@ class TablePhocaGalleryc extends TablePhocaGallerycDefault {
 	public function store($updateNulls = false)
 	{
 		$isNew = empty($this->id) ? true : false;
-dump('aaaaa');
-exit;
+
 		$result = parent::store($updateNulls);
 
-        if ($return) 
+        if ($result) 
 		{
-			dump($this, $return);
+			$tmp = new stdClass;
+
+			foreach ($this as $key => $value) {
+				if (!is_object($value)) {
+
+					switch ($key) {
+						case 'userid':
+							$tmp->created_by = $value;
+							$tmp->modified_by = $value;
+							# code...
+							break;
+						
+						default:
+							$tmp->$key = $value;
+							break;
+					}
+				}
+			}
+
+			dump($tmp, $result);
 
 			$key       = 'uploadedImages';
 			$namespace = 'NotificationAry.PhocaGalleryMultipleUpload';
-	
+
 			$session           = \JFactory::getSession();
 			$uploadedImages = $session->get($key, [], $namespace);
-			$uploadedImages[] = $this;
+			// $uploadedImages[] = (object) (array) $this;
+			$uploadedImages[] = $tmp;
 			$uploadedImages = $session->set($key, $uploadedImages, $namespace);
 		}
 
