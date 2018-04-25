@@ -7,7 +7,6 @@
  * @copyright Copyright (C) Jan Pavelka www.phoca.cz
  * @license http://www.gnu.org/copyleft/gpl.html GNU General Public License version 2 or later;
  */
- 
 
 class PhocaGalleryViewCategory extends PhocaGalleryViewCategoryDefault
 {
@@ -32,11 +31,11 @@ class PhocaGalleryViewCategory extends PhocaGalleryViewCategoryDefault
 
 				$context     = 'com_phocagallery.multipleupload';
 				$isNew       = true;
-				$contentItem = (object) $uploadedImages[0];
+				$contentItem = clone $uploadedImages[0];
 				$contentItem->title = $contentItem->filename;
 
 				for ($i=1; $i < count($uploadedImages); $i++) { 
-					$contentItem->title .= ', ' . $uploadedImages[$i]['filename'];
+					$contentItem->title .= ', ' . $uploadedImages[$i]->filename;
 				}
 
 				$contentItem->files = $uploadedImages;
@@ -51,14 +50,10 @@ class PhocaGalleryViewCategory extends PhocaGalleryViewCategoryDefault
 					)
 				);
 			}
-			
-
 
 			$uploadedImages = $session->set($key, [], $namespace);
 		}
 
-	
-	
 		return parent::display($tpl);
 	}
 }

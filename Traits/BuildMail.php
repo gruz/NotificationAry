@@ -922,6 +922,8 @@ trait BuildMail
 				$path[1] = $tmp[0];
 				$path[2] = $tmp[1];
 
+				$value = null;
+
 				switch ($path[1])
 				{
 					case 'Content':
@@ -933,7 +935,14 @@ trait BuildMail
 
 								if (is_array($value))
 								{
-									$value = implode(',', $value);
+									$test = end($value);
+									if ( ! is_object($test) ) {
+										$value = implode(',', $value);
+									} 
+									else {
+										$value = json_encode($value);
+									}
+
 								}
 							}
 						}

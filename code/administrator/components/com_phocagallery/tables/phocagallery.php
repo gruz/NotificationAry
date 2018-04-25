@@ -12,25 +12,9 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\String\StringHelper;
 
 class TablePhocaGallery extends TablePhocaGalleryDefault {
-	public function check()
-	{
-		$result = parent::check();
-
-		if ($result && false ) 
-		{
-			$isNew = empty($this->id) ? true : false;
-			JPluginHelper::importPlugin( 'system' );
-			$dispatcher = JEventDispatcher::getInstance();
-			$dispatcher->trigger( 'onContentBeforSave', array('com_phocadownload.upload', $this, $isNew ) );
-		}
-
-		return $result;
-	}
 
 	public function store($updateNulls = false)
 	{
-		$isNew = empty($this->id) ? true : false;
-
 		$result = parent::store($updateNulls);
 
         if ($result) 
@@ -44,17 +28,13 @@ class TablePhocaGallery extends TablePhocaGalleryDefault {
 						case 'userid':
 							$tmp->created_by = $value;
 							$tmp->modified_by = $value;
-							# code...
 							break;
-						
 						default:
 							$tmp->$key = $value;
 							break;
 					}
 				}
 			}
-
-			dump($tmp, $result);
 
 			$key       = 'uploadedImages';
 			$namespace = 'NotificationAry.PhocaGalleryMultipleUpload';
