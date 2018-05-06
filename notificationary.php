@@ -1908,11 +1908,12 @@ else
 						require_once( JPATH_ADMINISTRATOR.'/components/com_phocagallery/libraries/loader.php');
 					}
 
-					$dont_override['/components/com_phocagallery/controllers/category.php'] = false;
+					// $dont_override['/components/com_phocagallery/controllers/category.php'] = false;
 				}
 				else {
-					$dont_override['/components/com_phocagallery/controllers/category.php'] = true;
+					// $dont_override['/components/com_phocagallery/controllers/category.php'] = true;
 				}
+
 			}
 
 			self::autoOverride($this, $dont_override);

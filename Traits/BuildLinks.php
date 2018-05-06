@@ -447,13 +447,16 @@ trait BuildLinks
 		{
 			$app = \JApplicationCms::getInstance('site');
 			$router = $app->getRouter();
+
+			$option = self::getVarFromQuery($link, 'option');
+
 			$url = $router->build($link);
 			$url->setHost($live_site_host);
 			$url = $url->toString();
 			$url = \JPath::clean($url);
 			$link = $url;
 
-			if ($this->isNew)
+			if ($option !== 'com_phocagallery' && $this->isNew)
 			{
 				$jinput = \JFactory::getApplication()->input;
 				$submit_url = \JRoute::_('index.php?Itemid=' . $jinput->get('Itemid', null));

@@ -25,7 +25,7 @@ class PhocaGalleryViewCategory extends PhocaGalleryViewCategoryDefault
 			$session           = \JFactory::getSession();
 			$uploadedImages = $session->get($key, [], $namespace);
 
-			dump($uploadedImages, '$uploadedImages');
+			// dump($uploadedImages, '$uploadedImages');
 
 			if (count($uploadedImages) > 0) {
 
