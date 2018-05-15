@@ -152,7 +152,7 @@ trait PrepareUsersToNotify
 		$user = \JFactory::getUser();
 
 		// Check if notifications turned on for current user
-		if (!$this->_checkAllowed($user, $paramName = 'allowuser'))
+		if (!$this->checkAllowed($user, $paramName = 'allowuser'))
 		{
 			return array ();
 		}
@@ -163,7 +163,7 @@ trait PrepareUsersToNotify
 		}
 
 		// Check if notifications turned on for current article
-		if (!$this->_checkAllowed($this->contentItem, $paramName = 'article'))
+		if (!$this->checkAllowed($this->contentItem, $paramName = 'article'))
 		{
 			return array ();
 		}
@@ -525,7 +525,7 @@ trait PrepareUsersToNotify
 		}
 
 		// If the author should be notfied only for allowed modifiers
-		if ($this->rule->author_foranyuserchanges == '0' && !$this->_checkAllowed($this->modifier, $paramName = 'allowuser'))
+		if ($this->rule->author_foranyuserchanges == '0' && !$this->checkAllowed($this->modifier, $paramName = 'allowuser'))
 		{
 			return $users_to_send_helper;
 		}

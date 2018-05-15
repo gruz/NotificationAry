@@ -922,6 +922,8 @@ trait BuildMail
 				$path[1] = $tmp[0];
 				$path[2] = $tmp[1];
 
+				$value = null;
+
 				switch ($path[1])
 				{
 					case 'Content':
@@ -933,7 +935,14 @@ trait BuildMail
 
 								if (is_array($value))
 								{
-									$value = implode(',', $value);
+									$test = end($value);
+									if ( ! is_object($test) ) {
+										$value = implode(',', $value);
+									} 
+									else {
+										$value = json_encode($value);
+									}
+
 								}
 							}
 						}
@@ -1014,7 +1023,7 @@ trait BuildMail
 				}
 
 				return;
-				break;
+
 			case 'jdownloads':
 				$cat = \JTable::getInstance('category', 'jdownloadsTable');
 				$cat->load($catid);
@@ -1022,26 +1031,54 @@ trait BuildMail
 				$this->categoryTree = explode('/', $path);
 
 				return;
-				break;
+
 			case 'phocadownload':
-				if (! class_exists('PhocaDownloadCategory'))
-				{
-					require JPATH_ADMINISTRATOR . '/components/com_phocadownload/libraries/phocadownload/category/category.php';
+			case 'phocagallery':
+				// if (! class_exists('PhocaDownloadCategory'))
+				// {
+				// 	require JPATH_ADMINISTRATOR . '/components/com_phocadownload/libraries/phocadownload/category/category.php';
+				// }
+
+				switch ($this->context['extension']) {
+					case 'phocadownload':
+						$tblName = '#__phocadownload_categories';
+						if (! class_exists('\PhocaDownloadCategory'))
+						{
+							
+							require JPATH_ADMINISTRATOR . '/components/com_phocadownload/libraries/phocadownload/category/category.php';
+						}
+						break;						
+					case 'phocagallery':
+						$tblName = '#__phocagallery_categories';
+						if (! class_exists('\PhocaGalleryCategory'))
+						{
+							require JPATH_ADMINISTRATOR . '/components/com_phocagallery/libraries/phocagallery/html/category.php';
+							
+						}
+						break;
 				}
 
 				$db = \JFactory::getDBO();
 
 				// Build the list of categories
 				$query = 'SELECT a.title AS text, a.id AS value, a.parent_id as parentid'
-				. ' FROM #__phocadownload_categories AS a'
+				. ' FROM ' . $tblName . '  AS a'
 				. ' WHERE a.published = 1'
 				. ' ORDER BY a.ordering';
 				$db->setQuery($query);
 				$data = $db->loadObjectList();
-
-				$tree = array();
+				
+				$tree = [];
 				$text = '';
-				$tree = \PhocaDownloadCategory::CategoryTreeOption($data, $tree, 0, $text, $catid);
+
+				switch ($this->context['extension']) {
+					case 'phocadownload':
+						$tree = \PhocaDownloadCategory::CategoryTreeOption($data, $tree, 0, $text, $catid);
+						break;						
+					case 'phocagallery':
+						$tree = \PhocaGalleryCategory::CategoryTreeOption($data, $tree, 0, $text, $catid);
+						break;
+				}
 
 				$this->categoryTree = [];
 
@@ -1050,7 +1087,6 @@ trait BuildMail
 				}
 				
 				return;
-				break;
 			default :
 				if (isset($this->rule->extensionInfo) && !empty($this->rule->extensionInfo['Category table class'])) {
 

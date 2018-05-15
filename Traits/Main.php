@@ -256,10 +256,11 @@ trait Main
 	/**
 	 * Autooverride (based on plg_system_mvcoverride but changed a little)
 	 *
-	 * @param   \plgSystemNotificationary  $pluginObject Our plugin itself
+	 * @param   \plgSystemNotificationary  $pluginObject   Our plugin itself
+	 * @param   array                      $dont_override  Paths to skip, not to override in vain
 	 * @return  void
 	 */
-	public static function autoOverride(\plgSystemNotificationary $pluginObject)
+	public static function autoOverride(\plgSystemNotificationary $pluginObject, array $dont_override)
 	{
 		$jinput = \JFactory::getApplication()->input;
 
@@ -367,6 +368,9 @@ trait Main
 		// Loading override files
 		foreach ($filesToOverride as $fileToOverride => $overriderFolder)
 		{
+			if ( !empty( $dont_override[$fileToOverride] )) {
+				continue;
+			}
 			if (\JFile::exists(JPATH_ROOT . $fileToOverride))
 			{
 				$originalFilePath = JPATH_ROOT . $fileToOverride;

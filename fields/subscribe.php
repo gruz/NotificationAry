@@ -127,7 +127,7 @@ class NAFormFieldSubscribe extends GJFieldsFormField
 
 			$pluginObject->rule = $rule;
 
-			if (!$pluginObject->_checkAllowed($user, $paramName = 'notifyuser', $fieldNamePrefix = 'ausers'))
+			if (!$pluginObject->checkAllowed($user, $paramName = 'notifyuser', $fieldNamePrefix = 'ausers'))
 			{
 				// Debug line
 				// ~ dump(': User is not allowed to subscribe', $rule->__ruleUniqID);
