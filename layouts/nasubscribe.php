@@ -8,8 +8,6 @@
 
 defined('JPATH_BASE') or die;
 
-use Joomla\CMS\HTML\HTMLHelper;
-
 extract($displayData);
 
 /**
@@ -23,11 +21,11 @@ extract($displayData);
  * 	$layout          : (object) JLayout object to later be able to call a sublayout
  * 	$sublayout       : (string) Sublayout name
  * 	$debug           : (bool)   If to output layout debug
- * 	$user           :  (\JUser)  User object
+ * 	$user           :  (JUser)  User object
  */
 
 $form = array();
-$app = \JFactory::getApplication();
+$app = JFactory::getApplication();
 $class_add = '';
 
 // For user edit page we use Bootstap2 class to have the lists in 3 columns
@@ -44,9 +42,9 @@ $form[] = $layout->sublayout($sublayout, $displayData, null, array('debug' => $d
 
 $form[] = '<input type="hidden" name="ruleUniqID" value="' . $rule->__ruleUniqID . '">';
 $form[] = '<input type="hidden" name="userid" value="' . $user->id . '">';
-$form[] = HTMLHelper::_('form.token');
+$form[] = JHtml::_('form.token');
 
-// ~ $form[] = '<input class="submit" type="submit" name="subscribe" value="' . \JText::_('PLG_SYSTEM_NOTIFICATIONARY_SUBSCRIBE_UPDATE') . '">';
+// ~ $form[] = '<input class="submit" type="submit" name="subscribe" value="' . JText::_('PLG_SYSTEM_NOTIFICATIONARY_SUBSCRIBE_UPDATE') . '">';
 // ~ $form[] = '</form>';
 $form[] = '</span><!-- closet !-->';
 

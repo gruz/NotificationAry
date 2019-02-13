@@ -26,7 +26,7 @@ extract($displayData);
 
 // We render checkboxes with previously prepared options
 $field_type = 'list';
-$formfield = \JFormHelper::loadFieldType($field_type);
+$formfield = JFormHelper::loadFieldType($field_type);
 $element = simplexml_load_string(
 	'
 		<field
@@ -59,7 +59,7 @@ $form[] = $formfield->renderField();
 
 // We render checkboxes with previously prepared options
 $field_type = 'checkboxes';
-$formfield = \JFormHelper::loadFieldType($field_type);
+$formfield = JFormHelper::loadFieldType($field_type);
 $element = simplexml_load_string(
 	'
 		<field

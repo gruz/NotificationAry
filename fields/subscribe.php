@@ -46,7 +46,7 @@ class NAFormFieldSubscribe extends GJFieldsFormField
 	 */
 	public function getInput()
 	{
-		$app = \JFactory::getApplication();
+		$app = JFactory::getApplication();
 
 		// Pass the plugin object to be available in the field to have plugin params parsed there
 		$pluginObject = $app->get('plg_system_notificationary');
@@ -59,11 +59,11 @@ class NAFormFieldSubscribe extends GJFieldsFormField
 
 		if (!empty($userID))
 		{
-			$user = \JFactory::getUser($userID);
+			$user = JFactory::getUser($userID);
 		}
 		else
 		{
-			$user = \JFactory::getUser();
+			$user = JFactory::getUser();
 		}
 
 		$rules = $pluginObject->pparams;
@@ -105,7 +105,7 @@ class NAFormFieldSubscribe extends GJFieldsFormField
 				if ($app->isSite() && !$isProfile)
 				{
 					$msg = '<span style="color:red;">['
-						. \JText::_('PLG_SYSTEM_NOTIFICATIONARY_RULE_DOESNT_ALLOW_TO_SUBSCRIBE') . ': ' . $rule->__ruleUniqID
+						. JText::_('PLG_SYSTEM_NOTIFICATIONARY_RULE_DOESNT_ALLOW_TO_SUBSCRIBE') . ': ' . $rule->__ruleUniqID
 						. ']</span>';
 					$output[] = $msg;
 				}
@@ -115,7 +115,7 @@ class NAFormFieldSubscribe extends GJFieldsFormField
 			if (!$rule->isenabled)
 			{
 				$msg = '<span style="color:red;">['
-					. \JText::_('PLG_SYSTEM_NOTIFICATIONARY_RULE_DISABLED') . ': ' . $rule->__ruleUniqID
+					. JText::_('PLG_SYSTEM_NOTIFICATIONARY_RULE_DISABLED') . ': ' . $rule->__ruleUniqID
 					. ']</span>';
 				$output[] = $msg;
 				continue;
@@ -127,7 +127,7 @@ class NAFormFieldSubscribe extends GJFieldsFormField
 
 			$pluginObject->rule = $rule;
 
-			if (!$pluginObject->checkAllowed($user, $paramName = 'notifyuser', $fieldNamePrefix = 'ausers'))
+			if (!$pluginObject->_checkAllowed($user, $paramName = 'notifyuser', $fieldNamePrefix = 'ausers'))
 			{
 				// Debug line
 				// ~ dump(': User is not allowed to subscribe', $rule->__ruleUniqID);
@@ -144,7 +144,7 @@ class NAFormFieldSubscribe extends GJFieldsFormField
 
 				// Per rule subscribe
 				case '2':
-					$allowedCategories = plgSystemNotificationary::getProfileData($user->id, $rule->__ruleUniqID);
+					$allowedCategories = NotificationAryHelper::getProfileData($user->id, $rule->__ruleUniqID);
 
 					if (empty($allowedCategories))
 					{
@@ -175,7 +175,7 @@ class NAFormFieldSubscribe extends GJFieldsFormField
 			{
 				// Per category subscribe
 				case '1':
-					/**
+					/*
 					switch ($rule->context_or_contenttype)
 					{
 						case 'content_type':
@@ -194,24 +194,24 @@ class NAFormFieldSubscribe extends GJFieldsFormField
 					$scope = $rule->{$rule->context_or_contenttype};
 
 					// We load the field just to reuse the getOptions function
-					\JForm::addFieldPath(JPATH_LIBRARIES . '/gjfields');
+					JForm::addFieldPath(JPATH_LIBRARIES . '/gjfields');
 
-					$formfield = \JFormHelper::loadFieldType('gjfields.categoryext');
+					$formfield = JFormHelper::loadFieldType('gjfields.categoryext');
 					$element = simplexml_load_string(
 						'
 							<field name="subscribe_categories" maxrepeatlength="1" type="gjfields.variablefield"
-								basetype="gjfields.categoryext" extension="com_content"
+											basetype="gjfields.categoryext" extension="com_content"
 
-								context_or_contenttype="' . $rule->context_or_contenttype . '"
+											context_or_contenttype="' . $rule->context_or_contenttype . '"
 
-								scope="' . $scope . '"
-								published="1"
+											scope="' . $scope . '"
+											published="1"
 
-								source_parameter="context_or_contenttype,content_type,context"
-								target_parameter="context_or_contenttype,content_type,context"
-								multiple="multiple" size="20" show_uncategorized="1" label="PLG_SYSTEM_NOTIFICATIONARY_SUBSCRIBE_TO_CATEGORY"
-								description="" class="chzn-custom-value"
-								hint="PLG_SYSTEM_NOTIFICATIONARY_FIELD_CATEGORIES_CUSTOM"/>
+											source_parameter="context_or_contenttype,content_type,context"
+											target_parameter="context_or_contenttype,content_type,context"
+											multiple="multiple" size="20" show_uncategorized="1" label="PLG_SYSTEM_NOTIFICATIONARY_SUBSCRIBE_TO_CATEGORY"
+											description="" class="chzn-custom-value"
+											hint="PLG_SYSTEM_NOTIFICATIONARY_FIELD_CATEGORIES_CUSTOM"/>
 
 						');
 
@@ -227,14 +227,14 @@ class NAFormFieldSubscribe extends GJFieldsFormField
 					// Iterate categories and and add only needed ones and checked if needed.
 					foreach ($categories as $k => $category)
 					{
-						/**
-							<field name="ausers_articlegroups" maxrepeatlength="1"
-									type="gjfields.variablefield" basetype="list" default="0"
-									label="PLG_SYSTEM_NOTIFICATIONARY_FIELD_CATEGORIES" description="PLG_SYSTEM_NOTIFICATIONARY_FIELD_NOTIFY_ON_DESC">
-								<option value="1">PLG_SYSTEM_NOTIFICATIONARY_FIELD_SELECTION</option>
-								<option value="2">PLG_SYSTEM_NOTIFICATIONARY_FIELD_EXCLUDE_SELECTION</option>
-								<option value="0">JALL</option>
-							</field>
+						/*
+								<field name="ausers_articlegroups" maxrepeatlength="1"
+								 		type="gjfields.variablefield" basetype="list" default="0"
+								 		label="PLG_SYSTEM_NOTIFICATIONARY_FIELD_CATEGORIES" description="PLG_SYSTEM_NOTIFICATIONARY_FIELD_NOTIFY_ON_DESC">
+									<option value="1">PLG_SYSTEM_NOTIFICATIONARY_FIELD_SELECTION</option>
+									<option value="2">PLG_SYSTEM_NOTIFICATIONARY_FIELD_EXCLUDE_SELECTION</option>
+									<option value="0">JALL</option>
+								</field>
 						 */
 
 						$continue = false;
@@ -319,12 +319,12 @@ class NAFormFieldSubscribe extends GJFieldsFormField
 
 		$output = implode(PHP_EOL, $output);
 
-		$doc = \JFactory::getDocument();
+		$doc = JFactory::getDocument();
 
 											// It's a must part
-		$url_ajax_plugin = \JURI::base() . '?option=com_ajax&format=raw'
+		$url_ajax_plugin = JURI::base() . '?option=com_ajax&format=raw'
 
-				// $this->plgType should contain your plugin group (system, content etc.),
+				// $this->plg_type should contain your plugin group (system, content etc.),
 				// E.g. for a system plugin plg_system_menuary it should be system
 				. '&group=' . 'system'
 
@@ -343,10 +343,10 @@ class NAFormFieldSubscribe extends GJFieldsFormField
 		$doc->addScriptOptions('notificationary', array('ajax_url' => $url_ajax_plugin ));
 		$doc->addScriptOptions('notificationary', array('task' => 'subscription'));
 
-		\JPluginGJFields::addJSorCSS('ajax_subscribe.js', 'plg_system_notificationary', static::$debug);
-		\JPluginGJFields::addJSorCSS('spinning.css', 'plg_system_notificationary', static::$debug);
+		JPluginGJFields::addJSorCSS('ajax_subscribe.js', 'plg_system_notificationary', static::$debug);
+		JPluginGJFields::addJSorCSS('spinning.css', 'plg_system_notificationary', static::$debug);
 
-		\JText::script('PLG_SYSTEM_NOTIFICATIONARY_LOADING');
+		JText::script('PLG_SYSTEM_NOTIFICATIONARY_LOADING');
 
 		return $output;
 	}

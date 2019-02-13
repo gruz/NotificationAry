@@ -27,7 +27,7 @@ class plgSystemNotificationaryInstallerScript extends ScriptAry
 	function uninstall($parent)
 	{
 		// $parent is the class calling this method
-		echo '<p>' . \JText::_('You may wish to uninstall GJFields library used together with this extension. Other extensions may also use GJFields. If you uninstall GJFields by mistake, you can always reinstall it.') . '</p>';
+		echo '<p>' . JText::_('You may wish to uninstall GJFields library used together with this extension. Other extensions may also use GJFields. If you uninstall GJFields by mistake, you can always reinstall it.') . '</p>';
 	}
 
 	/**
@@ -50,7 +50,7 @@ class plgSystemNotificationaryInstallerScript extends ScriptAry
 		if (!empty($this->updateMessages))
 		{
 			echo '<div class="alert alert-message"><h3><span class="icon-notification" style="color:red;"></span> '
-				. \JText::_('Some parameters were changed') . '</h3>';
+				. JText::_('Some parameters were changed') . '</h3>';
 				echo '<ul><li>' . implode('</li><li>', $this->updateMessages) . '</li></ul>';
 			echo '</div>';
 		}
@@ -68,12 +68,7 @@ class plgSystemNotificationaryInstallerScript extends ScriptAry
 			return false;
 		}
 
-		if ('update' === $type) 
-		{
-			$this->_publishPlugin($this->ext_name, $this->ext_group, $this->ext_full_name, $state = 0);
-		}
-		
-		$db = \JFactory::getDbo();
+		$db = JFactory::getDbo();
 
 		// Remove NAS langpacks
 		$query = $db->getQuery(true);
@@ -91,11 +86,11 @@ class plgSystemNotificationaryInstallerScript extends ScriptAry
 
 			if ($res)
 			{
-				$msg = '<b style="color:green">' . \JText::sprintf('COM_INSTALLER_UNINSTALL_SUCCESS', $row['name']) . '</b>';
+				$msg = '<b style="color:green">' . JText::sprintf('COM_INSTALLER_UNINSTALL_SUCCESS', $row['name']) . '</b>';
 			}
 			else
 			{
-				$msg = '<b style="color:red">' . \JText::sprintf('COM_INSTALLER_UNINSTALL_ERROR', $row['name']) . '</b>';
+				$msg = '<b style="color:red">' . JText::sprintf('COM_INSTALLER_UNINSTALL_ERROR', $row['name']) . '</b>';
 			}
 
 			$this->messages[] = $msg;
@@ -115,11 +110,11 @@ class plgSystemNotificationaryInstallerScript extends ScriptAry
 
 		if ($res)
 		{
-			$msg = '<b style="color:green">' . $table_name . ' ' . \JText::sprintf('JGLOBAL_HELPREFRESH_BUTTON') . ' OK </b>';
+			$msg = '<b style="color:green">' . $table_name . ' ' . JText::sprintf('JGLOBAL_HELPREFRESH_BUTTON') . ' OK </b>';
 		}
 		else
 		{
-			$msg = '<b style="color:red">' . $table_name . ' ' . \JText::sprintf('JGLOBAL_HELPREFRESH_BUTTON') . ' ' . \JText::_('ERROR') . '  </b>';
+			$msg = '<b style="color:red">' . $table_name . ' ' . JText::sprintf('JGLOBAL_HELPREFRESH_BUTTON') . ' ' . JText::_('ERROR') . '  </b>';
 		}
 
 		// *** Remove NotifyArticleSubmit servers as new NotificationAry should be used
@@ -131,7 +126,7 @@ class plgSystemNotificationaryInstallerScript extends ScriptAry
 		$query->where($db->quoteName('name') . ' LIKE ' . $db->quote('%notifyarticlesubmit%'));
 		$db->setQuery($query);
 
-		// Load the results as a list of \stdClass objects.
+		// Load the results as a list of stdClass objects.
 		$results = $db->loadColumn();
 
 		if (!empty($results))
@@ -147,11 +142,11 @@ class plgSystemNotificationaryInstallerScript extends ScriptAry
 			$res = $db->execute();
 			if ($res)
 			{
-				$msg = '<b style="color:green">' . $table_name . ' ' . \JText::sprintf('JGLOBAL_HELPREFRESH_BUTTON') . ' OK </b>';
+				$msg = '<b style="color:green">' . $table_name . ' ' . JText::sprintf('JGLOBAL_HELPREFRESH_BUTTON') . ' OK </b>';
 			}
 			else
 			{
-				$msg = '<b style="color:red">' . $table_name . ' ' . \JText::sprintf('JGLOBAL_HELPREFRESH_BUTTON') . ' ' . \JText::_('ERROR') . '  </b>';
+				$msg = '<b style="color:red">' . $table_name . ' ' . JText::sprintf('JGLOBAL_HELPREFRESH_BUTTON') . ' ' . JText::_('ERROR') . '  </b>';
 			}
 
 			$query = $db->getQuery(true);
@@ -166,11 +161,11 @@ class plgSystemNotificationaryInstallerScript extends ScriptAry
 
 			if ($res)
 			{
-				$msg = '<b style="color:green">' . $table_name . ' ' . \JText::sprintf('JGLOBAL_HELPREFRESH_BUTTON') . ' OK </b>';
+				$msg = '<b style="color:green">' . $table_name . ' ' . JText::sprintf('JGLOBAL_HELPREFRESH_BUTTON') . ' OK </b>';
 			}
 			else
 			{
-				$msg = '<b style="color:red">' . $table_name . ' ' . \JText::sprintf('JGLOBAL_HELPREFRESH_BUTTON') . ' ' . \JText::_('ERROR') . '  </b>';
+				$msg = '<b style="color:red">' . $table_name . ' ' . JText::sprintf('JGLOBAL_HELPREFRESH_BUTTON') . ' ' . JText::_('ERROR') . '  </b>';
 			}
 		}
 
@@ -182,7 +177,7 @@ class plgSystemNotificationaryInstallerScript extends ScriptAry
 		// $parent is the class calling this method
 		// $type is the type of change (install, update or discover_install)
 
-		// echo '<p>' . \JText::_('COM_HELLOWORLD_PREFLIGHT_' . $type . '_TEXT') . '</p>';
+		// echo '<p>' . JText::_('COM_HELLOWORLD_PREFLIGHT_' . $type . '_TEXT') . '</p>';
 	}
 
 	/**
@@ -190,7 +185,7 @@ class plgSystemNotificationaryInstallerScript extends ScriptAry
 	 *
 	 * @return void
 	 */
-	function postflight( $type, $parent, $publishPlugin = true )
+	function postflight( $type, $parent )
 	{
 		$manifest = $parent->getParent()->getManifest();
 
@@ -203,7 +198,7 @@ class plgSystemNotificationaryInstallerScript extends ScriptAry
 		jimport('joomla.filesystem.file');
 
 
-		$db = \JFactory::getDbo();
+		$db = JFactory::getDbo();
 
 		// Select NAS parameters and store them to newly installed NA parameters. Uninstall NAS
 		// Select NotifyArticleSubmit params
@@ -222,8 +217,8 @@ class plgSystemNotificationaryInstallerScript extends ScriptAry
 				$db->quoteName('params') . '=' . $db->Quote($row['params']),
 			);
 			$conditions = array(
-				$db->quoteName('folder') . '=' . $db->Quote($this->plgType),
-				$db->quoteName('element') . '=' . $db->Quote($this->plgName),
+				$db->quoteName('folder') . '=' . $db->Quote($this->plg_type),
+				$db->quoteName('element') . '=' . $db->Quote($this->plg_name),
 			);
 			$query->update($db->quoteName('#__extensions'))->set($fields)->where($conditions);
 			$db->setQuery($query);
@@ -235,11 +230,11 @@ class plgSystemNotificationaryInstallerScript extends ScriptAry
 
 			if($getAffectedRows>0)
 			{
-				$msg = '<b style="color:green">' . \JText::sprintf('COM_INSTALLER_MSG_UPDATE_SUCCESS', \JText::_($this->plgFullName)) . '</b>';
+				$msg = '<b style="color:green">' . JText::sprintf('COM_INSTALLER_MSG_UPDATE_SUCCESS', JText::_($this->plg_full_name)) . '</b>';
 			}
 			else
 			{
-				$msg = '<b style="color:red">' . \JText::sprintf('COM_INSTALLER_MSG_UPDATE_ERROR', \JText::_($this->plgName)) . '</b>';
+				$msg = '<b style="color:red">' . JText::sprintf('COM_INSTALLER_MSG_UPDATE_ERROR', JText::_($this->plg_name)) . '</b>';
 			}
 
 			$this->messages[] = $msg;
@@ -253,11 +248,11 @@ class plgSystemNotificationaryInstallerScript extends ScriptAry
 
 			if ($res)
 			{
-				$msg = '<b style="color:green">' . \JText::sprintf('COM_INSTALLER_UNINSTALL_SUCCESS', $row['element']) . '</b>';
+				$msg = '<b style="color:green">' . JText::sprintf('COM_INSTALLER_UNINSTALL_SUCCESS', $row['element']) . '</b>';
 			}
 			else
 			{
-				$msg = '<b style="color:red">' . \JText::sprintf('COM_INSTALLER_UNINSTALL_ERROR', $row['element']) . '</b>';
+				$msg = '<b style="color:red">' . JText::sprintf('COM_INSTALLER_UNINSTALL_ERROR', $row['element']) . '</b>';
 			}
 
 			$this->messages[] = $msg;
@@ -279,11 +274,11 @@ class plgSystemNotificationaryInstallerScript extends ScriptAry
 
 			if ($res)
 			{
-				$msg = '<b style="color:green">' . \JText::sprintf('COM_INSTALLER_UNINSTALL_SUCCESS', $row['name']) . '</b>';
+				$msg = '<b style="color:green">' . JText::sprintf('COM_INSTALLER_UNINSTALL_SUCCESS', $row['name']) . '</b>';
 			}
 			else
 			{
-				$msg = '<b style="color:red">' . \JText::sprintf('COM_INSTALLER_UNINSTALL_ERROR', $row['name']) . '</b>';
+				$msg = '<b style="color:red">' . JText::sprintf('COM_INSTALLER_UNINSTALL_ERROR', $row['name']) . '</b>';
 			}
 
 			$this->messages[] = $msg;
@@ -296,11 +291,6 @@ class plgSystemNotificationaryInstallerScript extends ScriptAry
 
 		parent::postflight($type, $parent, $publishPlugin = true);
 
-		if ('update' === $type) 
-		{
-			$this->_publishPlugin($this->ext_name, $this->ext_group, $this->ext_full_name);
-		}
-
 	}
 
 	private function _prepareDefaultParams ($manifest, $groupname = 'notificationgroup')
@@ -308,15 +298,15 @@ class plgSystemNotificationaryInstallerScript extends ScriptAry
 $debug = true;
 $debug = false;
 		// Get extension table class
-		$extensionTable = \JTable::getInstance('extension');
+		$extensionTable = JTable::getInstance('extension');
 		// Find plugin id, in my case it was plg_ajax_ajaxhelpary
 		$pluginId = $extensionTable->find( array('element' => $this->ext_name, 'type' => 'plugin') );
 
 		$extensionTable->load($pluginId);
 
 		// Get joomla default object
-		$params = new \JRegistry;
-		$params_new = new \JRegistry;
+		$params = new JRegistry;
+		$params_new = new JRegistry;
 		$params->loadString($extensionTable->params, 'JSON'); // Load my plugin params.
 
 		// The parameters in the DB are stored as a one-dimensional array
@@ -332,7 +322,7 @@ echo PHP_EOL.'</pre>'.PHP_EOL;
 //~ dump ($params->toObject(),'$params');
 		if (empty($groupOfRules) || is_string($groupOfRules)) {
 			$inside_group = false;
-			$notificationgroup = new \stdClass;
+			$notificationgroup = new stdClass;
 			foreach ($manifest->xpath('//fieldset/field') as $field) {
 				$fname = (string) $field['name'];
 				if ($fname == '{'.$groupname ) {
@@ -375,7 +365,7 @@ echo PHP_EOL.'</pre>'.PHP_EOL;
 			$countOfGroups = count($groupOfRules->{'{'.$groupname})/3;
 //~ dump ($countOfGroups,'$countOfGroups');
 			$inside_group = false;
-			$notificationgroup = new \stdClass;
+			$notificationgroup = new stdClass;
 			foreach ($manifest->xpath('//fieldset/field') as $field) {
 				$fname = (string) $field['name'];
 				if ($fname == '{'.$groupname ) {
@@ -438,10 +428,10 @@ exit;
 
 		// check and store
 		if (!$extensionTable->check() || !$extensionTable->store()) {
-			$msg = '<b style="color:red">' . \JText::sprintf('COM_INSTALLER_MSG_UPDATE_ERROR',\JText::_($this->ext_full_name)) . '</b>';
+			$msg = '<b style="color:red">' . JText::sprintf('COM_INSTALLER_MSG_UPDATE_ERROR',JText::_($this->ext_full_name)) . '</b>';
 		}
 		else {
-			$msg = '<b style="color:green">' . \JText::sprintf('COM_INSTALLER_MSG_UPDATE_SUCCESS',\JText::_($this->ext_full_name)) . '</b>';
+			$msg = '<b style="color:green">' . JText::sprintf('COM_INSTALLER_MSG_UPDATE_SUCCESS',JText::_($this->ext_full_name)) . '</b>';
 		}
 		$this->messages[] = $msg;
 
@@ -451,7 +441,7 @@ exit;
 	{
 		if(!class_exists('paramsHelper'))
 		{
-			include __DIR__.'/Helpers/paramsHelper.php';
+			include __DIR__.'/helpers/paramsHelper.php';
 		}
 
 		$helper = new paramsHelper($element = 'notificationary', $type = 'plugin', $groupname, $manifest);
@@ -519,7 +509,7 @@ exit;
 
 		if ($status_action_to_notify_FLAG)
 		{
-			$this->updateMessages[] = 'Please check/update options for <b>"' . \JText::_('PLG_SYSTEM_NOTIFICATIONARY_FIELD_STATUS_ACTION_TO_NOTIFY') . '"</b>.
+			$this->updateMessages[] = 'Please check/update options for <b>"' . JText::_('PLG_SYSTEM_NOTIFICATIONARY_FIELD_STATUS_ACTION_TO_NOTIFY') . '"</b>.
 				<img width="545" src="http://static.xscreenshot.com/2016/05/12/03/screen_110d9b0551d56aff16ef7b970b2cc672" style="border-radius:5px;">
 			 ';
 		}
