@@ -124,6 +124,20 @@ $predefined_context_templates = array(
 		// ~ 'onContentChangeState' => 'zoo/onStateChangedZooItem.php', // The extension uses own function with own parameters. Have to catch the parametes, rework them to the form accepted by the regural joomla event, and pass to the regular joomla event
 		// 'onContentPrepareForm' => 'zoo/onEditZooItem.php', // The extension uses own function with own parameters. Have to catch the parametes, rework them to the form accepted by the regural joomla event, and pass to the regular joomla event
 		),
+	'com_users.user' => [
+		'Title' => 'Joomla Users',
+		'Item table class' => 'JTableUser',
+		// 'View link'=> 'index.php?option=com_hotspots&view=hotspot&id=##ID##',
+		// 'Frontend edit link'=> 'index.php?option=com_hotspots&task=form.edit&id=##ID##',
+		'Backend edit link'=> 'index.php?option=com_users&task=user.edit&id=##ID##',
+		'Category table class' => 'JTableUsergroup',
+		'Category context' => 'com_users.group',
+		'onContentAfterSave' => 'com_users/onUserAfterSave.php', // Just an alias name of the function which is used by the extension. It's assumed the the extension function uses the same parameters and core joomla plugin event function
+		'onContentBeforeSave' => 'com_users/onUserBeforeSave.php', // Just an alias name of the function which is used by the extension. It's assumed the the extension function uses the same parameters and core joomla plugin event function
+		// 'onContentChangeState' => 'com_users/onUserBeforeSave.php', // The extension uses own function with own parameters. Have to catch the parametes, rework them to the form accepted by the regural joomla event, and pass to the regular joomla event
+		'contextAliases' => 'com_users.users,com_users.users.default.filter', // may be comma separated, here it's used when publishing/unpublishing an Marker'
+		// 'RouterClass::RouterMethod' => 'HotspotsHelperRoute::getHotspotRoute',
+	],
 );
 
 ksort($predefined_context_templates);

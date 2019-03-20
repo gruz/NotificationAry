@@ -10,6 +10,8 @@
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 
+ // TODO include in new ALPHA this change: self::shouldShowSwitchCheckFlag
+ 
 // No direct access
 defined('_JEXEC') or die;
 
@@ -863,6 +865,11 @@ if (!class_exists('NotificationAryHelper') )
 					{
 						$this->previous_article = $jevent;
 					}
+
+					break;
+				case 'com_users.users':
+					$this->previous_article = $contentItem;
+					$this->previous_state = $contentItem->state;
 
 					break;
 				default :
@@ -4239,7 +4246,7 @@ if ($debug)
 							}
 							else
 							{
-								if (is_array($this->contentItem->{$path[2]}) && isset($this->contentItem->{$path[2]}[$path[3]]))
+								if (isset($this->contentItem->{$path[2]}) && is_array($this->contentItem->{$path[2]}) && isset($this->contentItem->{$path[2]}[$path[3]]))
 								{
 									$value = $this->contentItem->{$path[2]}[$path[3]];
 
@@ -4265,6 +4272,9 @@ if ($debug)
 							break;
 					}
 
+					if (empty($value)) {
+						$value = '';
+					}
 					$text = str_replace($matches[0][$k], (string) $value, $text);
 				}
 			}
@@ -6510,8 +6520,6 @@ if ($debug)
 			include dirname(__FILE__) . '/helpers/predefined_contexts.php';
 		}
 	}
-
-	$temp_alias_functions = array();
 
 	foreach ($custom_templates as $context => $array)
 	{

@@ -69,7 +69,7 @@ class NAFormFieldContenttypelimited extends JFormFieldList
 			It was:
 			It became:*/
 			//->where('type_alias NOT LIKE ' . $db->q('%.category'))
-			->where('type_alias NOT LIKE ' . $db->q('com_users.note'))
+			->where('type_alias NOT LIKE ' . $db->q('com_users%'))
 			/*##mygruz20160412235218 } */
 
 			->order('a.type_title ASC');

@@ -4,10 +4,10 @@
   <author>Gruz</author>
   <authorEmail>arygroup@gmail.com</authorEmail>
   <authorUrl>http://gruz.ml/extensions/notificationary.html</authorUrl>
-  <creationDate>2019-02-13</creationDate>
+  <creationDate>2019-03-20</creationDate>
   <copyright>Copyright (C) 2004-2019 Gruz All rights reserved.</copyright>
   <license>GNU General Public License</license>
-  <version>0.2.17 dev build 49</version>
+  <version>0.2.17 dev build 50</version>
   <description>PLG_SYSTEM_NOTIFICATIONARY_FIELD_DESC</description>
   <files>
 
