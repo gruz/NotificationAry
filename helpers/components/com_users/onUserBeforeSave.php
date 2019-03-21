@@ -58,6 +58,53 @@ function onUserBeforeSave($user, $isNew, $data)
 	$user->catid = null;
 	$user->created = $user->registerDate;
 
+	$fields = FieldsHelper::getFields("com_users.user", $user);
+
+	// Loading the model
+	// $model = JModelLegacy::getInstance('Field', 'FieldsModel', array('ignore_request' => true));
+
+	
+	// Loop over the fields
+	foreach ($fields as $field)
+	{
+		
+		// Determine the value if it is (un)available from the data
+		if (key_exists($field->name, $data['com_fields']))
+		{
+			$value = $data['com_fields'][$field->name] === false ? null : $data['com_fields'][$field->name];
+		}
+		// Field not available on form, use stored value
+		else
+		{
+			$value = $field->rawvalue;
+		}
+
+		// If no value set (empty) remove value from database
+		if (is_array($value) ? !count($value) : !strlen($value))
+		{
+			$value = null;
+		}
+
+		// JSON encode value for complex fields
+		if (is_array($value) && (count($value, COUNT_NORMAL) !== count($value, COUNT_RECURSIVE) || !count(array_filter(array_keys($value), 'is_numeric'))))
+		{
+			$value = json_encode($value);
+		}
+
+		$field->new_value = $value;
+		$field->old_value = $field->value;
+
+		// Setting the value for the field and the item
+		// $model->setFieldValue($field->id, $item->id, $value);
+	}
+
+	if ($fields)
+	{
+		$user->com_fields = $fields;
+	}
+	// dump($user->com_fields, 'before');
+
+
 // dump($user);
 	return $this->onContentBeforeSave($context, $user, $isNew);
 	// $this->onContentChangeState($context, $contentItem, $data->block);

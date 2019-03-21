@@ -135,7 +135,7 @@ $predefined_context_templates = array(
 		'onContentAfterSave' => 'com_users/onUserAfterSave.php', // Just an alias name of the function which is used by the extension. It's assumed the the extension function uses the same parameters and core joomla plugin event function
 		'onContentBeforeSave' => 'com_users/onUserBeforeSave.php', // Just an alias name of the function which is used by the extension. It's assumed the the extension function uses the same parameters and core joomla plugin event function
 		// 'onContentChangeState' => 'com_users/onUserBeforeSave.php', // The extension uses own function with own parameters. Have to catch the parametes, rework them to the form accepted by the regural joomla event, and pass to the regular joomla event
-		'contextAliases' => 'com_users.users,com_users.users.default.filter', // may be comma separated, here it's used when publishing/unpublishing an Marker'
+		'contextAliases' => 'com_users.users,com_users.users.default.filter,com_users.profile', // may be comma separated, here it's used when publishing/unpublishing an Marker'
 		// 'RouterClass::RouterMethod' => 'HotspotsHelperRoute::getHotspotRoute',
 	],
 );

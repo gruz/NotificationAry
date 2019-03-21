@@ -36,6 +36,9 @@ function onUserAfterSave($user, $isNew, $success, $msg)
 	$user->modified_by = JFactory::getUser()->id;;
 	$user->catid = null;
 	$user->created = $user->registerDate;
+	
+	// dump($user, 'after');
+	// dump($this->previous_article->com_fields, 'after3');
 
 	return $this->onContentAfterSave($context, $user , $isNew);
 }

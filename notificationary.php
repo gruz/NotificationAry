@@ -1,4 +1,6 @@
 <?php
+
+use Joomla\CMS\Form\Form;
 /**
  * A plugin which sends notifications when an article is added or modified at a Joomla web-site
  *
@@ -11,13 +13,16 @@
  */
 
  // TODO include in new ALPHA this change: self::shouldShowSwitchCheckFlag
- 
+
 // No direct access
 defined('_JEXEC') or die;
 
 jimport('gjfields.gjfields');
 jimport('gjfields.helper.plugin');
 jimport('joomla.filesystem.folder');
+
+JLoader::register('FieldsHelper', JPATH_ADMINISTRATOR . '/components/com_fields/helpers/fields.php');
+
 
 $latest_gjfields_needed_version = '1.2.0';
 $error_msg = 'Install the latest GJFields plugin version <span style="color:black;">'
@@ -621,7 +626,7 @@ if (!class_exists('NotificationAryHelper') )
 				return true;
 			}
 
-			/* ##mygruz20180313030701 {  
+			/* ##mygruz20180313030701 {
 			if ($context == 'com_categories.category')
 			{
 				$context .= $jinput->get('extension', null);
@@ -826,7 +831,8 @@ if (!class_exists('NotificationAryHelper') )
 		 */
 		public function onContentBeforeSave($context, $contentItem, $isNew)
 		{
-// ~ dump($context,'onContentBeforeSave');
+
+			// ~ dump($context,'onContentBeforeSave');
 
 			$jinput = JFactory::getApplication()->input;
 
@@ -1168,7 +1174,7 @@ if (!class_exists('NotificationAryHelper') )
 		 */
 		public function onContentAfterSave($context, $contentItem, $isNew)
 		{
-// ~ dumpTrace();
+			// ~ dumpTrace();
 			$jinput = JFactory::getApplication()->input;
 
 			if ($jinput->get('option', null) == 'com_dump')
@@ -1313,6 +1319,10 @@ if (!class_exists('NotificationAryHelper') )
 					// Clear anyway
 					$session->clear('shouldShowSwitchCheckFlagK2SpecialDefaultValue', $this->plg_name);
 
+					if (isset($jform['runnotificationary']))
+					{
+						$jform_runnotificationary = $jform['runnotificationary'];
+					}
 					if (isset($jform['attribs']['runnotificationary']))
 					{
 						$jform_runnotificationary = $jform['attribs']['runnotificationary'];
@@ -5790,12 +5800,14 @@ if ($debug)
 		 */
 		public function onContentPrepareForm($form, $contentItem)
 		{
-// ~ dump('onContentPrepareForm','onContentPrepareForm');
-// ~ dumpTrace();
+			// ~ dump('onContentPrepareForm','onContentPrepareForm');
+			// ~ dumpTrace();
+
 			$this->_userProfileFormHandle($form, $contentItem);
 
-$debug = true;
-$debug = false;
+			$debug = true;
+			$debug = false;
+
 			$jinput = JFactory::getApplication()->input;
 
 			if ($jinput->get('option', null) == 'com_dump')
@@ -5803,12 +5815,12 @@ $debug = false;
 				return;
 			}
 
-if ($debug)
-{
-	dump('onContentPrepareForm', 'onContentPrepareForm');
-	dump($form, 'form');
-	dump($contentItem, '$contentItem');
-}
+			if ($debug)
+			{
+				dump('onContentPrepareForm', 'onContentPrepareForm');
+				dump($form, 'form');
+				dump($contentItem, '$contentItem');
+			}
 
 			$var = $jinput->get('cid');
 
@@ -5839,29 +5851,29 @@ if ($debug)
 
 			$session = JFactory::getSession();
 
-if ($debug)
-{
-	dump($context, '$context from Form');
-}
+			if ($debug)
+			{
+				dump($context, '$context from Form');
+			}
 
 			$session->set('FormContext', $context, $this->plg_name);
 			$context = $this->_contextAliasReplace($context);
 			$this->_setContext($context);
 
-if ($debug)
-{
-	dump($context, 'here 1 $context');
-}
+			if ($debug)
+			{
+				dump($context, 'here 1 $context');
+			}
 
 			if (!$this->_isContentEditPage($context) )
 			{
 				return;
 			}
 
-if ($debug)
-{
-	dump('here 2');
-}
+			if ($debug)
+			{
+				dump('here 2');
+			}
 
 			// Specially for JEvents. Here I set data for special JEvents event onEventEdit which is run after onContentPrepare
 			if ($context == "jevents.edit.icalevent" )
@@ -5881,7 +5893,7 @@ if ($debug)
 			// If NSwitch is off - FALSE
 			self::$shouldShowSwitchCheckFlag = false;
 
-// ~ dump($this->pparams,'$this->pparams');
+			// ~ dump($this->pparams,'$this->pparams');
 			// ~ $this->contentItem = $this->_contentItemPrepare($contentItem);
 
 			if (!empty($contentItem))
@@ -5896,11 +5908,11 @@ if ($debug)
 				return;
 			}
 
-if ($debug)
-{
-	dump($rules, '$rules');
-	dump('here 3');
-}
+			if ($debug)
+			{
+				dump($rules, '$rules');
+				dump('here 3');
+			}
 
 			$session = JFactory::getSession();
 
@@ -5911,17 +5923,19 @@ if ($debug)
 			}
 			else
 			{
-				$attribs = 'attribs';
-
-				if (!empty($contentItem) && !isset($contentItem->{$attribs}))
+				if ($form->getName() === 'com_users.profile') {
+					$attribs = 'params';
+				} elseif (!empty($contentItem) && !isset($contentItem->{$attribs}))
 				{
 					$attribs = 'params';
+				} else {
+					$attribs = 'attribs';
 				}
 
 				$session->set('AttribsField' . $context, $attribs, $this->plg_name);
 			}
 
-// ~ dump($contentItem,'$contentItem');
+			// ~ dump($contentItem,'$contentItem');
 			$app = JFactory::getApplication();
 
 			if (!empty($contentItem->$attribs))
@@ -5949,14 +5963,18 @@ if ($debug)
 					}
 				}
 			}
-
+			$fieldsetOpened = false;
 			$string = '
-						<form>
-							<fields name="' . $attribs . '">';
-
+				<form>
+					<fields name="' . $attribs . '" >';
 								if ($app->isAdmin())
 								{
 									$string .= '<fieldset name="basic" >';
+									$fieldsetOpened = true;
+								}
+								elseif ($form->getName() === 'com_users.profile') {
+									$string .= '<fieldset name="core" label="PLG_SYSTEM_NOTIFICATIONARY_NOTIFY">';
+									$fieldsetOpened = true;
 								}
 								/*
 								if (version_compare(JVERSION, '3.7', '<') == 1 || true)
@@ -5978,7 +5996,7 @@ if ($debug)
 										<option value="1">JYES</option>
 									</field>';
 
-								if ($app->isAdmin())
+								if ($fieldsetOpened)
 								{
 									$string .= '</fieldset>';
 								}
@@ -5992,8 +6010,9 @@ if ($debug)
 								$string .= '
 							</fields>
 						</form>';
-
 			$form->load((string) $string, true);
+
+			
 			$this->attribsField = $attribs;
 			self::$shouldShowSwitchCheckFlag = true;
 
