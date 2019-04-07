@@ -5925,7 +5925,7 @@ if ($debug)
 			{
 				if ($form->getName() === 'com_users.profile') {
 					$attribs = 'params';
-				} elseif (!empty($contentItem) && !isset($contentItem->{$attribs}))
+				} elseif (!empty($contentItem) && !isset($contentItem->attribs))
 				{
 					$attribs = 'params';
 				} else {

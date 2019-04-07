@@ -48,13 +48,25 @@ function onUserBeforeSave($user, $isNew, $data)
 	// 	$isNew = false;
 	// }
 	
+	$db = JFactory::getDbo();
+
+	$query = $db->getQuery(true)
+		->select($db->quoteName('id'))
+		->from($db->quoteName('#__users'))
+		->where($db->quoteName('email') . ' = ' . $db->quote(JFactory::getUser()->email));
+
+	$db->setQuery($query, 0, 1);
+
+	$user_id = $db->loadResult();
+
 	$context = 'com_users.users';
 	$this->isNew = $isNew;
 
 	$user = (object) $user;
 	$user->state = ! $user->block;
 	$user->created_by = null;
-	$user->modified_by = JFactory::getUser()->id;;
+	$user->modified_by = $user_id;
+	$user->modified = new JDate();
 	$user->catid = null;
 	$user->created = $user->registerDate;
 
