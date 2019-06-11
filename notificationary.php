@@ -3349,6 +3349,11 @@ if ($debug)
 				$user->id = -1;
 			}
 
+			$userGroupToCache = $user->groups;
+			sort($userGroupToCache);
+			$userGroupToCache = implode(',', $userGroupToCache);
+			$hash = $this->contentItem->id . '|' . $userGroupToCache;
+
 			if ($user->id == $this->author->id || $user->id == $this->modifier->id)
 			{
 				// Do not cache for author or modifier
@@ -3357,11 +3362,6 @@ if ($debug)
 			{
 				if (!$this->rule->personalize)
 				{
-					$userGroupToCache = $user->groups;
-					sort($userGroupToCache);
-					$userGroupToCache = implode(',', $userGroupToCache);
-					$hash = $this->contentItem->id . '|' . $userGroupToCache;
-
 					if (isset($this->rule->cachedMailBuilt[$hash]))
 					{
 						$mail = $this->rule->cachedMailBuilt[$hash];

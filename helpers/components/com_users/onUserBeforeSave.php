@@ -27,8 +27,9 @@ defined('_JEXEC') or die('Restricted access');
 
 function onUserBeforeSave($user, $isNew, $data)
 {
-
-// dump ('onBeforeSaveEvent');
+	// dump ($user, 'user');
+	// dump ($data, 'data');
+	// // dump ('onBeforeSaveEvent');
 	// $dataModel = new JEventsDataModel;
 
 	// foreach ($vevent as $k => $v)
@@ -108,6 +109,23 @@ function onUserBeforeSave($user, $isNew, $data)
 
 		// Setting the value for the field and the item
 		// $model->setFieldValue($field->id, $item->id, $value);
+	}
+
+	$names = [
+		'name' => JText::_('COM_USERS_PROFILE_NAME_LABEL'),
+		'username' => JText::_('JGLOBAL_USERNAME'),
+		'email' => JText::_('JGLOBAL_EMAIL'),
+	];
+
+	foreach ($names as $name => $label) {
+
+		$field = new stdClass;
+	
+		$field->old_value = $user->$name;
+		$field->new_value = $data[$name];
+		$field->label = $label;
+
+		array_unshift($fields, $field);
 	}
 
 	if ($fields)
