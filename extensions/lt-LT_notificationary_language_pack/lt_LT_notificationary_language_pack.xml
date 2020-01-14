@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <extension version="2.5" type="file" method="upgrade">
   <name>lt_LT_notificationary_language_pack</name>
-  <version>2019-06-11 00:19</version>
-  <creationDate>2019-06-11 00:19</creationDate>
+  <version>2020-01-14 11:09</version>
+  <creationDate>2020-01-14 11:09</creationDate>
   <author>AryGroup</author>
   <email>arygroup@gmail.com</email>
   <authorUrl>http://arygroup.ga</authorUrl>
-  <copyright>Copyright (C) 2004-2019 Gruz. All rights reserved.</copyright>
+  <copyright>Copyright (C) 2004-2020 Gruz. All rights reserved.</copyright>
   <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
   <description>lt-LT NotificationAry language pack</description>
   <scriptfile>scriptfile.php</scriptfile>
