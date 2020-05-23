@@ -7,12 +7,12 @@
   <creationDate>2020-05-23</creationDate>
   <copyright>Copyright (C) 2004-2020 Gruz All rights reserved.</copyright>
   <license>GNU General Public License</license>
-  <version>0.2.18 dev build 6</version>
+  <version>0.2.18 dev build 7</version>
   <description>PLG_SYSTEM_NOTIFICATIONARY_FIELD_DESC</description>
   <files>
 
 
-  <folder>code</folder><folder>css</folder><folder>extensions</folder><folder>fields</folder><folder>forms</folder><folder>helpers</folder><folder>images</folder><folder>js</folder><folder>language</folder><folder>layouts</folder><filename>README.md</filename><filename>index.html</filename><filename plugin="notificationary">notificationary.php</filename><filename>scriptary.php</filename><filename>scriptfile.php</filename></files>
+  <folder>HelperClasses</folder><folder>code</folder><folder>css</folder><folder>extensions</folder><folder>fields</folder><folder>forms</folder><folder>helpers</folder><folder>images</folder><folder>js</folder><folder>language</folder><folder>layouts</folder><filename>README.md</filename><filename>index.html</filename><filename plugin="notificationary">notificationary.php</filename><filename>scriptary.php</filename><filename>scriptfile.php</filename></files>
 
 	<media destination="plg_system_notificationary" folder=".">
 		<folder>css</folder>

@@ -1,4 +1,6 @@
 <?php
+
+use NotificationAry\HelperClasses\NotificationAryHelper;
 /**
  * This is a helper file used to output email template in the plugin settings.
  * Tries to load an content item object based on the selected source content type

@@ -9,10 +9,12 @@
  * @license GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 
+ namespace NotificationAry\HelperClasses;
+
 // No direct access
 defined('_JEXEC') or die;
 
-class fakeMailerClass
+class FakeMailerClass
 {
 
 	function isHTML($var) { $this->{__FUNCTION__} = $var; }

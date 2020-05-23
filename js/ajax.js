@@ -87,7 +87,7 @@ jQuery( document ).ready(function( $ ) {
 		{
 			if (response.finished)
 			{
-				var msg = Joomla.optionsStorage.notificationary.sent+response.message;
+				var msg = Joomla.optionsStorage.notificationary.messages.sent+response.message;
 				resultElement.append( msg  );
 				var tmp_str = msg;
 

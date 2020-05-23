@@ -9,8 +9,22 @@
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 
+namespace NotificationAry\HelperClasses;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
+
+use JFactory;
+use JUser;
+use JComponentHelper;
+use JHTML;
+use JText;
+use JForm;
+use JFormHelper;
+use JTable;
+use JRegistry;
+use JFolder;
+use JFile, JLog, JUri, App;
 
 /**
  * Helper class
@@ -124,7 +138,7 @@ class NotificationAryHelper
 
 		if (!isset($predefined_context_templates))
 		{
-			include dirname(__FILE__) . '/predefined_contexts.php';
+			include NotificationAry_DIR . '/helpers/predefined_contexts.php';
 		}
 
 		if (!isset($predefined_context_templates[$context]))
@@ -503,7 +517,7 @@ class NotificationAryHelper
 				if (!class_implements($class, 'JTableInterface'))
 				{
 					// This isn't an instance of JTableInterface. Abort.
-					throw new RuntimeException('Class must be an instance of JTableInterface');
+					throw new \RuntimeException('Class must be an instance of JTableInterface');
 				}
 
 				// ~ $result = $class::getInstance($tableInfo->special->type, $tableInfo->special->prefix);
@@ -663,11 +677,11 @@ class NotificationAryHelper
 				$value = implode(',', $value);
 			}
 
-			if ( is_object( $value ) ) 
+			if ( is_object( $value ) )
 			{
 				continue;
 			}
-			
+
 			$place_holders_body_input[] = '<span style="color:red;">##User#' . $key . '##</span> => ' . htmlentities((string) $value) . '<br/>';
 		}
 	}
