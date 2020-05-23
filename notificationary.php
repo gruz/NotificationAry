@@ -36,8 +36,8 @@ jimport('joomla.filesystem.folder');
 
 JLoader::register('FieldsHelper', JPATH_ADMINISTRATOR . '/components/com_fields/helpers/fields.php');
 
-$latest_gjfields_needed_version = '1.2.0';
-$gjfieldsChecker = new GJFieldsChecker($latest_gjfields_needed_version);
+$latest_gjfields_needed_version = '1.2.16';
+$gjfieldsChecker = new GJFieldsChecker($latest_gjfields_needed_version, 'NotificationAry');
 $isOK = $gjfieldsChecker->check();
 
 if (!$isOK) {

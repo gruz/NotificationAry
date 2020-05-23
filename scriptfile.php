@@ -509,9 +509,7 @@ exit;
 
 		if ($status_action_to_notify_FLAG)
 		{
-			$this->updateMessages[] = 'Please check/update options for <b>"' . JText::_('PLG_SYSTEM_NOTIFICATIONARY_FIELD_STATUS_ACTION_TO_NOTIFY') . '"</b>.
-				<img width="545" src="http://static.xscreenshot.com/2016/05/12/03/screen_110d9b0551d56aff16ef7b970b2cc672" style="border-radius:5px;">
-			 ';
+			$this->updateMessages[] = 'Please check/update options for <b>"' . JText::_('PLG_SYSTEM_NOTIFICATIONARY_FIELD_STATUS_ACTION_TO_NOTIFY') . '"</b>.';
 		}
 /*
 echo '<hr/>';

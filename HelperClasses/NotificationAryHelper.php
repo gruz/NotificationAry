@@ -694,7 +694,6 @@ class NotificationAryHelper
 	 * Replaces the plugin code with the subscribe/unsubscribe form otherwise.
 	 * The plugin code format: {na subscribe 5889f0565a762} where 5889f0565a762 is the
 	 * NA rule UniqID. See the screenshot to get the idea
-	 * http://view.xscreenshot.com/a3dbc86f705ab26c2c2b15627b40dc52
 	 *
 	 * @param   object  $pluginObject  NA plugin object
 	 * @param   array   $body          HTML body

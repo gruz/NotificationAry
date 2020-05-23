@@ -69,7 +69,7 @@ jQuery( document ).ready(function($) {
 	$('a.add_new_slide').click(function(e) {
 		e.preventDefault();
 		var me = $(this);
-		var currPanel = $(me.closest('div.variablefield_div'));
+		var currPanel = me.closest('div.variablefield_div');
 		var maxRepeat = me.attr('data-max-repeat-length');
 		if (maxRepeat>0) {
 			var allPanels = currPanel.parent().find('div.variablefield_div'); // go to top level and find all collapsable groups
@@ -79,19 +79,14 @@ jQuery( document ).ready(function($) {
 			}
 		}
 
-
-		currPanel.find( 'select' ).each(function() {	$(this).chosen("destroy");	});
+		var currPanelSelect = currPanel.find( 'select' );
+		currPanelSelect.chosen("destroy");
 		var newPanel = currPanel.clone(true);
-		currPanel.find( 'select' ).each(function() {	$(this).chosen({disable_search_threshold: 10});	});
-		newPanel.find( 'select' ).each(function() {	$(this).chosen({disable_search_threshold: 10});	});
-		newPanel.find( '.isToggler' ).each(function() {
-			$(this).unbind( "change" );
-			$(this).removeClass( "isToggler" );
-		});
+		currPanelSelect.chosen({disable_search_threshold: 10});
+		newPanel.find( '.isToggler' ).unbind( "change" ).removeClass( "isToggler" );
 		newPanel.find( '.gjtoggler' ).each(function() {
-			$.connectToggler(this);
+			jQuery.connectToggler(this);
 		});
-
 
 		jQuery(newPanel).find('input.ruleUniqID')[0].value = uniqid(); // Make uniqId for a group
 		// Add smth. like (2) to the name of the group when copying
@@ -109,10 +104,9 @@ jQuery( document ).ready(function($) {
 		}
 		jQuery(newPanel).find('.groupnameEditField')[0].value = jQuery(newPanel).find('.groupnameEditField')[0].value + ' ('+i+')';
 
-		newPanel.insertAfter(currPanel);
-
-
+		newPanel.insertAfter(currPanel).find('select').chosen({disable_search_threshold: 10});
 	});
+
 	$('a.move_up_slide').click(function(e) {
 		e.preventDefault();
 		var me = $(this);

@@ -14,44 +14,44 @@ namespace NotificationAry\HelperClasses;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use JFactory;
-
 class GJFieldsChecker
 {
 	private $version;
 	private $message;
+	private $extensionName;
 
-	public function __construct($version)
+	public function __construct($version, $extensionName)
 	{
 		$this->version = $version;
+		$this->extensionName = $extensionName;
 		return $this;
 	}
 
-	public function check() 
+	public function check()
 	{
-		$error_msg = 'Install the latest GJFields plugin version <span style="color:black;">'
-		. __FILE__ . '</span>: <a href="http://www.gruz.org.ua/en/extensions/gjfields-sefl-reproducing-joomla-jform-fields.html">GJFields</a>';
-	
+		$error_msg =  '<b>'. $this->extensionName . '</b>: Install the latest GJFields plugin version at least <span style="color:black;">'
+		. $this->version . '</span>: <a href="http://gruz.ml/en/extensions/gjfields-sefl-reproducing-joomla-jform-fields.html">GJFields</a>';
+
 		$isOk = true;
-	
+
 		while (true) {
 			$isOk = false;
-		
+
 			if (!class_exists('JPluginGJFields')) {
 				$error_msg = 'Strange, but missing GJFields library for <span style="color:black;">'
 					. __FILE__ . '</span><br> The library should be installed together with the extension... Anyway, reinstall it:
-					<a href="http://www.gruz.org.ua/en/extensions/gjfields-sefl-reproducing-joomla-jform-fields.html">GJFields</a>';
+					<a href="http://gruz.ml/en/extensions/gjfields-sefl-reproducing-joomla-jform-fields.html">GJFields</a>';
 				break;
 			}
-		
+
 			$gjfields_version = file_get_contents(JPATH_ROOT . '/libraries/gjfields/gjfields.xml');
 			preg_match('~<version>(.*)</version>~Ui', $gjfields_version, $gjfields_version);
 			$gjfields_version = $gjfields_version[1];
-		
+
 			if (version_compare($gjfields_version, $this->version, '<')) {
 				break;
 			}
-		
+
 			$isOk = true;
 			break;
 		}
@@ -64,7 +64,7 @@ class GJFieldsChecker
 
 	/**
 	 * Get the value of message
-	 */ 
+	 */
 	public function getMessage()
 	{
 		return $this->message;
@@ -74,7 +74,7 @@ class GJFieldsChecker
 	 * Set the value of message
 	 *
 	 * @return  self
-	 */ 
+	 */
 	public function setMessage($message)
 	{
 		$this->message = $message;

@@ -26,9 +26,8 @@ use JString;
 use JFactory;
 use JEventsDataModel;
 use JURI, JUserHelper;
-use JFile, JFolder, JUser, JApplication, JLoader, JPath, JRoute, 
-JApplicationHelper,
-JSession;
+use JFile, JFolder, JUser, JApplication, JLoader, JPath, JRoute, JCategories,
+JApplicationHelper, JSession;
 
 /**
  * Plugin code
@@ -472,6 +471,10 @@ class NotificationaryCore extends \JPluginGJFields
 
 					break;
 			}
+
+			$extension_info = array_map(function($item) {
+				return '\\' . $item;
+			}, $$extension_info);
 
 			return array($extension_info, $contentType);
 		}
@@ -1027,8 +1030,8 @@ class NotificationaryCore extends \JPluginGJFields
 			$jtable_class = get_class($contentItem);
 			$msg = array();
 			$msg[] = '</p><div class="alert-message row-fluid">';
-			$msg[] = '<p><a href="http://static.xscreenshot.com/2016/05/10/00/screen_31582c1a5da14780c3ab5f5181a4f46f" target="_blank"><small><b>'
-				. $this->plg_name . '</b> ' . JText::_('JTOOLBAR_DISABLE') . ' ' . JText::_('NOTICE') . '</small></a></p>';
+			$msg[] = '<p><small><b>'
+				. $this->plg_name . '</b> ' . JText::_('JTOOLBAR_DISABLE') . ' ' . JText::_('NOTICE') . '</small></p>';
 			$msg[] = '<b>Context:</b> ' . $context;
 			$msg[] = '<br><b>Item table name:</b> ' . trim($jtable_class);
 
