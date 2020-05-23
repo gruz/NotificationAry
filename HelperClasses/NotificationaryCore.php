@@ -474,7 +474,7 @@ class NotificationaryCore extends \JPluginGJFields
 
 			$extension_info = array_map(function($item) {
 				return '\\' . $item;
-			}, $$extension_info);
+			}, $extension_info);
 
 			return array($extension_info, $contentType);
 		}
