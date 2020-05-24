@@ -465,16 +465,12 @@ class NotificationaryCore extends \JPluginGJFields
 				case 'contextAliases':
 					break;
 				case 'RouterClass::RouterMethod':
-					$extension_info[$key] = $contentType->router;
+					$extension_info[$key] = '\\'. $contentType->router;
 					break;
 				default:
 
 					break;
 			}
-
-			$extension_info = array_map(function($item) {
-				return '\\' . $item;
-			}, $extension_info);
 
 			return array($extension_info, $contentType);
 		}

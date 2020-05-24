@@ -514,14 +514,14 @@ class NotificationAryHelper
 			{
 				$class = isset($tableInfo->special->class) ? $tableInfo->special->class : 'JTable';
 
-				if (!class_implements($class, 'JTableInterface'))
+				if (!class_implements($class, '\JTableInterface'))
 				{
 					// This isn't an instance of JTableInterface. Abort.
 					throw new \RuntimeException('Class must be an instance of JTableInterface');
 				}
 
 				// ~ $result = $class::getInstance($tableInfo->special->type, $tableInfo->special->prefix);
-				$result = $tableInfo->special->prefix . $tableInfo->special->type;
+				$result = '\\'. $tableInfo->special->prefix . $tableInfo->special->type;
 			}
 		}
 
