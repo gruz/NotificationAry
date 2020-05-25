@@ -31,7 +31,7 @@ defined('_JEXEC') or die('Restricted access');
 			if (!empty($vevent->data['custom_runnotificationary']))
 			{
 				$jform['params']['runnotificationary'] = $vevent->data['custom_runnotificationary'];
-				$jinput = JFactory::getApplication()->input;
+				$jinput = \JFactory::getApplication()->input;
 				$jform = $jinput->set('jform', $jform);
 				$jform = $jinput->get('jform', null, null);
 			}
@@ -47,7 +47,7 @@ defined('_JEXEC') or die('Restricted access');
 			$contentItem->fulltext = $contentItem->data['DESCRIPTION'];
 		}
 
-		$jinput = JFactory::getApplication()->input;
+		$jinput = \JFactory::getApplication()->input;
 		$evid = $jinput->post->get('evid');
 		$isNew = true;
 

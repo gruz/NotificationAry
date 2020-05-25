@@ -8,7 +8,7 @@
 
 defined('JPATH_PLATFORM') or die;
 
-if (!class_exists('GJFieldsFormField'))
+if (!class_exists('\\GJFieldsFormField'))
 {
 	include JPATH_ROOT . '/libraries/gjfields/gjfields.php';
 }
@@ -108,7 +108,7 @@ class NAFormFieldCategory extends \JFormFieldList
 		// We load the field just to reuse the getOptions function
 		\JForm::addFieldPath(JPATH_LIBRARIES . '/gjfields');
 
-		$formfield = JFormHelper::loadFieldType('gjfields.categoryext');
+		$formfield = \JFormHelper::loadFieldType('gjfields.categoryext');
 		$element = simplexml_load_string(
 			'
 				<field name="subscribe_categories" maxrepeatlength="1" type="gjfields.variablefield"

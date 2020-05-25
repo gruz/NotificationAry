@@ -16,7 +16,7 @@ use Joomla\Utilities\ArrayHelper;
  *
  * @since  1.6
  */
-class UsersModelUsers extends UsersModelUsersDefault
+class UsersModelUsers extends \UsersModelUsersDefault
 {
 	/**
 	 * Constructor.
@@ -66,7 +66,7 @@ class UsersModelUsers extends UsersModelUsersDefault
 	 */
 	protected function getListQuery()
 	{
-		$session = JFactory::getSession();
+		$session = \JFactory::getSession();
 
 		// Here on some reason I cannot use getState/setState. The value is not stored between page load
 		// So I arrived at a decision to use Session instead
@@ -90,7 +90,7 @@ class UsersModelUsers extends UsersModelUsersDefault
 		$categoryID = $this->getState('filter.nacategory');
 
 		$db    = $this->getDbo();
-		$app = JFactory::getApplication();
+		$app = \JFactory::getApplication();
 		// Pass the plugin object to be available in the field to have plugin params parsed there
 		$pluginObject = $app->get('plg_system_notificationary');
 
@@ -270,7 +270,7 @@ class UsersModelUsers extends UsersModelUsersDefault
 
 		foreach ($includeEmails as $k => $v)
 		{
-			$user = NotificationAryHelper::getUserByEmail($v);
+			$user = \NotificationAry\HelperClasses\NotificationAryHelper::getUserByEmail($v);
 			if ($user->id != 0)
 			{
 				$userIdsToInclude[] = $user->id;
@@ -279,7 +279,7 @@ class UsersModelUsers extends UsersModelUsersDefault
 
 		foreach ($excludeEmails as $k => $v)
 		{
-			$user = NotificationAryHelper::getUserByEmail($v);
+			$user = \NotificationAry\HelperClasses\NotificationAryHelper::getUserByEmail($v);
 			if ($user->id != 0)
 			{
 				$userIdsToExclude[] = $user->id;

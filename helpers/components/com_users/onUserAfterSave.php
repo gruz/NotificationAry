@@ -27,12 +27,12 @@ defined('_JEXEC') or die('Restricted access');
 function onUserAfterSave($user, $isNew, $success, $msg)
 {
 	// dump ('onBeforeSaveEvent');
-	$db = JFactory::getDbo();
+	$db = \JFactory::getDbo();
 
 	$query = $db->getQuery(true)
 		->select($db->quoteName('id'))
 		->from($db->quoteName('#__users'))
-		->where($db->quoteName('email') . ' = ' . $db->quote(JFactory::getUser()->email));
+		->where($db->quoteName('email') . ' = ' . $db->quote(\JFactory::getUser()->email));
 
 	$db->setQuery($query, 0, 1);
 
@@ -44,7 +44,7 @@ function onUserAfterSave($user, $isNew, $success, $msg)
 	$user->state = ! $user->block;
 	$user->created_by = null;
 	$user->modified_by = $user_id;
-	$user->modified = new JDate();
+	$user->modified = new \JDate();
 	$user->catid = null;
 	$user->created = $user->registerDate;
 	

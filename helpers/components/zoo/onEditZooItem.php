@@ -14,7 +14,7 @@ static function onEditZooItem($event)
 {
 	$contentItem = $event->getSubject();
 
-	if (!NotificationAryHelper::isZooEditPage($contentItem))
+	if (!\NotificationAry\HelperClasses\NotificationAryHelper::isZooEditPage($contentItem))
 	{
 		return;
 	}
@@ -32,7 +32,7 @@ static function onEditZooItem($event)
 
 
 
-	$session = JFactory::getSession();
+	$session = \JFactory::getSession();
 	$session->clear('CustomReplacement', "notificationary");
 
 	$context = 'com_zoo.item';
@@ -74,7 +74,7 @@ dump($a,'$dataModel');
 
 
 	// Include buttons defined by published quickicon plugins
-	JPluginHelper::importPlugin('system', 'notificationary');
+	\JPluginHelper::importPlugin('system', 'notificationary');
 
 	$app = JFactory::getApplication();
 
@@ -186,7 +186,7 @@ dump($a,'$dataModel');
 			}
 		}
 
-		$db = JFactory::getDbo();
+		$db = \JFactory::getDbo();
 		$query = $db->getQuery(true);
 		$query->select('category_id');
 		$query->from($db->quoteName('#__zoo_category_item'));
@@ -239,7 +239,7 @@ dump($a,'$dataModel');
 
 	$form = new JForm($context);
 
-	JDispatcher::getInstance()->trigger(
+	\JDispatcher::getInstance()->trigger(
 			'onContentPrepareForm',
 			array(
 					$form,
@@ -258,7 +258,7 @@ dump($event, 'event');
 		$context = 'com_zoo.item';
 		self::_setContext($context);
 
-		$jinput = JFactory::getApplication()->input;
+		$jinput = \JFactory::getApplication()->input;
 
 
 		// Prepare to imitate onContentPrepareForm {
@@ -272,7 +272,7 @@ dump($event, 'event');
 		$contentItem->load($jinput->get('cid', 0));
 
 		jimport('joomla.form.form');
-		$form = JForm::getInstance('itemForm', JPATH_ADMINISTRATOR . '/components/com_k2/models/item.xml');
+		$form = \JForm::getInstance('itemForm', JPATH_ADMINISTRATOR . '/components/com_k2/models/item.xml');
 		$values = array('params' => json_decode($contentItem->params));
 		$form->bind($values);
 

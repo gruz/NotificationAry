@@ -8,12 +8,12 @@
 
 defined('JPATH_PLATFORM') or die;
 
-if (!class_exists('GJFieldsFormField'))
+if (!class_exists('\\GJFieldsFormField'))
 {
 	include JPATH_ROOT . '/libraries/gjfields/gjfields.php';
 }
 
-if (!class_exists('GJFieldsFormFieldTextareafixed'))
+if (!class_exists('\\GJFieldsFormFieldTextareafixed'))
 {
 	include JPATH_ROOT . '/libraries/gjfields/textareafixed.php';
 }
@@ -24,7 +24,7 @@ if (!class_exists('GJFieldsFormFieldTextareafixed'))
  * @author  Gruz <arygroup@gmail.com>
  * @since   0.0.1
  */
-class NAFormFieldTextareawithpreload extends GJFieldsFormFieldTextareafixed
+class NAFormFieldTextareawithpreload extends \GJFieldsFormFieldTextareafixed
 {
 	/**
 	 * The form field type.

@@ -744,7 +744,7 @@ class NotificationaryCore extends \JPluginGJFields
 				$this->previous_article = clone $contentItem;
 				$this->previous_article->reset();
 				$this->previous_article->load($contentItem->id);
-				$this->previous_state = $this->previous_article->state;
+				$this->previous_state = !empty($this->previous_article->state) ? $this->previous_article->state : null;
 
 				break;
 		}
@@ -772,13 +772,13 @@ class NotificationaryCore extends \JPluginGJFields
 					}
 
 					if ($v == 'txt') {
-						if (!class_exists('Html2Text')) {
+						if (!class_exists('\Html2Text\Html2Text')) {
 							require_once NotificationAry_DIR . '/helpers/Html2Text.php';
 						}
 
 						// Instantiate a new instance of the class. Passing the string
 						// variable automatically loads the HTML for you.
-						$h2t = new Html2Text\Html2Text($text, array('show_img_link' => 'yes'));
+						$h2t = new \Html2Text\Html2Text($text, array('show_img_link' => 'yes'));
 						$h2t->width = 120;
 
 						// Simply call the get_text() method for the class to convert
@@ -884,7 +884,7 @@ class NotificationaryCore extends \JPluginGJFields
 			}
 
 			// Initialize the diff class
-			$diff = new Diff($old, $new, $options);
+			$diff = new \Diff($old, $new, $options);
 			$css = JFile::read(NotificationAry_DIR . '/helpers/Diff/styles.css');
 		}
 
@@ -3287,14 +3287,14 @@ class NotificationaryCore extends \JPluginGJFields
 		// Instantiate a new instance of the class. Passing the string
 		// variable automatically loads the HTML for you.
 		if ($this->rule->emailformat == 'plaintext') {
-			if (!class_exists('Html2Text')) {
+			if (!class_exists('\Html2Text\Html2Text')) {
 				require_once NotificationAry_DIR . '/helpers/Html2Text.php';
 			}
 		}
 
 		if (empty($this->rule->introtext)) {
 			if ($this->rule->emailformat == 'plaintext') {
-				$h2t = new Html2Text\Html2Text($this->contentItem->introtext, array('show_img_link' => 'yes'));
+				$h2t = new \Html2Text\Html2Text($this->contentItem->introtext, array('show_img_link' => 'yes'));
 				$h2t->width = 120;
 
 				// Simply call the get_text() method for the class to convert
@@ -3310,7 +3310,7 @@ class NotificationaryCore extends \JPluginGJFields
 			if ($this->rule->emailformat == 'plaintext') {
 				// Instantiate a new instance of the class. Passing the string
 				// variable automatically loads the HTML for you.
-				$h2t = new Html2Text\Html2Text($this->contentItem->fulltext);
+				$h2t = new \Html2Text\Html2Text($this->contentItem->fulltext);
 				$h2t->width = 120;
 
 				// Simply call the get_text() method for the class to convert

@@ -9,14 +9,14 @@
 
 defined('JPATH_PLATFORM') or die;
 
-JFormHelper::loadFieldClass('list');
+\JFormHelper::loadFieldClass('list');
 
 /**
  * Form Field class for the Joomla Framework.
  *
  * @since  3.1
  */
-class NAFormFieldContenttypelimited extends JFormFieldList
+class NAFormFieldContenttypelimited extends \JFormFieldList
 {
 	/**
 	 * A flexible tag list that respects access controls
@@ -60,8 +60,8 @@ class NAFormFieldContenttypelimited extends JFormFieldList
 	 */
 	protected function getOptions()
 	{
-		$lang = JFactory::getLanguage();
-		$db    = JFactory::getDbo();
+		$lang = \JFactory::getLanguage();
+		$db    = \JFactory::getDbo();
 		$query = $db->getQuery(true)
 			->select('a.type_id AS value, a.type_title AS text, a.type_alias AS alias')
 			->from('#__content_types AS a')
@@ -81,7 +81,7 @@ class NAFormFieldContenttypelimited extends JFormFieldList
 		{
 			$options = $db->loadObjectList();
 		}
-		catch (RuntimeException $e)
+		catch (\RuntimeException $e)
 		{
 			return array();
 		}
@@ -104,7 +104,7 @@ class NAFormFieldContenttypelimited extends JFormFieldList
 
 			if ($lang->hasKey($option->string))
 			{
-				$option->text = JText::_($option->string);
+				$option->text = \JText::_($option->string);
 			}
 		}
 

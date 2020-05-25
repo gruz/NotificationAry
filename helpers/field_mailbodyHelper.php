@@ -67,17 +67,17 @@ defined('_JEXEC') or die('Restricted access');
 
 	$place_holders_body_label = array_merge($place_holders_subject_label, $place_holders_body_label);
 
-	$default_body = JText::_('JSITE') . ':  %SITELINK% :: %SITENAME%
-' . JText::_('JGLOBAL_TITLE') . ': %TITLE%
-' . JText::_('PLG_SYSTEM_NOTIFICATIONARY_CONTENT_TYPE') . ': %CONTENT_TYPE%
-' . JText::_('PLG_SYSTEM_NOTIFICATIONARY_ACTION') . ': %ACTION%
-' . JText::_('JCATEGORY') . ': %CATEGORY PATH%
-' . JText::_('PLG_SYSTEM_NOTIFICATIONARY_VIEW_LINK') . ': %FRONT VIEW LINK%
+	$default_body = \JText::_('JSITE') . ':  %SITELINK% :: %SITENAME%
+' . \JText::_('JGLOBAL_TITLE') . ': %TITLE%
+' . \JText::_('PLG_SYSTEM_NOTIFICATIONARY_CONTENT_TYPE') . ': %CONTENT_TYPE%
+' . \JText::_('PLG_SYSTEM_NOTIFICATIONARY_ACTION') . ': %ACTION%
+' . \JText::_('JCATEGORY') . ': %CATEGORY PATH%
+' . \JText::_('PLG_SYSTEM_NOTIFICATIONARY_VIEW_LINK') . ': %FRONT VIEW LINK%
 
-' . JText::_('JGLOBAL_CREATED_DATE') . ': %CREATED DATE%
-' . JText::_('JGLOBAL_FIELD_MODIFIED_LABEL') . ': %MODIFIED DATE%
+' . \JText::_('JGLOBAL_CREATED_DATE') . ': %CREATED DATE%
+' . \JText::_('JGLOBAL_FIELD_MODIFIED_LABEL') . ': %MODIFIED DATE%
 
-' . JText::_('JGLOBAL_INTRO_TEXT') . ':
+' . \JText::_('JGLOBAL_INTRO_TEXT') . ':
 ----
 %INTRO TEXT%
 ----
@@ -110,14 +110,14 @@ defined('_JEXEC') or die('Restricted access');
 					break;
 			}
 
-			JPluginHelper::importPlugin('notificationary');
-			$app = JFactory::getApplication();
+			\JPluginHelper::importPlugin('notificationary');
+			$app = \JFactory::getApplication();
 
 			$scriptAdded = $app->get('##mygruz20160216061544', false);
 
 			if (!$scriptAdded)
 			{
-				$document = JFactory::getDocument();
+				$document = \JFactory::getDocument();
 				$js = "
 					jQuery(document).ready(function(){
 						jQuery('small.object_values').toggle('hide');
@@ -140,7 +140,7 @@ defined('_JEXEC') or die('Restricted access');
 
 				$tbl = $contentObject->get('_tbl');
 				$tbl_key = $contentObject->get('_tbl_key');
-				$db = JFactory::getDBO();
+				$db = \JFactory::getDBO();
 				$query = $db->getQuery(true);
 				$query->select($tbl_key);
 				$query->from($tbl);
@@ -159,7 +159,7 @@ defined('_JEXEC') or die('Restricted access');
 			$place_holders_body_input = array();
 
 			$place_holders_body_input[] = '<br/>'
-				. JText::_('PLG_SYSTEM_NOTIFICATIONARY_SHOW_EXAMPLE_OBJECT')
+				. \JText::_('PLG_SYSTEM_NOTIFICATIONARY_SHOW_EXAMPLE_OBJECT')
 				. ' <button type="button" class="btn btn-warning btn-small object_values" >
 							<i class="icon-plus"></i>
 						</button><br/>
@@ -167,14 +167,14 @@ defined('_JEXEC') or die('Restricted access');
 						<pre style="clear:both;float:left;width:46%;margin-right:1%;"><b>----'
 							. get_class($contentObject) . '----</b><br/>';
 
-			JLoader::register('NotificationAryHelper', dirname(__FILE__) . '/helper.php');
+			\JLoader::register('NotificationAryHelper', dirname(__FILE__) . '/helper.php');
 
 			NotificationAryHelper::buildExampleObject($contentObject, $place_holders_body_input);
 
 			// Free some memory
 			unset($contentObject);
 
-			$user = JFactory::getUser();
+			$user = \JFactory::getUser();
 			$place_holders_body_input[] = '</pre>';
 			$place_holders_body_input[] = '<pre style="float:left;width:46%;"><b>----' . get_class($user) . '----</b><br/>';
 			NotificationAryHelper::buildExampleUser($user, $place_holders_body_input);

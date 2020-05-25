@@ -8,7 +8,7 @@
 
 defined('JPATH_PLATFORM') or die;
 
-if (!class_exists('GJFieldsFormField'))
+if (!class_exists('\\GJFieldsFormField'))
 {
 	include JPATH_ROOT . '/libraries/gjfields/gjfields.php';
 }
@@ -19,7 +19,7 @@ if (!class_exists('GJFieldsFormField'))
  * @author  Gruz <arygroup@gmail.com>
  * @since   0.0.1
  */
-class NAFormFieldRule extends JFormFieldList
+class NAFormFieldRule extends \JFormFieldList
 {
 	/**
 	 * The form field type.
@@ -38,7 +38,7 @@ class NAFormFieldRule extends JFormFieldList
 	 */
 	public function getOptions()
 	{
-		$app = JFactory::getApplication();
+		$app = \JFactory::getApplication();
 
 		// Pass the plugin object to be available in the field to have plugin params parsed there
 		$pluginObject = $app->get('plg_system_notificationary');
@@ -49,7 +49,7 @@ class NAFormFieldRule extends JFormFieldList
 
 		$rules = $pluginObject->pparams;
 
-		$output = array();
+		$options = array();
 
 		foreach ($rules as $ruleNumber => $rule)
 		{
@@ -59,7 +59,7 @@ class NAFormFieldRule extends JFormFieldList
 				continue;
 			}
 
-			$option = new stdClass;
+			$option = new \stdClass;
 			$option->value = $rule->__ruleUniqID;
 			$option->text = $rule->{'{notificationgroup'}[0];
 

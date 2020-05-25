@@ -19,7 +19,7 @@ function onBeforeSaveEvent ($vevent, $dryrun)
 	}
 
 // ~ dump ('onBeforeSaveEvent');
-	$dataModel = new JEventsDataModel;
+	$dataModel = new \JEventsDataModel;
 
 	foreach ($vevent as $k => $v)
 	{
@@ -30,7 +30,7 @@ function onBeforeSaveEvent ($vevent, $dryrun)
 	$contentItem = $dataModel;
 
 	$context = 'jevents.edit.icalevent';
-	$jinput = JFactory::getApplication()->input;
+	$jinput = \JFactory::getApplication()->input;
 	$evid = $jinput->post->get('evid');
 	$isNew = true;
 

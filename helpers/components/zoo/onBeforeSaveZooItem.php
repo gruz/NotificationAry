@@ -17,7 +17,7 @@ static function onBeforeSaveZooItem ($event)
 
 	$contentItem = $event->getSubject();
 
-	if (!NotificationAryHelper::isZooEditPage($contentItem))
+	if (!\NotificationAry\HelperClasses\NotificationAryHelper::isZooEditPage($contentItem))
 	{
 		return;
 	}
@@ -27,10 +27,10 @@ static function onBeforeSaveZooItem ($event)
 	$isNew = $event['new'];
 
 	$context = 'com_zoo.item';
-	$jinput = JFactory::getApplication()->input;
+	$jinput = \JFactory::getApplication()->input;
 	$custom_runnotificationary = $jinput->post->get('params', [], 'array')['config']['custom_runnotificationary'];
 
-	$jinput = JFactory::getApplication()->input;
+	$jinput = \JFactory::getApplication()->input;
 	$jform = $jinput->get('jform', null, null);
 
 	if (empty($jform))
@@ -43,7 +43,7 @@ static function onBeforeSaveZooItem ($event)
 
 	$contentItem->params->{'config.custom_runnotificationary'} = $custom_runnotificationary;
 
-	$session = JFactory::getSession();
+	$session = \JFactory::getSession();
 	$CustomReplacement = $session->get('CustomReplacement', null, 'notificationary');
 
 	if (!empty($CustomReplacement))
@@ -51,7 +51,7 @@ static function onBeforeSaveZooItem ($event)
 
 	}
 
-	JDispatcher::getInstance()->trigger(
+	\JDispatcher::getInstance()->trigger(
 			'onContentBeforeSave',
 			array(
 				$context,

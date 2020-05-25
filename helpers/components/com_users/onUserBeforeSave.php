@@ -49,12 +49,12 @@ function onUserBeforeSave($user, $isNew, $data)
 	// 	$isNew = false;
 	// }
 	
-	$db = JFactory::getDbo();
+	$db = \JFactory::getDbo();
 
 	$query = $db->getQuery(true)
 		->select($db->quoteName('id'))
 		->from($db->quoteName('#__users'))
-		->where($db->quoteName('email') . ' = ' . $db->quote(JFactory::getUser()->email));
+		->where($db->quoteName('email') . ' = ' . $db->quote(\JFactory::getUser()->email));
 
 	$db->setQuery($query, 0, 1);
 
@@ -67,11 +67,11 @@ function onUserBeforeSave($user, $isNew, $data)
 	$user->state = ! $user->block;
 	$user->created_by = null;
 	$user->modified_by = $user_id;
-	$user->modified = new JDate();
+	$user->modified = new \JDate();
 	$user->catid = null;
 	$user->created = $user->registerDate;
 
-	$fields = FieldsHelper::getFields("com_users.user", $user);
+	$fields = \FieldsHelper::getFields("com_users.user", $user);
 
 	// Loading the model
 	// $model = JModelLegacy::getInstance('Field', 'FieldsModel', array('ignore_request' => true));
@@ -112,14 +112,14 @@ function onUserBeforeSave($user, $isNew, $data)
 	}
 
 	$names = [
-		'name' => JText::_('COM_USERS_PROFILE_NAME_LABEL'),
-		'username' => JText::_('JGLOBAL_USERNAME'),
-		'email' => JText::_('JGLOBAL_EMAIL'),
+		'name' => \JText::_('COM_USERS_PROFILE_NAME_LABEL'),
+		'username' => \JText::_('JGLOBAL_USERNAME'),
+		'email' => \JText::_('JGLOBAL_EMAIL'),
 	];
 
 	foreach ($names as $name => $label) {
 
-		$field = new stdClass;
+		$field = new \stdClass;
 	
 		$field->old_value = $user->$name;
 		$field->new_value = $data[$name];

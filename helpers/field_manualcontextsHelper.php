@@ -12,7 +12,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 if (!isset($predefined_context_templates)) { include 'predefined_contexts.php';}
 
 $output = array();
-$output[] = '<option data-template="" >'.JText::_('JNONE').'</option>';
+$output[] = '<option data-template="" >'.\JText::_('JNONE').'</option>';
 
 foreach ($predefined_context_templates as $context=>$array) {
 	$tmp = array();
@@ -47,15 +47,15 @@ foreach ($predefined_context_templates as $context=>$array) {
 	// Check if component is installed
 	//~ if (!JComponentHelper::getComponent($component[0], true)->enabled){
 	$file = JPATH_ADMINISTRATOR . '/components/com_'.$option.'/'.$option.'.php';
-	if (file_exists($file) && JComponentHelper::isEnabled('com_'.$option, true)) {
+	if (file_exists($file) && \JComponentHelper::isEnabled('com_'.$option, true)) {
 	} else {
 		$option_style=' style="color:gray" ';
-		$option_text = JText::sprintf('LIB_GJFIELDS_NOT_INSTALLED',$array['Title'].' :: ');
+		$option_text = \JText::sprintf('LIB_GJFIELDS_NOT_INSTALLED',$array['Title'].' :: ');
 	}
 
 	$output[] = '<option data-template="'.implode(PHP_EOL,$tmp).'" '.$option_style.'>'.$option_text.'</option>';
 }
-$output_templates = '<div class="select_templates">'.JText::_('PLG_SYSTEM_NOTIFICATIONARY_PREDEFINED_MANUAL_CONTEXT')." <select >" .implode('',$output).'</select> </div>';
+$output_templates = '<div class="select_templates">'.\JText::_('PLG_SYSTEM_NOTIFICATIONARY_PREDEFINED_MANUAL_CONTEXT')." <select >" .implode('',$output).'</select> </div>';
 
 $output_label = "<br/>
 <textarea class='helpertextarea' readonly >".
@@ -65,7 +65,7 @@ implode(PHP_EOL,$rows)
 
 $height = (count($rows)+1)*18;
 
-$app = JFactory::getApplication();
+$app = \JFactory::getApplication();
 
 $app->get('css added ##mygruz20160408015751',false);
 if (!$app->get('css added ##mygruz20160408015751',false)) {
@@ -113,7 +113,7 @@ if (!$app->get('css added ##mygruz20160408015751',false)) {
 		width:auto;
 	}
 	';
-	$app    = JFactory::getApplication();
+	$app    = \JFactory::getApplication();
 	if ($app->getTemplate() == 'hathor') {
 		$css .= '
 		/* Special for hathor */
@@ -168,7 +168,7 @@ if (!$app->get('css added ##mygruz20160408015751',false)) {
 		});
 
 	";
-	$document = JFactory::getDocument();
+	$document = \JFactory::getDocument();
 	$document->addStyleDeclaration($css);
 	$document->addScriptDeclaration($js);
 	$app->set('css added ##mygruz20160408015751',true);

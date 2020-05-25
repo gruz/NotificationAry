@@ -17,7 +17,7 @@ static function onAfterSaveZooItem ($event)
 
 	$contentItem = $event->getSubject();
 
-	if (!NotificationAryHelper::isZooEditPage($contentItem))
+	if (!\NotificationAry\HelperClasses\NotificationAryHelper::isZooEditPage($contentItem))
 	{
 		return;
 	}
@@ -27,7 +27,7 @@ static function onAfterSaveZooItem ($event)
 
 // ~ dump($contentItem,'$contentItem AFTER');
 
-	JDispatcher::getInstance()->trigger(
+	\JDispatcher::getInstance()->trigger(
 			'onContentAfterSave',
 			array(
 				$context,
