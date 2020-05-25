@@ -24,7 +24,7 @@ use JFormHelper;
 use JTable;
 use JRegistry;
 use JFolder;
-use JFile, JLog, JUri, App;
+use JFile, JLog, JUri, App, JModelLegacy;
 
 /**
  * Helper class

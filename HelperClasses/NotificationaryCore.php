@@ -27,7 +27,7 @@ use JFactory;
 use JEventsDataModel;
 use JURI, JUserHelper;
 use JFile, JFolder, JUser, JApplication, JLoader, JPath, JRoute, JCategories,
-JApplicationHelper, JSession;
+JApplicationHelper, JSession, JModelLegacy;
 
 /**
  * Plugin code

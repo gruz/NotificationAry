@@ -21,7 +21,7 @@ if (!class_exists('GJFieldsFormField'))
  * @author  Gruz <arygroup@gmail.com>
  * @since   0.0.1
  */
-class NAFormFieldCategory extends JFormFieldList
+class NAFormFieldCategory extends \JFormFieldList
 {
 	/**
 	 * The form field type.
@@ -57,7 +57,7 @@ class NAFormFieldCategory extends JFormFieldList
 	 */
 	public function getOptions()
 	{
-		$items_model = JModelLegacy::getInstance('Users', 'UsersModel');
+		$items_model = \JModelLegacy::getInstance('Users', 'UsersModel');
 		$ruleUniqID = $items_model->getState('filter.naruleUniqID');
 
 		if (empty($ruleUniqID))
@@ -66,7 +66,7 @@ class NAFormFieldCategory extends JFormFieldList
 			// ~ return parent::getOptions();
 		}
 
-		$app = JFactory::getApplication();
+		$app = \JFactory::getApplication();
 		// Pass the plugin object to be available in the field to have plugin params parsed there
 		$pluginObject = $app->get('plg_system_notificationary');
 
@@ -106,7 +106,7 @@ class NAFormFieldCategory extends JFormFieldList
 		$scope = $rule->{$rule->context_or_contenttype};
 
 		// We load the field just to reuse the getOptions function
-		JForm::addFieldPath(JPATH_LIBRARIES . '/gjfields');
+		\JForm::addFieldPath(JPATH_LIBRARIES . '/gjfields');
 
 		$formfield = JFormHelper::loadFieldType('gjfields.categoryext');
 		$element = simplexml_load_string(
