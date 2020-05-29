@@ -915,6 +915,7 @@ class NotificationaryCore extends \JPluginGJFields
 			$query->where(" id <> " . $db->Quote($this->contentItem->modified_by));
 		}
 
+		$groupsSet = false;
 		if (!empty($GroupLevels)) {
 			$where = '';
 
@@ -924,6 +925,7 @@ class NotificationaryCore extends \JPluginGJFields
 
 			$where .= ' ( group_id = ' . implode(' OR group_id = ', $GroupLevels) . ')';
 			$query->where($where);
+			$groupsSet = true;
 		}
 
 		if (!empty($UserIds)) {
@@ -932,7 +934,9 @@ class NotificationaryCore extends \JPluginGJFields
 			if ($UserWhere == 'NOT') {
 				$where .= $UserWhere;
 			} else {
-				$where .= 'TRUE OR';
+				if ($groupsSet) {
+					$where .= 'TRUE OR';
+				}
 			}
 
 			$where .= ' ( id = ' . implode(' OR id=', $UserIds) . ')';
@@ -944,6 +948,12 @@ class NotificationaryCore extends \JPluginGJFields
 		$db->setQuery((string) $query);
 
 		$users_to_send = $db->loadAssocList();
+
+		// $sql = $db->replacePrefix((string) $query);
+		// dump($sql);
+		// dumpMessage('--------------------');
+		// dumpMessage($sql, 'sql');
+		// dump($users_to_send, '$users_to_send');
 
 		// If the rule allows to subscribe manually,
 		// then we have to check if the user has some subscription personalization
@@ -1367,7 +1377,7 @@ class NotificationaryCore extends \JPluginGJFields
 		}
 
 		if (!empty($this->task) && $this->task == 'saveItem') {
-			$this->_debug(' > Current obect ' . $selectionDebugTextGroups . ' (ids)', false, $object->temp_gid);
+			$this->_debug(' > Current object ' . $selectionDebugTextGroups . ' (ids)', false, $object->temp_gid);
 		}
 
 		// If not all grouplevels allowed then check if current user is allowed
