@@ -67,7 +67,7 @@ trait ParamsHandler
 				continue;
 			}
 
-			$this->pparams[$rule_number] = (object) $rule;
+			$this->pparams[$rule_number] = $rule;
 
 			// This array is used to build mails once per user group, as mails to users from the same user groups are the same.
 			// Here we just init it to be used when building a mail.

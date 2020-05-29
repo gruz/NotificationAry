@@ -1,6 +1,5 @@
 <?php
 namespace NotificationAry;
-use Joomla\CMS\Form\Form;
 
 /**
  * A plugin which sends notifications when an article is added or modified at a Joomla web-site
