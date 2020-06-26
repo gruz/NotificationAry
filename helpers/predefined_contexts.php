@@ -83,7 +83,9 @@ $predefined_context_templates = array(
 		),
 	'jevents.edit.icalevent' => array(
 		'Title' => 'JEvent Event',
-		'Item table class' => 'iCalEvent',
+		// 'Item table class' => 'iCalEvent',
+		// 'Item table class' => 'plugins/system/notificationary/helpers/components/jevents/tables/:ZooTableItem',
+		'Item table class' => 'plugins/system/notificationary/helpers/components/jevents/tables/:JeventsTableVevdetail',
 		'View link'=> 'index.php?option=com_jevents&task=icalevent.detail&evid=##ID##',
 		'Frontend edit link'=> 'index.php?option=com_jevents&task=icalevent.edit&evid=##ID##',
 		'Backend edit link'=> 'index.php?option=com_jevents&task=icalevent.edit&evid=##ID##',

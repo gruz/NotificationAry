@@ -14,6 +14,7 @@ namespace NotificationAry\HelperClasses;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use JLoader;
 use JFactory;
 use JUser;
 use JComponentHelper;
@@ -34,6 +35,32 @@ use JFile, JLog, JUri, App, JModelLegacy;
  */
 class NotificationAryHelper
 {
+	static function loadPluginDependencies() {
+		defined('NotificationAry_DIR') or define('NotificationAry_DIR', realpath(__DIR__ . '/../'));
+
+		JLoader::register('FieldsHelper', JPATH_ADMINISTRATOR . '/components/com_fields/helpers/fields.php');
+		JLoader::register('plgSystemNotificationary', __FILE__);
+
+		jimport('gjfields.helper.plugin');
+		jimport('joomla.filesystem.folder');
+		jimport('joomla.plugin.plugin');
+		jimport('joomla.filesystem.file');
+
+		$com_path = JPATH_SITE . '/components/com_content/';
+
+		// ~ require_once $com_path.'router.php';
+		if (!class_exists('ContentRouter')) {
+			require_once $com_path . 'router.php';
+		}
+
+		// ~ require_once $com_path.'helpers/route.php';
+		if (!class_exists('ContentHelperRoute')) {
+			require_once $com_path . 'helpers/route.php';
+		}
+
+		JLoader::register('FieldsHelper', JPATH_ADMINISTRATOR . '/components/com_fields/helpers/fields.php');
+	}
+
 	/**
 	 * This is a debug function. Generates a number of users for testing purposes
 	 *

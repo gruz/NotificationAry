@@ -13,30 +13,22 @@ namespace NotificationAry\HelperClasses;
 
 use NotificationAry\HelperClasses\NotificationAryHelper;
 use NotificationAry\HelperClasses\FakeMailerClass;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Table\Table;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use JText,
-	JTable,
 	JForm,
 	JString,
-	JEventsDataModel,
 	JURI,
-	JUserHelper,
 	JFile,
 	JFolder,
 	JUser,
-	JApplication,
-	JLoader,
-	JPath,
-	JCategories,
-	JModelLegacy,
-	JRoute,
-	JApplicationHelper,
-	JSession,
-	JFactory
+	JModelLegacy
 ;
+
 /**
  * Plugin code
  *
@@ -49,6 +41,10 @@ class NotificationaryCore extends \JPluginGJFields
 	use Traits\AjaxEvents;
 	use Traits\BuildMail;
 	use Traits\ParamsHandler;
+
+	use Traits\Extensions\JEvents;
+	use Traits\Extensions\ComUsers;
+	use Traits\Extensions\Zoo;
 	// use Traits\SmallFunctions;
 	// Enable this variable to load local non-minified JS and CSS
 	static public $debug = false;
@@ -170,7 +166,7 @@ class NotificationaryCore extends \JPluginGJFields
 	 */
 	public function __construct(&$subject, $config)
 	{
-		$jinput = JFactory::getApplication()->input;
+		$jinput = Factory::getApplication()->input;
 
 		if ($jinput->get('option', null) == 'com_dump') {
 			return;
@@ -226,11 +222,11 @@ class NotificationaryCore extends \JPluginGJFields
 	private function _getExtensionInfo($context = null, $id = null)
 	{
 		if (!empty($id)) {
-			$contentType = JTable::getInstance('contenttype');
+			$contentType = Table::getInstance('contenttype');
 			$contentType->load($id);
 			$context = $this->_contextAliasReplace($contentType->type_alias);
 		} else {
-			$contentType = JTable::getInstance('contenttype');
+			$contentType = Table::getInstance('contenttype');
 			$contentType->load(array('type_alias' => $context));
 		}
 
@@ -259,7 +255,7 @@ class NotificationaryCore extends \JPluginGJFields
 
 		list($option, $suffix) = explode('.', $context, 2);
 		$category_context = $option . '.category';
-		$contentTypeCategory = JTable::getInstance('contenttype');
+		$contentTypeCategory = Table::getInstance('contenttype');
 		$contentTypeCategory->load(array('type_alias' => $category_context));
 
 		foreach ($extension_info as $key => $value) {
@@ -397,18 +393,18 @@ class NotificationaryCore extends \JPluginGJFields
 			$temp = explode('.', $context, 2);
 
 			if (empty($path)) {
-				JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/' . $temp[0] . '/tables');
+				Table::addIncludePath(JPATH_ADMINISTRATOR . '/components/' . $temp[0] . '/tables');
 			} else {
-				JTable::addIncludePath(JPATH_ROOT . '/' . $path);
+				Table::addIncludePath(JPATH_ROOT . '/' . $path);
 			}
 		} else {
-			// $contenttypeObject = JTable::getInstance( 'contenttype');
+			// $contenttypeObject = Table::getInstance( 'contenttype');
 			// $contenttypeObject->load( $extension );
 			$context = $this->_contextAliasReplace($context);
 
 			switch ($context) {
 				case 'com_content.article':
-					// $contentItem = JTable::getInstance( 'content');
+					// $contentItem = Table::getInstance( 'content');
 					$type = 'content';
 					$prefix = null;
 					break;
@@ -418,7 +414,7 @@ class NotificationaryCore extends \JPluginGJFields
 					break;
 				default:
 					$tablename = explode('.', $context);
-					JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/' . $tablename[0] . '/tables');
+					Table::addIncludePath(JPATH_ADMINISTRATOR . '/components/' . $tablename[0] . '/tables');
 
 					// Category
 					$type = $tablename[1];
@@ -433,14 +429,14 @@ class NotificationaryCore extends \JPluginGJFields
 		}
 
 		if (!empty($prefix)) {
-			$contentItem = JTable::getInstance($type, $prefix);
+			$contentItem = Table::getInstance($type, $prefix);
 		} else {
-			$contentItem = JTable::getInstance($type);
+			$contentItem = Table::getInstance($type);
 		}
 
 		if (!$contentItem || !method_exists($contentItem, 'load')) {
 			if (!$this->paramGet('debug')) {
-				$app = JFactory::getApplication();
+				$app = Factory::getApplication();
 				$appReflection = new \ReflectionClass(get_class($app));
 				$_messageQueue = $appReflection->getProperty('_messageQueue');
 				$_messageQueue->setAccessible(true);
@@ -459,7 +455,7 @@ class NotificationaryCore extends \JPluginGJFields
 					$prefix = '';
 				}
 
-				JFactory::getApplication()->enqueueMessage(
+				Factory::getApplication()->enqueueMessage(
 					JText::_(ucfirst($this->plg_name)) . ' (line ' . __LINE__ . '): ' . $type . ' => ' . $prefix,
 					'warning'
 				);
@@ -516,16 +512,16 @@ class NotificationaryCore extends \JPluginGJFields
 	 */
 	protected function _cleanAttachments()
 	{
-		$session = JFactory::getSession();
+		$session = Factory::getSession();
 		$session->set('Attachments', null, $this->plg_name);
 		$session->set('Diffs', null, $this->plg_name);
 
 		// Remove accidently unremoved attachments
-		$files = JFolder::files(JFactory::getApplication()->getCfg('tmp_path'), 'diff_id_*', false, true);
+		$files = JFolder::files(Factory::getApplication()->getCfg('tmp_path'), 'diff_id_*', false, true);
 		JFile::delete($files);
-		$files = JFolder::files(JFactory::getApplication()->getCfg('tmp_path'), 'prev_version_id_*', false, true);
+		$files = JFolder::files(Factory::getApplication()->getCfg('tmp_path'), 'prev_version_id_*', false, true);
 		JFile::delete($files);
-		$files = JFolder::files(JFactory::getApplication()->getCfg('tmp_path'), $this->plg_name . '_*', false, true);
+		$files = JFolder::files(Factory::getApplication()->getCfg('tmp_path'), $this->plg_name . '_*', false, true);
 		JFile::delete($files);
 	}
 
@@ -542,7 +538,7 @@ class NotificationaryCore extends \JPluginGJFields
 			return;
 		}
 
-		$app = JFactory::getApplication();
+		$app = Factory::getApplication();
 
 		if ($this->paramGet('forceNotTimeLimit')) {
 			$maxExecutionTime = ini_get('max_execution_time');
@@ -551,14 +547,14 @@ class NotificationaryCore extends \JPluginGJFields
 
 		foreach ($Users_to_send as $key => $value) {
 			if (!empty($value['id'])) {
-				// ~ $user = JFactory::getUser($value['id']);
+				// ~ $user = Factory::getUser($value['id']);
 				$user = NotificationAryHelper::getUser($value['id']);
 			} else {
 				$user = NotificationAryHelper::getUserByEmail($value['email']);
 			}
 
 			if (empty($user->id)) {
-				$user = JFactory::getUser(0);
+				$user = Factory::getUser(0);
 				$user->set('email', $value['email']);
 			}
 
@@ -572,7 +568,7 @@ class NotificationaryCore extends \JPluginGJFields
 				$mailer = new FakeMailerClass;
 			} else {
 				// This object is not serializable, so I need to use a simple object to store and pass information to the ajax part
-				$mailer = JFactory::getMailer();
+				$mailer = Factory::getMailer();
 			}
 
 			if ($this->rule->emailformat != 'plaintext') {
@@ -640,7 +636,7 @@ class NotificationaryCore extends \JPluginGJFields
 				}
 
 				$mailer_ser = base64_encode(serialize($mailer));
-				$tmpPath = JFactory::getApplication()->getCfg('tmp_path');
+				$tmpPath = Factory::getApplication()->getCfg('tmp_path');
 				$filename = $this->plg_name . '_' . $this->ajaxHash . '_' . uniqid();
 				JFile::write($tmpPath . '/' . $filename, $mailer_ser);
 
@@ -771,7 +767,7 @@ class NotificationaryCore extends \JPluginGJFields
 			dump('users 4 - Content status or action is among allowed ones');
 		}
 
-		$user = JFactory::getUser();
+		$user = Factory::getUser();
 
 		// Check if notifications turned on for current user
 		if (!$this->_checkAllowed($user, $paramName = 'allowuser')) {
@@ -849,7 +845,7 @@ class NotificationaryCore extends \JPluginGJFields
 			$onItems = 0;
 		}
 
-		$db = JFactory::getDBO();
+		$db = Factory::getDBO();
 
 		// Create WHERE conditions start here
 
@@ -1004,10 +1000,10 @@ class NotificationaryCore extends \JPluginGJFields
 		if ($notifyonlyifcanview && isset($this->contentItem->access)) {
 			foreach ($users_to_send as $k => $value) {
 				if (!empty($value['id'])) {
-					// ~ $user = JFactory::getUser($value['id']);
+					// ~ $user = Factory::getUser($value['id']);
 					$user = NotificationAryHelper::getUser($value['id']);
 				} else {
-					$user = JFactory::getUser(0);
+					$user = Factory::getUser(0);
 					$user->set('email', $value['email']);
 				}
 
@@ -1223,7 +1219,7 @@ class NotificationaryCore extends \JPluginGJFields
 		* 			description="PLG_SYSTEM_NOTIFICATIONARY_FIELD_USER_IDS_DESC"/>
 		*	<field name="ausers_allowusers12}" maxrepeatlength="1" type="variablefield" basetype="toggler"/>
 		*	Function call to check if allowed:
-		* $user = JFactory::getUser();
+		* $user = Factory::getUser();
 		* if (!$this->_checkAllowed($user, $paramName = 'allowuser', $fieldNamePrefix='ausers' )) { return; }
 		*
 		* @param   object  &$object          Either content item object or Joomla user object
@@ -1275,7 +1271,7 @@ class NotificationaryCore extends \JPluginGJFields
 				$msg = var_dump(debug_backtrace(), true);
 			}
 
-			JFactory::getApplication()->enqueueMessage(
+			Factory::getApplication()->enqueueMessage(
 				JText::_(ucfirst($this->plg_name))
 					. ' (line ' . __LINE__ . '): '
 					. ' _checkAllowed method cannot be run with an empty object<br/>' . $msg,
@@ -1555,7 +1551,7 @@ class NotificationaryCore extends \JPluginGJFields
 		$debug = false;
 
 		// Get extension table class
-		$extensionTable = JTable::getInstance('extension');
+		$extensionTable = Table::getInstance('extension');
 
 		$pluginId = $extensionTable->find(array('element' => $this->plg_name, 'type' => 'plugin'));
 		$extensionTable->load($pluginId);
@@ -1593,7 +1589,7 @@ class NotificationaryCore extends \JPluginGJFields
 			} else {
 				$hash_srip = substr($v, 0, 20) . ' ......... ' . substr($v, -20);
 
-				JFactory::getApplication()->enqueueMessage(
+				Factory::getApplication()->enqueueMessage(
 					$this->plg_name . ": "
 						. JText::_('PLG_SYSTEM_NOTIFICATIONARY_COULD_NOT_APPLY_CONFIGURATION_HASH')
 						. '<i>' . $hash_srip . '</i>',
@@ -1700,8 +1696,8 @@ class NotificationaryCore extends \JPluginGJFields
 			// ~ return false;
 		}
 
-		$app	= JFactory::getApplication();
-		$uri = JFactory::getURI();
+		$app	= Factory::getApplication();
+		$uri = Factory::getURI();
 		$pageURL = $uri->toString();
 
 		$app->redirect($pageURL);
@@ -1753,7 +1749,7 @@ class NotificationaryCore extends \JPluginGJFields
 		}
 
 		// Mark the rule as unsubscribed in the profile as well
-		$db = JFactory::getDbo();
+		$db = Factory::getDbo();
 		$query = $db->getQuery(true)
 			->delete($db->quoteName('#__user_profiles'))
 			->where($db->quoteName('user_id') . ' = ' . (int) $userObject->id)
@@ -1842,7 +1838,7 @@ class NotificationaryCore extends \JPluginGJFields
 			$return = (array) $return;
 		}
 
-		$session = JFactory::getSession();
+		$session = Factory::getSession();
 		$CustomReplacement = $session->get('CustomReplacement', null, $this->plg_name);
 
 		if (isset($CustomReplacement['context'])) {
@@ -1891,7 +1887,7 @@ class NotificationaryCore extends \JPluginGJFields
 				return str_replace('com_categories.category', '', $context) . '.category';
 			}
 
-			$session = JFactory::getSession();
+			$session = Factory::getSession();
 			$formContext = $session->get('FormContext', null, $this->plg_name);
 
 			// When editing an article at first (not after page reload), I can meet such ""
@@ -1974,7 +1970,7 @@ class NotificationaryCore extends \JPluginGJFields
 				$msg = '<br>' . PHP_EOL . $msg;
 			}
 
-			JFactory::getApplication()->enqueueMessage($msg, 'notice');
+			Factory::getApplication()->enqueueMessage($msg, 'notice');
 		}
 	}
 
@@ -1999,7 +1995,7 @@ class NotificationaryCore extends \JPluginGJFields
 		// Check we are manipulating a valid form.
 		$name = $form->getName();
 
-		$app = JFactory::getApplication();
+		$app = Factory::getApplication();
 
 		if (!in_array($name, array('com_admin.profile', 'com_users.user', 'com_users.profile', "com_users.users.default.filter"))) {
 			return true;
@@ -2022,7 +2018,7 @@ class NotificationaryCore extends \JPluginGJFields
 			return true;
 		}
 
-		$jinput = JFactory::getApplication()->input;
+		$jinput = Factory::getApplication()->input;
 		$userID = $jinput->get('id', null);
 
 		if (empty($userID)) {
@@ -2035,7 +2031,7 @@ class NotificationaryCore extends \JPluginGJFields
 		$form->setFieldAttribute('subscribe', 'userid', $userID, 'nasubscribe');
 		$form->setFieldAttribute('subscribe', 'isProfile', true, 'nasubscribe');
 
-		$doc = JFactory::getDocument();
+		$doc = Factory::getDocument();
 		$js = '
 			jQuery(document).ready(function($){
 				var label = $(".nasubscribe").closest("div.control-group").find(".control-label:first").text().trim();

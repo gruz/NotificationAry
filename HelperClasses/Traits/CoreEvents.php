@@ -8,35 +8,25 @@
  * @copyright  0000 Copyleft (є) 2017 - All rights reversed
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
-
 namespace NotificationAry\HelperClasses\Traits;
 
+use Joomla\CMS\Factory;
+
+use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\Form\Form;
+use Joomla\CMS\Table\Table;
+use Joomla\CMS\Router\Route;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Filesystem\File;
+use Joomla\CMS\Session\Session;
+use Joomla\String\StringHelper;
+use Joomla\CMS\Component\ComponentHelper;
 use NotificationAry\HelperClasses\NotificationAryHelper;
 // use NotificationAry\HelperClasses\FakeMailerClass;
 
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
-
-use JText,
-	JTable,
-	JForm,
-	JString,
-	JEventsDataModel,
-	JURI,
-	JUserHelper,
-	JFile, 
-	JFolder,
-	JUser,
-	JApplication,
-	JLoader,
-	JPath,
-	JCategories,
-	JModelLegacy,
-	JRoute,
-	JApplicationHelper,
-	JSession,
-	JFactory
-;
 
 /**
  * Plugin code
@@ -46,6 +36,7 @@ use JText,
  */
 trait CoreEvents
 {
+	static protected $shouldShowSwitchCheckFlag = false;
 	/**
 	 * Run plugin on change article state from article list.
 	 *
@@ -57,8 +48,9 @@ trait CoreEvents
 	 */
 	public function onContentChangeState($context, $pks, $value)
 	{
+
 		// ~ dumpMessage('onContentChangeState');
-		$jinput = JFactory::getApplication()->input;
+		$jinput = Factory::getApplication()->input;
 
 		if ($jinput->get('option', null) == 'com_dump') {
 			return true;
@@ -92,7 +84,7 @@ trait CoreEvents
 
 		foreach ($pks as $id) {
 			$contentItem->load($id);
-			$contentItem->modified_by = JFactory::getUser()->id;
+			$contentItem->modified_by = Factory::getUser()->id;
 			$this->previous_state = 'not determined';
 			$this->onContentAfterSave($context, $contentItem, false);
 		}
@@ -114,7 +106,7 @@ trait CoreEvents
 
 		// ~ dump($context,'onContentBeforeSave');
 
-		$jinput = JFactory::getApplication()->input;
+		$jinput = Factory::getApplication()->input;
 
 		if ($jinput->get('option', null) == 'com_dump') {
 			return;
@@ -130,7 +122,7 @@ trait CoreEvents
 
 		$this->contentItem  = $this->_contentItemPrepare($contentItem);
 
-		$session = JFactory::getSession();
+		$session = Factory::getSession();
 		$CustomReplacement = $session->get('CustomReplacement', null, $this->plg_name);
 
 		switch ($context) {
@@ -139,7 +131,7 @@ trait CoreEvents
 				$this->previous_state = $CustomReplacement['previous_state'];
 				break;
 			case 'jevents.edit.icalevent':
-				$dataModel = new JEventsDataModel;
+				$dataModel = new \JEventsDataModel;
 				$this->previous_article = $dataModel;
 				$jevent = $dataModel->queryModel->getEventById(intval($this->contentItem->id), 1, "icaldb");
 
@@ -155,7 +147,7 @@ trait CoreEvents
 				break;
 			default:
 
-				// $this->previous_article = JTable::getInstance('content');
+				// $this->previous_article = Table::getInstance('content');
 				// $this->previous_article = $this->_getContentItemTable($context);
 				$this->previous_article = clone $contentItem;
 				$this->previous_article->reset();
@@ -167,7 +159,7 @@ trait CoreEvents
 
 		$this->previous_article = $this->_contentItemPrepare($this->previous_article);
 
-		$confObject = JFactory::getApplication();
+		$confObject = Factory::getApplication();
 		$tmpPath = $confObject->getCfg('tmp_path');
 
 		foreach ($this->prepare_previous_versions_flag as $k => $v) {
@@ -205,7 +197,7 @@ trait CoreEvents
 
 					break;
 				case 'sql':
-					$db = JFactory::getDBO();
+					$db = Factory::getDBO();
 					$empty_contentItem = clone $this->previous_article;
 					$empty_contentItem->reset();
 
@@ -229,7 +221,7 @@ trait CoreEvents
 			}
 
 			if (!empty($this->attachments[$v])) {
-				JFile::write($this->attachments[$v], $text);
+				File::write($this->attachments[$v], $text);
 			}
 		}
 
@@ -278,30 +270,30 @@ trait CoreEvents
 
 			$old = array();
 			$old[] = '<h1>' . $this->previous_article->title . '</h1>';
-			$introtext = preg_split("/\r\n|\n|\r/", JString::trim($this->previous_article->introtext));
+			$introtext = preg_split("/\r\n|\n|\r/", StringHelper::trim($this->previous_article->introtext));
 			$old = array_merge($old, $introtext);
 
 			if (!empty($this->previous_article->fulltext)) {
 				$old[] = '<hr id="system-readmore" />';
-				$fulltext = preg_split("/\r\n|\n|\r/", JString::trim($this->previous_article->fulltext));
+				$fulltext = preg_split("/\r\n|\n|\r/", StringHelper::trim($this->previous_article->fulltext));
 				$old = array_merge($old, $fulltext);
 			}
 
 			$new = array();
 			$new[] = '<h1>' . $this->contentItem->title . '</h1>';
-			$introtext = preg_split("/\r\n|\n|\r/", JString::trim($this->contentItem->introtext));
+			$introtext = preg_split("/\r\n|\n|\r/", StringHelper::trim($this->contentItem->introtext));
 
 			$new = array_merge($new, $introtext);
 
 			if (!empty($this->contentItem->fulltext)) {
 				$new[] = '<hr id="system-readmore" />';
-				$fulltext = preg_split("/\r\n|\n|\r/", JString::trim($this->contentItem->fulltext));
+				$fulltext = preg_split("/\r\n|\n|\r/", StringHelper::trim($this->contentItem->fulltext));
 				$new = array_merge($new, $fulltext);
 			}
 
 			// Initialize the diff class
 			$diff = new \Diff($old, $new, $options);
-			$css = JFile::read(NotificationAry_DIR . '/helpers/Diff/styles.css');
+			$css = File::read(NotificationAry_DIR . '/helpers/Diff/styles.css');
 		}
 
 		$path = $tmpPath . '/diff_id_' . $this->previous_article->id . '_' . uniqid();
@@ -354,11 +346,11 @@ trait CoreEvents
 			}
 
 			if (!empty($this->attachments[$v])) {
-				JFile::write($this->attachments[$v], $text);
+				File::write($this->attachments[$v], $text);
 			}
 		}
 
-		$session = JFactory::getSession();
+		$session = Factory::getSession();
 
 		if (!empty($this->attachments)) {
 			$session->set('Attachments', $this->attachments, $this->plg_name);
@@ -377,7 +369,7 @@ trait CoreEvents
 	public function onContentAfterSave($context, $contentItem, $isNew)
 	{
 		// ~ dumpTrace();
-		$jinput = JFactory::getApplication()->input;
+		$jinput = Factory::getApplication()->input;
 
 		if ($jinput->get('option', null) == 'com_dump') {
 			return;
@@ -405,11 +397,11 @@ trait CoreEvents
 			$msg = array();
 			$msg[] = '</p><div class="alert-message row-fluid">';
 			$msg[] = '<p><small><b>'
-				. $this->plg_name . '</b> ' . JText::_('JTOOLBAR_DISABLE') . ' ' . JText::_('NOTICE') . '</small></p>';
+				. $this->plg_name . '</b> ' . Text::_('JTOOLBAR_DISABLE') . ' ' . Text::_('NOTICE') . '</small></p>';
 			$msg[] = '<b>Context:</b> ' . $context;
 			$msg[] = '<br><b>Item table name:</b> ' . trim($jtable_class);
 
-			$app = JFactory::getApplication();
+			$app = Factory::getApplication();
 			$msg[] = '
 			<br/><button type="button" class="btn btn-warning btn-small object_values"  ><i class="icon-plus"></i></button><br/>
 			<small class="object_values hide">
@@ -418,7 +410,7 @@ trait CoreEvents
 
 			NotificationAryHelper::buildExampleObject($contentItem, $msg);
 
-			$user = JFactory::getUser();
+			$user = Factory::getUser();
 
 			$msg[] = '
 				</pre>';
@@ -440,11 +432,11 @@ trait CoreEvents
 			// Have to add script here, because K2 doesn't run any other function in the except onContentAfterSave,
 			// but onContentAfterSave is fired in a way the $js can be added as inline code.
 			if ($this->paramGet('showContext')) {
-				$app = JFactory::getApplication();
+				$app = Factory::getApplication();
 				$scriptAdded = $app->get('##mygruz20160216061544', false);
 
 				if (!$scriptAdded) {
-					$document = JFactory::getDocument();
+					$document = Factory::getDocument();
 
 					$js = "<script type=\"text/javascript\">";
 					$js .= "
@@ -464,7 +456,7 @@ trait CoreEvents
 				}
 			}
 
-			JFactory::getApplication()->enqueueMessage($msg . $js, 'notice');
+			Factory::getApplication()->enqueueMessage($msg . $js, 'notice');
 		}
 
 		if (!$this->_isContentEditPage($context)) {
@@ -474,14 +466,14 @@ trait CoreEvents
 		// Blocks executing the plugin if notification switch is set to no
 		if (!$this->onContentChangeStateFired) {
 			// Needed for Notification switch in K2 {
-			$session = JFactory::getSession();
+			$session = Factory::getSession();
 
 			if (!self::$shouldShowSwitchCheckFlag) {
 				// Is set for onAfterContentSave
 				self::$shouldShowSwitchCheckFlag = $session->get('shouldShowSwitchCheckFlagK2Special', false, $this->plg_name);
 
 				if (self::$shouldShowSwitchCheckFlag) {
-					// ~ $jinput = JFactory::getApplication()->input;
+					// ~ $jinput = Factory::getApplication()->input;
 					$jform = $jinput->post->getArray();
 				}
 			}
@@ -501,7 +493,7 @@ trait CoreEvents
 					$jform = $jinput->get('jform', null, null);
 				}
 
-				// Get from JForm to use if there is no in attribs or params. com_content
+				// Get from Form to use if there is no in attribs or params. com_content
 				// on saving at FE a New article uses 'params' while everywhere else 'attribs'
 				$jform_runnotificationary = $session->get('shouldShowSwitchCheckFlagK2SpecialDefaultValue', false, $this->plg_name);
 
@@ -568,16 +560,16 @@ trait CoreEvents
 		}
 
 		$this->isNew = $isNew;
-		$config = JFactory::getConfig();
+		$config = Factory::getConfig();
 
 		$this->sitename = $config->get('sitename');
 
 		if (trim($this->sitename) == '') {
-			$this->sitename = JURI::root();
+			$this->sitename = Uri::root();
 		}
 
-		$user = JFactory::getUser();
-		$app = JFactory::getApplication();
+		$user = Factory::getUser();
+		$app = Factory::getApplication();
 
 		$ShowSuccessMessage = $this->paramGet('showsuccessmessage');
 		$this->SuccessMessage = '';
@@ -614,13 +606,13 @@ trait CoreEvents
 			}
 		}
 
-		// ~ $this->author = JFactory::getUser( $contentItem->created_by );
+		// ~ $this->author = Factory::getUser( $contentItem->created_by );
 		$this->author = NotificationAryHelper::getUser($this->contentItem->created_by);
 
 		if ($this->contentItem->modified_by > 0) {
 			$this->modifier = NotificationAryHelper::getUser($this->contentItem->modified_by);
 		} else {
-			$this->modifier = JFactory::getUser();
+			$this->modifier = Factory::getUser();
 		}
 
 		$this->isAjax = $this->paramGet('useajax');
@@ -648,7 +640,7 @@ trait CoreEvents
 					$msg[] = print_r($Users_to_send, true);
 					$msg[] = '</pre>';
 					$msg = implode(PHP_EOL, $msg);
-					JFactory::getApplication()->enqueueMessage($msg, 'notice');
+					Factory::getApplication()->enqueueMessage($msg, 'notice');
 				}
 
 				// DO NOT SEND ANY MAILS ON DEBUG
@@ -663,21 +655,21 @@ trait CoreEvents
 				if (!empty($this->broken_sends) && !empty($this->ErrorMessage)) {
 					// User has back-end access
 					if ($canLoginBackend) {
-						$email = " " . JText::_('PLG_SYSTEM_NOTIFICATIONARY_EMAILS') . implode(" , ", $this->broken_sends);
+						$email = " " . Text::_('PLG_SYSTEM_NOTIFICATIONARY_EMAILS') . implode(" , ", $this->broken_sends);
 					}
 
 					$app->enqueueMessage(
-						JText::_(ucfirst($this->plg_name)) . ' (line ' . __LINE__ . '): ' . JText::_($this->ErrorMessage) . ' ' . $email,
+						Text::_(ucfirst($this->plg_name)) . ' (line ' . __LINE__ . '): ' . Text::_($this->ErrorMessage) . ' ' . $email,
 						'error'
 					);
 				} elseif (empty($this->broken_sends) && !empty($this->SuccessMessage)) {
 					if (!empty($Users_to_send)) {
 						$canLoginBackend = $user->authorise('core.login.admin');
 						$successmessagenumberofusers = $this->paramGet('successmessagenumberofusers');
-						$msg = JText::_($this->SuccessMessage);
+						$msg = Text::_($this->SuccessMessage);
 
 						if ($canLoginBackend && $successmessagenumberofusers > 0) {
-							$msg = $msg . ' ' . JText::_('PLG_SYSTEM_NOTIFICATIONARY_USERS_NOTIFIED') . count($Users_to_send);
+							$msg = $msg . ' ' . Text::_('PLG_SYSTEM_NOTIFICATIONARY_USERS_NOTIFIED') . count($Users_to_send);
 
 							// When publishing from list, the message is the same (the same number of users in notified).
 							// So if publishing to items and 10 users should be notified per item, the message says 10 mails sent, while 20 is sent.
@@ -686,7 +678,7 @@ trait CoreEvents
 							$msg .= ' :: ID: <b>' . $this->contentItem->id . '</b> ';
 
 							if (!empty($this->contentItem->title)) {
-								$msg .= JText::_('PLG_SYSTEM_NOTIFICATIONARY_TITLE') . ' <b>: ' . $this->contentItem->title . '</b> ';
+								$msg .= Text::_('PLG_SYSTEM_NOTIFICATIONARY_TITLE') . ' <b>: ' . $this->contentItem->title . '</b> ';
 							}
 						}
 
@@ -699,7 +691,7 @@ trait CoreEvents
 		if (!$this->isAjax) {
 			$this->_cleanAttachments();
 		} else {
-			$session = JFactory::getSession();
+			$session = Factory::getSession();
 			$attachments = $session->set('AjaxHash', $this->ajaxHash, $this->plg_name);
 		}
 	}
@@ -714,7 +706,7 @@ trait CoreEvents
 	 */
 	public function onBeforeRender()
 	{
-		$app = JFactory::getApplication();
+		$app = Factory::getApplication();
 
 		$jinput = $app->input;
 
@@ -725,7 +717,7 @@ trait CoreEvents
 		// Block JSON response, like there was an incompatibility with RockSprocket
 		$format = $jinput->get('format', 'html');
 
-		$session = JFactory::getSession();
+		$session = Factory::getSession();
 
 		// Is set in onAfterContentSave
 		$ajaxHash = $session->get('AjaxHash', null, $this->plg_name);
@@ -741,13 +733,13 @@ trait CoreEvents
 			$paramsToBePassed = base64_encode(serialize($paramsToBePassed));
 
 			// Build remote link
-			$url_ajax_plugin = JRoute::_(
-				JURI::base()
+			$url_ajax_plugin = Route::_(
+				URI::base()
 					// It's a must
 					. '?option=com_ajax&format=raw'
 					. '&group=' . $this->plg_type
 					. '&plugin=notificationAryRun'
-					. '&' . JSession::getFormToken() . '=1'
+					. '&' . Session::getFormToken() . '=1'
 					. '&uniq=' . uniqid()
 					. '&serialize=' . $paramsToBePassed
 			);
@@ -757,27 +749,27 @@ trait CoreEvents
 				$app->enqueueMessage('<small>' . 'Ajax URL: ' . $url_ajax_plugin . '</small>', 'notice');
 			}
 
-			$doc = JFactory::getDocument();
+			$doc = Factory::getDocument();
 
 			$doc->addScriptOptions($this->plg_name, array('ajax_place' => $this->plg_full_name));
 			$doc->addScriptOptions($this->plg_name, array('ajax_url' => $url_ajax_plugin));
 
-			//$doc->addScriptOptions($this->plg_name, ['messages' => array('error' => JText::_('Ajax error')) ]);
+			//$doc->addScriptOptions($this->plg_name, ['messages' => array('error' => Text::_('Ajax error')) ]);
 
 			if ($this->paramGet('ajax_allow_to_cancel') && $this->paramGet('ajax_delay') > 0) {
 				$doc->addScriptOptions($this->plg_name, array('start_delay' => ($this->paramGet('ajax_delay') + 1)));
-				JText::script('PLG_SYSTEM_NOTIFICATIONARY_AJAX_TIME_TO_START');
-				// ~ $doc->addScriptOptions($this->plg_name, array('messages' => array('delay_text' => JText::_('PLG_SYSTEM_NOTIFICATIONARY_AJAX_TIME_TO_START')) ));
+				Text::script('PLG_SYSTEM_NOTIFICATIONARY_AJAX_TIME_TO_START');
+				// ~ $doc->addScriptOptions($this->plg_name, array('messages' => array('delay_text' => Text::_('PLG_SYSTEM_NOTIFICATIONARY_AJAX_TIME_TO_START')) ));
 			}
 
 			$SuccessMessage = '';
 
 			if ($this->paramGet('showsuccessmessage')) {
-				$SuccessMessage .= JText::_($this->paramGet('successmessage'));
+				$SuccessMessage .= Text::_($this->paramGet('successmessage'));
 			}
 
 			if ($this->paramGet('successmessagenumberofusers')) {
-				$SuccessMessage .= ' ' . JText::_('PLG_SYSTEM_NOTIFICATIONARY_USERS_NOTIFIED');
+				$SuccessMessage .= ' ' . Text::_('PLG_SYSTEM_NOTIFICATIONARY_USERS_NOTIFIED');
 			}
 
 			$doc->addScriptOptions($this->plg_name, ['messages' => array('sent' => $SuccessMessage)]);
@@ -799,7 +791,7 @@ trait CoreEvents
 	 */
 	public function onAfterRender()
 	{
-		$jinput = JFactory::getApplication()->input;
+		$jinput = Factory::getApplication()->input;
 
 		if ($jinput->get('option', null) == 'com_dump') {
 			return;
@@ -811,7 +803,7 @@ trait CoreEvents
 
 		NotificationAryHelper::addUserlistBadges();
 
-		$app = JFactory::getApplication();
+		$app = Factory::getApplication();
 
 		// Block JSON response, like there was an incompatibility with RockSprocket
 		$format = $jinput->get('format', 'html');
@@ -821,18 +813,18 @@ trait CoreEvents
 			$body = $app->getBody();
 
 			// Get extension table class
-			$extensionTable = JTable::getInstance('extension');
+			$extensionTable = Table::getInstance('extension');
 
 			$pluginId = $extensionTable->find(array('element' => $this->plg_name, 'type' => 'plugin'));
 
-			$language = JFactory::getLanguage();
+			$language = Factory::getLanguage();
 
 			// Have to load curren logged in language to show the proper menu item language, not the default backend language
 			$language->load($this->plg_full_name, $this->plg_path, $language->get('tag'), true);
 
 			$menu = '<li><a class="menu-'
 				. $this->plg_name . ' " href="index.php?option=com_plugins&task=plugin.edit&extension_id=' . $pluginId . '">'
-				. JText::_($this->plg_full_name . '_MENU')
+				. Text::_($this->plg_full_name . '_MENU')
 				. ' <i class="icon-mail-2"></i></a></li>';
 
 			$js = '
@@ -857,7 +849,7 @@ trait CoreEvents
 		}
 
 		// Output Ajax placeholder if needed {
-		$session = JFactory::getSession();
+		$session = Factory::getSession();
 
 		// Is set in onAfterContentSave
 		$ajaxHash = $session->get('AjaxHash', null, $this->plg_name);
@@ -866,7 +858,7 @@ trait CoreEvents
 
 		if (!empty($ajaxHash)) {
 			$place_debug = '';
-			$user = JFactory::getUser();
+			$user = Factory::getUser();
 
 			// Since the _checkAllowed checks the global settings, there is no $this->rule passed and used there
 			if ($this->paramGet('ajax_allow_to_cancel') && $this->_checkAllowed($user, $paramName = 'allowuser', $prefix = 'ajax')) {
@@ -883,11 +875,11 @@ trait CoreEvents
 				$place_debug .= '<small>';
 
 				if ($this->paramGet('ajax_allow_to_cancel') && $this->_checkAllowed($user, $paramName = 'allowuser', $prefix = 'ajax')) {
-					$place_debug .= JText::_('PLG_SYSTEM_NOTIFICATIONARY_AJAX_TIME_TO_CANCEL');
+					$place_debug .= Text::_('PLG_SYSTEM_NOTIFICATIONARY_AJAX_TIME_TO_CANCEL');
 					$place_debug .= '. ';
 				}
 
-				$place_debug .= JText::_('PLG_SYSTEM_NOTIFICATIONARY_AJAX_SENDING_MESSAGES') . '</small>';
+				$place_debug .= Text::_('PLG_SYSTEM_NOTIFICATIONARY_AJAX_SENDING_MESSAGES') . '</small>';
 			}
 
 			$ajax_place_holder = '<div class="nasplace" >' . $place_debug . '<div class="nasplaceitself" id="' . $this->plg_full_name . '" ></div>';
@@ -913,7 +905,7 @@ trait CoreEvents
 			$contentItem->load($jinput->get('cid', 0));
 
 			jimport('joomla.form.form');
-			$form = JForm::getInstance('itemForm', JPATH_ADMINISTRATOR . '/components/com_k2/models/item.xml');
+			$form = Form::getInstance('itemForm', JPATH_ADMINISTRATOR . '/components/com_k2/models/item.xml');
 			$values = array('params' => json_decode($contentItem->params));
 			$form->bind($values);
 
@@ -955,7 +947,7 @@ trait CoreEvents
 		}
 
 		$body = $app->getBody();
-		$app = JFactory::getApplication();
+		$app = Factory::getApplication();
 		$checkedyes = $checkedno = 'checked="checked"';
 		$selectedyes = $selectedno = 'selected="selected"';
 		$active_no = $active_yes = '';
@@ -975,10 +967,10 @@ trait CoreEvents
 		$CustomReplacement = $session->get('CustomReplacement', null, $this->plg_name);
 
 		$replacement_label = '
-				<label title="" data-original-title="<strong>' . JText::_('PLG_SYSTEM_NOTIFICATIONARY_NOTIFY') . '</strong><br />'
-			. JText::_('PLG_SYSTEM_NOTIFICATIONARY_NOTIFY_DESC')
+				<label title="" data-original-title="<strong>' . Text::_('PLG_SYSTEM_NOTIFICATIONARY_NOTIFY') . '</strong><br />'
+			. Text::_('PLG_SYSTEM_NOTIFICATIONARY_NOTIFY_DESC')
 			. '" class="hasTip hasTooltip required" for="jform_runnotificationary" id="jform_attribs_runnotificationary-lbl">'
-			. JText::_('PLG_SYSTEM_NOTIFICATIONARY_NOTIFY') . '</label>';
+			. Text::_('PLG_SYSTEM_NOTIFICATIONARY_NOTIFY') . '</label>';
 
 		if (!empty($CustomReplacement) && $CustomReplacement['context'] == $this->context['full']) {
 			$possible_tag_ids = $CustomReplacement['possible_tag_ids'];
@@ -1001,8 +993,8 @@ trait CoreEvents
 			if (!$app->isAdmin() && $this->paramGet('replacement_type') === 'simple') {
 				$replacement_fieldset = '
 				<select id="jform_' . $this->attribsField . '_runnotificationary" name="jform[' . $this->attribsField . '][runnotificationary]" class="inputbox">
-				<option value="1" ' . $selectedyes . '>' . JText::_('JYES') . '</option>
-				<option value="0" ' . $selectedno . '>' . JText::_('JNO') . '</option>
+				<option value="1" ' . $selectedyes . '>' . Text::_('JYES') . '</option>
+				<option value="0" ' . $selectedno . '>' . Text::_('JNO') . '</option>
 				</select>
 				';
 			} else {
@@ -1010,10 +1002,10 @@ trait CoreEvents
 					<fieldset id="jform_' . $this->attribsField . '_runnotificationary" class="radio btn-group btn-group-yesno nswitch" >
 						<input type="radio" ' . $checkedyes . ' value="1" name="jform[' . $this->attribsField . '][runnotificationary]" id="jform_'
 					. $this->attribsField . '_runnotificationary1">
-						<label for="jform_' . $this->attribsField . '_runnotificationary1" class="btn ' . $active_yes . '">' . JText::_('JYES') . '</label>
+						<label for="jform_' . $this->attribsField . '_runnotificationary1" class="btn ' . $active_yes . '">' . Text::_('JYES') . '</label>
 						<input type="radio" ' . $checkedno . ' value="0" name="jform[' . $this->attribsField . '][runnotificationary]" id="jform_'
 					. $this->attribsField . '_runnotificationary0">
-						<label for="jform_' . $this->attribsField . '_runnotificationary0" class="btn' . $active_no . '">' . JText::_('JNO') . '</label>
+						<label for="jform_' . $this->attribsField . '_runnotificationary0" class="btn' . $active_no . '">' . Text::_('JNO') . '</label>
 					</fieldset>
 				';
 			}
@@ -1051,9 +1043,9 @@ trait CoreEvents
 				$replacement_fieldset = '
 					<div><fieldset id="jform_' . $this->attribsField . '_runnotificationary" class="radio btn-group btn-group-yesno nswitch" >
 						<input type="radio" ' . $checkedyes . ' value="1" name="custom_runnotificationary" id="jform_' . $this->attribsField . '_runnotificationary1">
-						<label for="jform_' . $this->attribsField . '_runnotificationary1" class="btn ' . $active_yes . '">' . JText::_('JYES') . '</label>
+						<label for="jform_' . $this->attribsField . '_runnotificationary1" class="btn ' . $active_yes . '">' . Text::_('JYES') . '</label>
 						<input type="radio" ' . $checkedno . ' value="0" name="custom_runnotificationary" id="jform_' . $this->attribsField . '_runnotificationary0">
-						<label for="jform_' . $this->attribsField . '_runnotificationary0" class="btn' . $active_no . '">' . JText::_('JNO') . '</label>
+						<label for="jform_' . $this->attribsField . '_runnotificationary0" class="btn' . $active_no . '">' . Text::_('JNO') . '</label>
 					</fieldset>
 				';
 			}
@@ -1078,7 +1070,7 @@ trait CoreEvents
 
 		$this->HTMLtype = 'div';
 
-		if (JFactory::getApplication()->isAdmin() && JFactory::getApplication()->getTemplate() !== 'isis') {
+		if (Factory::getApplication()->isAdmin() && Factory::getApplication()->getTemplate() !== 'isis') {
 			$this->HTMLtype = 'li';
 		}
 
@@ -1116,18 +1108,18 @@ trait CoreEvents
 				} else {
 					$label = '
 						<label title="" data-original-title="<strong>'
-						. JText::_('PLG_SYSTEM_NOTIFICATIONARY_NOTIFY')
+						. Text::_('PLG_SYSTEM_NOTIFICATIONARY_NOTIFY')
 						. '</strong><br />'
-						. JText::_('PLG_SYSTEM_NOTIFICATIONARY_NOTIFY_DESC') . '" class="hasTooltip required" for="="jform_'
+						. Text::_('PLG_SYSTEM_NOTIFICATIONARY_NOTIFY_DESC') . '" class="hasTooltip required" for="="jform_'
 						. $this->attribsField . '_runnotificationary" id="jform_attribs_runnotificationary-lbl">'
-						. JText::_('PLG_SYSTEM_NOTIFICATIONARY_NOTIFY')
+						. Text::_('PLG_SYSTEM_NOTIFICATIONARY_NOTIFY')
 						. '</label>';
 
 					$field = '
 						<select id="jform_'
 						. $this->attribsField . '_runnotificationary" name="jform[' . $this->attribsField . '][runnotificationary]"  size="1" class="inputbox">
-								<option value="0" ' . $selectedno . '>' . JText::_('JNo') . '</option>
-								<option value="1" ' . $selectedyes . '>' . JText::_('JYes') . '</option>
+								<option value="0" ' . $selectedno . '>' . Text::_('JNo') . '</option>
+								<option value="1" ' . $selectedyes . '>' . Text::_('JYes') . '</option>
 						</select>';
 
 					$replacement = '</div><div class="formelm">' . $label . $field . '</div><div>';
@@ -1160,7 +1152,7 @@ trait CoreEvents
 		if (self::$shouldShowSwitchCheckFlag && !$app->isAdmin()) {
 			// $nswitch_placeholder = NotificationAryHelper::getHTMLElementById($body,'jform_catid','select');
 
-			// At least at protostar a tab without name appears aboove the article, I assume is generates because of the NS injected into JForm.
+			// At least at protostar a tab without name appears aboove the article, I assume is generates because of the NS injected into Form.
 			// Let's try to remove it
 			$hiddenTab = NotificationAryHelper::getHTMLElementById($body, 'params-basic', $tagname = 'div', $attributeName = 'id');
 
@@ -1227,7 +1219,7 @@ trait CoreEvents
 	public function onContentPrepare($context, &$article, &$params, $page = null)
 	{
 		static $assetsAdded = false;
-		$app = JFactory::getApplication();
+		$app = Factory::getApplication();
 
 		// Replace plugin code with the subscribe/unsubscribe form if needed
 		if ($app->isSite()) {
@@ -1266,7 +1258,7 @@ trait CoreEvents
 	 * but also needs to be called in this function to let it be saved. If just outputting a field, it's not
 	 * saved to DB when a content item is saved
 	 *
-	 * @param   JForm   $form         The form to be altered.
+	 * @param   Form   $form         The form to be altered.
 	 * @param   object  $contentItem  The associated data for the form.
 	 *
 	 * @return  boolean
@@ -1281,7 +1273,7 @@ trait CoreEvents
 		$debug = true;
 		$debug = false;
 
-		$jinput = JFactory::getApplication()->input;
+		$jinput = Factory::getApplication()->input;
 
 		if ($jinput->get('option', null) == 'com_dump') {
 			return;
@@ -1300,7 +1292,7 @@ trait CoreEvents
 		}
 
 		// Check we are manipulating a valid form.
-		if (!($form instanceof JForm)) {
+		if (!($form instanceof Form)) {
 			$this->_subject->setError('JERROR_NOT_A_FORM');
 
 			return false;
@@ -1315,7 +1307,7 @@ trait CoreEvents
 			$context = $form->getName();
 		}
 
-		$session = JFactory::getSession();
+		$session = Factory::getSession();
 
 		if ($debug) {
 			dump($context, '$context from Form');
@@ -1338,7 +1330,7 @@ trait CoreEvents
 		}
 
 		// Specially for JEvents. Here I set data for special JEvents event onEventEdit which is run after onContentPrepare
-		if ($context == "jevents.edit.icalevent") {
+		if ('jevents.edit.icalevent' === $context) {
 			global  $NotificationAryFirstRunCheck;
 
 			if (empty($this->form)) {
@@ -1371,7 +1363,7 @@ trait CoreEvents
 			dump('here 3');
 		}
 
-		$session = JFactory::getSession();
+		$session = Factory::getSession();
 
 		if (empty($contentItem)) {
 			$attribs = $session->get('AttribsField' . $context, 'attribs', $this->plg_name);
@@ -1389,7 +1381,7 @@ trait CoreEvents
 		}
 
 		// ~ dump($contentItem,'$contentItem');
-		$app = JFactory::getApplication();
+		$app = Factory::getApplication();
 
 		if (!empty($contentItem->$attribs)) {
 			if (!is_array($contentItem->$attribs)) {
@@ -1471,8 +1463,8 @@ trait CoreEvents
 
 		foreach ($rules as $rule_number => $rule) {
 			if ($rule->notificationswitchaddconfirmation) {
-				$doc = JFactory::getDocument();
-				$language = JFactory::getLanguage();
+				$doc = Factory::getDocument();
+				$language = Factory::getLanguage();
 
 				// Have to load current logged in user language to show the proper menu item language, not the default backend language
 				$language->load($this->plg_full_name, $this->plg_path, $language->get('tag'), true);
@@ -1494,11 +1486,11 @@ trait CoreEvents
 								return;
 							}
 							var c = confirm('"
-					. JText::_(
-						JText::sprintf(
+					. Text::_(
+						Text::sprintf(
 							'PLG_SYSTEM_NOTIFICATIONARY_ARE_YOU_SURE',
-							'"' . JText::_('PLG_SYSTEM_NOTIFICATIONARY_NOTIFY') . '"',
-							'"' . JText::_('JNo') . '"'
+							'"' . Text::_('PLG_SYSTEM_NOTIFICATIONARY_NOTIFY') . '"',
+							'"' . Text::_('JNo') . '"'
 						),
 						true
 					)
@@ -1522,19 +1514,19 @@ trait CoreEvents
 	 */
 	public function onAfterRoute()
 	{
-		$jinput = JFactory::getApplication()->input;
+		$jinput = Factory::getApplication()->input;
 		$uniq = $jinput->get('unsubscribe', null);
 		$email = $jinput->get('email', null, 'raw');
 		$md5 = $jinput->get('hash', null, 'raw');
 
 		if ($uniq) {
 			$serialize = (base64_encode(serialize(array('unsubscribe' => $email, 'md5' => $md5))));
-			$app	= JFactory::getApplication();
+			$app	= Factory::getApplication();
 
 			$redirect_url = 'index.php?option=com_ajax&format=raw'
 				. '&group=' . $this->plg_type
 				. '&plugin=notificationAryRun'
-				. '&' . JSession::getFormToken() . '=1'
+				. '&' . Session::getFormToken() . '=1'
 				. '&uniq=' . uniqid()
 				. '&uniq=' . $uniq
 				. '&serialize=' . $serialize;
@@ -1559,7 +1551,7 @@ trait CoreEvents
 			if (!$param->isenabled) {
 				continue;
 			}
-			if ($param->context_or_contenttype == "context" && $param->context == "com_zoo.item" && JComponentHelper::getComponent('com_zoo', true)->enabled) {
+			if ($param->context_or_contenttype == "context" && $param->context == "com_zoo.item" && ComponentHelper::getComponent('com_zoo', true)->enabled) {
 				NotificationAryHelper::loadZoo();
 				break;
 			}

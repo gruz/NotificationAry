@@ -17,63 +17,31 @@ namespace NotificationAry;
 // No direct access
 defined('_JEXEC') or die;
 
-use JLoader;
-
-JLoader::registerNamespace('NotificationAry', __DIR__, false, false, 'psr4');
-
-use JRegistry;
-use JPluginHelper;
-use JFactory;
-use NotificationAry\HelperClasses\GJFieldsChecker;
-use NotificationAry\HelperClasses\NotificationAryHelper;
-
-defined('NotificationAry_DIR') or define('NotificationAry_DIR', __DIR__);
-
-jimport('gjfields.gjfields');
-jimport('gjfields.helper.plugin');
-jimport('joomla.filesystem.folder');
-
-JLoader::register('FieldsHelper', JPATH_ADMINISTRATOR . '/components/com_fields/helpers/fields.php');
-
-$latest_gjfields_needed_version = '1.2.16';
-$gjfieldsChecker = new GJFieldsChecker($latest_gjfields_needed_version, 'NotificationAry');
-$isOK = $gjfieldsChecker->check();
-
-if (!$isOK) {
-	JFactory::getApplication()->enqueueMessage($gjfieldsChecker->getMessage(), 'error');
+// Do not enter here if it's a com_dump call to avoid duplicate plugin call with jdump
+if (\Joomla\CMS\Factory::getApplication()->input->get('option', null) === 'com_dump') {
 	return;
 }
 
-jimport('joomla.plugin.plugin');
-jimport('joomla.filesystem.file');
-
-$com_path = JPATH_SITE . '/components/com_content/';
-
-// ~ require_once $com_path.'router.php';
-if (!class_exists('ContentRouter')) {
-	require_once $com_path . 'router.php';
+// Check if the latest needed version of GJFields installed
+\JLoader::registerNamespace('NotificationAry', __DIR__, false, false, 'psr4');
+if (!(new HelperClasses\GJFieldsChecker('1.2.16', 'NotificationAry'))->check()) {
+	return;
 }
 
-// ~ require_once $com_path.'helpers/route.php';
-if (!class_exists('ContentHelperRoute')) {
-	require_once $com_path . 'helpers/route.php';
-}
+use Joomla\Registry\Registry;
+use Joomla\CMS\Plugin\PluginHelper;
+use NotificationAry\HelperClasses\NotificationAryHelper;
 
-JLoader::register('plgSystemNotificationary', __FILE__);
+NotificationAryHelper::loadPluginDependencies();
 
 // Generate and empty object
-$plgParams = new JRegistry;
+$plgParams = new Registry;
 
 // Get plugin details
-$plugin = JPluginHelper::getPlugin('system', 'notificationary');
+$plugin = PluginHelper::getPlugin('system', 'notificationary');
 
 // Load params into our params object
 $plgParams->loadString($plugin->params);
-$jinput = JFactory::getApplication()->input;
-
-if ($jinput->get('option', null) == 'com_dump') {
-	return;
-}
 
 $notificationgroup = $plgParams->get('{notificationgroup');
 

@@ -11,6 +11,8 @@
 
 namespace NotificationAry\HelperClasses;
 
+use Joomla\CMS\Factory;
+
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
@@ -24,6 +26,7 @@ class GJFieldsChecker
 	{
 		$this->version = $version;
 		$this->extensionName = $extensionName;
+		jimport('gjfields.gjfields');
 		return $this;
 	}
 
@@ -36,7 +39,7 @@ class GJFieldsChecker
 
 		while (true) {
 			$isOk = false;
-
+			
 			if (!class_exists('JPluginGJFields')) {
 				$error_msg = 'Strange, but missing GJFields library for <span style="color:black;">'
 					. __FILE__ . '</span><br> The library should be installed together with the extension... Anyway, reinstall it:
@@ -58,6 +61,7 @@ class GJFieldsChecker
 
 		if (!$isOk) {
 			$this->setMessage($error_msg);
+			Factory::getApplication()->enqueueMessage($this->getMessage(), 'error');
 		}
 		return $isOk;
 	}
