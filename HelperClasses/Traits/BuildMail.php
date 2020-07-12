@@ -17,25 +17,15 @@ use NotificationAry\HelperClasses\NotificationAryHelper;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\Factory;
 use JText,
 	JTable,
-	JForm,
-	JString,
-	JEventsDataModel,
 	JURI,
-	JUserHelper,
-	JFile, 
-	JFolder,
-	JUser,
 	JApplication,
 	JLoader,
 	JPath,
 	JCategories,
-	JModelLegacy,
-	JRoute,
-	JApplicationHelper,
-	JSession,
-	JFactory
+	JRoute
 ;
 
 /**
@@ -169,7 +159,7 @@ trait BuildMail
 				}
 				break;
 			case 'view':
-				$app = JFactory::getApplication();
+				$app = Factory::getApplication();
 				$break = false;
 
 				$catid = (is_array($this->contentItem->catid)) ? $this->contentItem->catid[0] : $this->contentItem->catid;
@@ -195,7 +185,7 @@ trait BuildMail
 									JLoader::register($parts[0], JPATH_ROOT . '/components/' . $this->context['option'] . '/helpers/route.php');
 									$link = $parts[0]::{$parts[1]}($this->contentItem->id, $catid);
 								} else {
-									$db = JFactory::getDBO();
+									$db = Factory::getDBO();
 									$query = $db->getQuery(true);
 									$query->select('id')->from('#__menu')->where($db->quoteName('link') . " = " . $db->Quote($link));
 									$query->where($db->quoteName('menutype') . " <> " . $db->Quote('main'));
@@ -263,7 +253,7 @@ trait BuildMail
 										/*
 									case 'k2':
 										if ( $app->isAdmin() ) {
-											$db = JFactory::getDBO();
+											$db = Factory::getDBO();
 											$query = $db->getQuery(true);
 											$query->select('id')->from('#__menu')->where($db->quoteName('link')." = ".$db->Quote($link));
 											$db->setQuery((string)$query);
@@ -319,7 +309,7 @@ trait BuildMail
 	 */
 	private function _makeSEF($link)
 	{
-		$conf = JFactory::getConfig();
+		$conf = Factory::getConfig();
 
 		if ($conf->get('sef') != 1) {
 			$live_site_host = JURI::root();
@@ -334,18 +324,18 @@ trait BuildMail
 
 		$live_site_host = $curr_root['scheme'] . '://' . $curr_root['host'] . $port . '/';
 
-		$app = JFactory::getApplication();
+		$app = Factory::getApplication();
 
 		if ($app->isAdmin()) {
 			// After struggling much with getting proper SEF link from Backend, I had to use this remote call
-			$user = JFactory::getUser();
+			$user = Factory::getUser();
 
 			// I create a fake session as a flag to show onAjaxNotificationAryGetFEURL that it's a call from myself
-			$session = JFactory::getSession();
+			$session = Factory::getSession();
 			$sessionId = $session->getId();
 
 			// Get current user password hash to later restore it
-			$db		= JFactory::getDBO();
+			$db		= Factory::getDBO();
 			$query	= $db->getQuery(true);
 			$query->select(array('password'));
 			$query->from('#__users');
@@ -410,7 +400,7 @@ trait BuildMail
 			$link = $url;
 
 			if ($this->isNew) {
-				$jinput = JFactory::getApplication()->input;
+				$jinput = Factory::getApplication()->input;
 				$submit_url = JRoute::_('index.php?Itemid=' . $jinput->get('Itemid', null));
 				$submit_url = JPath::clean($live_site_host . $submit_url);
 				$link = str_replace($submit_url, $live_site_host, $link);
@@ -458,7 +448,7 @@ trait BuildMail
 		}
 
 		static $user_language_loaded = false;
-		$app = JFactory::getApplication();
+		$app = Factory::getApplication();
 
 		if ($app->isAdmin()) {
 			$lang_code = $user->getParam('admin_language');
@@ -466,7 +456,7 @@ trait BuildMail
 			$lang_code = $user->getParam('language');
 		}
 
-		$language = JFactory::getLanguage();
+		$language = Factory::getLanguage();
 
 		if (!empty($lang_code) && $lang_code != $this->default_lang) {
 			$language->load($this->plg_base_name, JPATH_ADMINISTRATOR, $lang_code, true);
@@ -1178,7 +1168,7 @@ trait BuildMail
 						}
 						break;
 					case 'User':
-						$user = JFactory::getUser();
+						$user = Factory::getUser();
 
 						if (isset($user->{$path[2]})) {
 							$value = $user->{$path[2]};

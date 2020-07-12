@@ -45,7 +45,7 @@ trait ComUsers
         $fields = \FieldsHelper::getFields("com_users.user", $user);
 
         // Loading the model
-        // $model = JModelLegacy::getInstance('Field', 'FieldsModel', array('ignore_request' => true));
+        // $model = \Joomla\CMS\MVC\Model\BaseDatabaseModel::getInstance('Field', 'FieldsModel', array('ignore_request' => true));
 
 
         // Loop over the fields

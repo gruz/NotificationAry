@@ -17,26 +17,8 @@ use NotificationAry\HelperClasses\NotificationAryHelper;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use JText,
-	JTable,
-	JForm,
-	JString,
-	JEventsDataModel,
-	JURI,
-	JUserHelper,
-	JFile, 
-	JFolder,
-	JUser,
-	JApplication,
-	JLoader,
-	JPath,
-	JCategories,
-	JModelLegacy,
-	JRoute,
-	JApplicationHelper,
-	JSession,
-	JFactory
-;
+use Joomla\CMS\Factory;
+use JText;
 
 trait ParamsHandler
 {
@@ -100,7 +82,7 @@ trait ParamsHandler
 				$context = trim($templateRows[0]);
 
 				if (empty($context)) {
-					JFactory::getApplication()->enqueueMessage(
+					Factory::getApplication()->enqueueMessage(
 						JText::_(
 							ucfirst($this->plg_name)
 						)
@@ -327,7 +309,7 @@ trait ParamsHandler
 				$this->_debug('Only update allowed and isn\'t new?  PASSED');
 			}
 
-			$user = JFactory::getUser();
+			$user = Factory::getUser();
 
 			if ($task == 'saveItem') {
 				$this->_debug('User allowed?   START CHECK');
@@ -359,7 +341,7 @@ trait ParamsHandler
 					dumpMessage('here 5');
 				}
 
-				$app = JFactory::getApplication();
+				$app = Factory::getApplication();
 
 				if (!$app->isAdmin() && !$rule->notificationswitchfrontend) {
 					continue;

@@ -57,7 +57,7 @@ class NAFormFieldCategory extends \JFormFieldList
 	 */
 	public function getOptions()
 	{
-		$items_model = \JModelLegacy::getInstance('Users', 'UsersModel');
+		$items_model = \Joomla\CMS\MVC\Model\BaseDatabaseModel::getInstance('Users', 'UsersModel');
 		$ruleUniqID = $items_model->getState('filter.naruleUniqID');
 
 		if (empty($ruleUniqID))

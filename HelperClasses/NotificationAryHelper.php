@@ -14,8 +14,8 @@ namespace NotificationAry\HelperClasses;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\Factory;
 use JLoader;
-use JFactory;
 use JUser;
 use JComponentHelper;
 use JHTML;
@@ -25,7 +25,7 @@ use JFormHelper;
 use JTable;
 use JRegistry;
 use JFolder;
-use JFile, JLog, JUri, App, JModelLegacy;
+use JFile, JLog, JUri, App;
 
 /**
  * Helper class
@@ -72,7 +72,7 @@ class NotificationAryHelper
 	 */
 	static function userGenerator($number = 2, $groups = 'default')
 	{
-		$jinput = JFactory::getApplication()->input;
+		$jinput = Factory::getApplication()->input;
 
 		if ($jinput->get('option') == 'com_plugins' && $jinput->get('task') == 'plugin.apply')
 		{
@@ -86,7 +86,7 @@ class NotificationAryHelper
 		$instance = JUser::getInstance();
 		jimport('joomla.application.component.helper');
 		$config = JComponentHelper::getParams('com_users');
-		$db = JFactory::getDBO();
+		$db = Factory::getDBO();
 		$query = $db->getQuery(true);
 		$query->select('id , title');
 		$query->from('#__usergroups');
@@ -95,7 +95,7 @@ class NotificationAryHelper
 
 		$defaultUserGroupNames = $db->loadAssocList();
 		$defaultUserGroup = $db->loadResultArray();
-		$acl = JFactory::getACL();
+		$acl = Factory::getACL();
 
 		// For each group
 		for ($k = 0; $k < count($defaultUserGroupNames); $k++)
@@ -134,7 +134,7 @@ class NotificationAryHelper
 				{
 					if (!$instance->save())
 					{
-						JFactory::getApplication()->enqueueMessage($instance->getError(), 'error');
+						Factory::getApplication()->enqueueMessage($instance->getError(), 'error');
 
 						return;
 					}
@@ -435,7 +435,7 @@ class NotificationAryHelper
 	 */
 	static public function getUserByEmail ($email)
 	{
-		$db = JFactory::getDbo();
+		$db = Factory::getDbo();
 
 		$query = $db->getQuery(true)
 			->select($db->quoteName('id'))
@@ -448,12 +448,12 @@ class NotificationAryHelper
 
 		if (empty($result))
 		{
-			$user = JFactory::getUser(0);
+			$user = Factory::getUser(0);
 			$user->email = $email;
 		}
 		else
 		{
-			$user = JFactory::getUser($db->loadResult());
+			$user = Factory::getUser($db->loadResult());
 		}
 
 		return $user;
@@ -491,11 +491,11 @@ class NotificationAryHelper
 
 		if ($table->load($user_id))
 		{
-			$user = JFactory::getUser($user_id);
+			$user = Factory::getUser($user_id);
 		}
 		else
 		{
-			$user = JFactory::getUser(0);
+			$user = Factory::getUser(0);
 		}
 
 		return $user;
@@ -731,11 +731,11 @@ class NotificationAryHelper
 	public static function pluginCodeReplace($pluginObject, $body, $matches)
 	{
 		// Load NA subscribed options from the user profiles table
-		$user = JFactory::getUser();
+		$user = Factory::getUser();
 
 		$rules = $pluginObject->pparams;
 
-		$app = JFactory::getApplication();
+		$app = Factory::getApplication();
 		$app->set('plg_system_notificationary', $pluginObject);
 
 		$replaced = false;
@@ -759,7 +759,7 @@ class NotificationAryHelper
 
 			$form = array();
 
-			if (JFactory::getUser()->guest)
+			if (Factory::getUser()->guest)
 			{
 				$replacements[$replace_code] = '';
 				$replaced = true;
@@ -865,7 +865,7 @@ class NotificationAryHelper
 		}
 
 		// Load the profile data from the database.
-		$db = JFactory::getDbo();
+		$db = Factory::getDbo();
 		$db->setQuery(
 			'SELECT profile_value FROM #__user_profiles'
 				. ' WHERE user_id = ' . (int) $userid . " AND profile_key LIKE " . $db->q('notificationary.' . $ruleid . '.%')
@@ -1055,14 +1055,14 @@ class NotificationAryHelper
 	 */
 	public static function _autoOverride($pluginObject)
 	{
-			$jinput = JFactory::getApplication()->input;
+			$jinput = Factory::getApplication()->input;
 
 			if ($jinput->get('option', null) == 'com_dump')
 			{
 				return;
 			}
 
-			$app = JFactory::getApplication();
+			$app = Factory::getApplication();
 
 			$parsed = $jinput->getArray();
 
@@ -1099,7 +1099,7 @@ class NotificationAryHelper
 			// Check scope condition
 			$scope = '';
 
-			if (JFactory::getApplication()->isAdmin())
+			if (Factory::getApplication()->isAdmin())
 			{
 				$scope = 'administrator';
 			}
@@ -1107,7 +1107,7 @@ class NotificationAryHelper
 			// Do not override wrong scope for components
 			foreach ($files_to_override as $fileToOverride => $overriderFolder)
 			{
-				if (JFactory::getApplication()->isAdmin())
+				if (Factory::getApplication()->isAdmin())
 				{
 					if (strpos($fileToOverride, '/com_') === 0)
 					{
@@ -1231,7 +1231,7 @@ class NotificationAryHelper
 
 			if ($overridden)
 			{
-				$app = JFactory::getApplication();
+				$app = Factory::getApplication();
 				$pluginObject->_prepareParams();
 				$app->set('plg_system_notificationary', $pluginObject);
 			}
@@ -1246,17 +1246,17 @@ class NotificationAryHelper
 	 */
 	public static function addUserlistBadges()
 	{
-		$document = JFactory::getDocument();
+		$document = Factory::getDocument();
 		$type   = $document->getType();
 
-		$app = JFactory::getApplication();
+		$app = Factory::getApplication();
 		$option = $app->input->getString('option');
 		$view   = $app->input->getString('view');
 		$task   = $app->input->getString('task');
 
 		if (($option == 'com_users') && ($view == 'users') && $type == 'html')
 		{
-			$items_model = JModelLegacy::getInstance('Users', 'UsersModel');
+			$items_model = \Joomla\CMS\MVC\Model\BaseDatabaseModel::getInstance('Users', 'UsersModel');
 			$ruleUniqID = $items_model->getState('filter.naruleUniqID');
 			$nacategory = $items_model->getState('filter.nacategory');
 
@@ -1265,7 +1265,7 @@ class NotificationAryHelper
 				return;
 			}
 
-			$app = JFactory::getApplication();
+			$app = Factory::getApplication();
 			$pluginObject = $app->get('plg_system_notificationary');
 
 			// Load NA subscribed options from the user profiles table
@@ -1540,7 +1540,7 @@ class NotificationAryHelper
 
 		$contentItemId = $contentItem->id;
 
-		$jinput = JFactory::getApplication()->input;
+		$jinput = Factory::getApplication()->input;
 		$option = $jinput->get('option');
 
 		if ($option !== 'com_zoo')
@@ -1548,7 +1548,7 @@ class NotificationAryHelper
 			return false;
 		}
 
-		$app = JFactory::getApplication();
+		$app = Factory::getApplication();
 
 		// Replace plugin code at Frontend
 		if ($app->isSite())

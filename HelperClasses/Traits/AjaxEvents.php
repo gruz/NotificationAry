@@ -17,25 +17,14 @@ use NotificationAry\HelperClasses\NotificationAryHelper;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\Factory;
 use JText,
-	JTable,
-	JForm,
-	JString,
-	JEventsDataModel,
-	JURI,
 	JUserHelper,
 	JFile, 
 	JFolder,
-	JUser,
-	JApplication,
-	JLoader,
-	JPath,
-	JCategories,
-	JModelLegacy,
 	JRoute,
 	JApplicationHelper,
-	JSession,
-	JFactory
+	JSession
 ;
 
 /**
@@ -57,14 +46,14 @@ trait AjaxEvents
 	 */
 	public function onAjaxNotificationAryGetFEURl()
 	{
-		$app	= JFactory::getApplication();
+		$app	= Factory::getApplication();
 
 		// Has to work as a FE called function
 		if ($app->isAdmin()) {
 			return;
 		}
 
-		$jinput = JFactory::getApplication()->input;
+		$jinput = Factory::getApplication()->input;
 		$userId = $jinput->get('userid', null);
 
 		if (empty($userId)) {
@@ -84,7 +73,7 @@ trait AjaxEvents
 		// ~ $hash = JApplicationHelper::getHash($userId . $sid . $url);
 
 		// Get the database connection object and verify its connected.
-		$db = JFactory::getDbo();
+		$db = Factory::getDbo();
 
 		try {
 			// Get the session data from the database table.
@@ -103,7 +92,7 @@ trait AjaxEvents
 			return;
 		}
 
-		$user	= JFactory::getUser();
+		$user	= Factory::getUser();
 
 		if ($user->id == $userId) {
 			echo JRoute::_($url);
@@ -111,7 +100,7 @@ trait AjaxEvents
 			return;
 		}
 
-		$instance = JFactory::getUser($userId);
+		$instance = Factory::getUser($userId);
 
 		if (empty($instance->id)) {
 			return;
@@ -127,7 +116,7 @@ trait AjaxEvents
 		login restore the preserved password directly in the
 			database
 		*/
-		$session = JFactory::getSession();
+		$session = Factory::getSession();
 
 
 		// Set a temporary password for the user
@@ -160,7 +149,7 @@ trait AjaxEvents
 	{
 		$resposne = array('success' => false);
 
-		$jinput = JFactory::getApplication()->input;
+		$jinput = Factory::getApplication()->input;
 		$token = JSession::getFormToken();
 
 		if (!JSession::checkToken()) {
@@ -169,9 +158,9 @@ trait AjaxEvents
 			return json_encode($resposne);
 		}
 
-		$user = JFactory::getUser();
+		$user = Factory::getUser();
 
-		$app = JFactory::getApplication();
+		$app = Factory::getApplication();
 
 		if ($user->guest) {
 			$resposne['message'] = JText::_('JERROR_ALERTNOAUTHOR');
@@ -189,7 +178,7 @@ trait AjaxEvents
 			}
 		}
 
-		$user = JFactory::getUser($userid);
+		$user = Factory::getUser($userid);
 		$ruleUniqID = $jinput->post->get('ruleUniqID');
 
 		$categoriesToBeStored = $jinput->post->get('categoriesToSubscribe_' . $ruleUniqID, array(), 'array');
@@ -210,7 +199,7 @@ trait AjaxEvents
 		}
 
 		try {
-			$db = JFactory::getDbo();
+			$db = Factory::getDbo();
 			$query = $db->getQuery(true)
 				->delete($db->quoteName('#__user_profiles'))
 				->where($db->quoteName('user_id') . ' = ' . (int) $user->id)
@@ -271,7 +260,7 @@ trait AjaxEvents
 	 */
 	public function onAjaxNotificationAryRun()
 	{
-		$jinput = JFactory::getApplication()->input;
+		$jinput = Factory::getApplication()->input;
 
 		// Uniqid passed via URL
 		$uniq = $jinput->get('uniq', null);
@@ -279,7 +268,7 @@ trait AjaxEvents
 		// Hash containing information
 		$serialize = $jinput->get('serialize', null, 'string');
 
-		$session = JFactory::getSession();
+		$session = Factory::getSession();
 
 		$serialize = unserialize(base64_decode($serialize));
 
@@ -293,7 +282,7 @@ trait AjaxEvents
 
 		$counter = $session->get('AjaxHashCounter' . $hash, -1, $this->plg_name);
 
-		$files = JFolder::files(JFactory::getApplication()->getCfg('tmp_path'), $this->plg_name . '_' . $hash . '_*', false, true);
+		$files = JFolder::files(Factory::getApplication()->getCfg('tmp_path'), $this->plg_name . '_' . $hash . '_*', false, true);
 
 		if (empty($files)) {
 			$this->_cleanAttachments();
@@ -336,7 +325,7 @@ trait AjaxEvents
 
 			$mailer_temp = unserialize(base64_decode(file_get_contents($file)));
 
-			$mailer = JFactory::getMailer();
+			$mailer = Factory::getMailer();
 
 			foreach ($mailer_temp as $k => $v) {
 				if ($k == 'addRecipient' || $k == 'addReplyTo') {

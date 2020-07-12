@@ -15,18 +15,17 @@ use NotificationAry\HelperClasses\NotificationAryHelper;
 use NotificationAry\HelperClasses\FakeMailerClass;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Table\Table;
+use Joomla\CMS\Form\Form;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
 use JText,
-	JForm,
 	JString,
 	JURI,
 	JFile,
 	JFolder,
-	JUser,
-	JModelLegacy
+	JUser
 ;
 
 /**
@@ -1977,7 +1976,7 @@ class NotificationaryCore extends \JPluginGJFields
 	/**
 	 * Adds additional fields to the user editing form
 	 *
-	 * @param   JForm  $form  The form to be altered.
+	 * @param   Form  $form  The form to be altered.
 	 * @param   mixed  $data  The associated data for the form.
 	 *
 	 * @return  boolean
@@ -1986,7 +1985,7 @@ class NotificationaryCore extends \JPluginGJFields
 	 */
 	public function _userProfileFormHandle($form, $data)
 	{
-		if (!($form instanceof JForm)) {
+		if (!($form instanceof Form)) {
 			$this->_subject->setError('JERROR_NOT_A_FORM');
 
 			return false;
@@ -2005,11 +2004,11 @@ class NotificationaryCore extends \JPluginGJFields
 		$app->set($this->plg_full_name, $this);
 
 		if ($name == "com_users.users.default.filter") {
-			JForm::addFormPath(__DIR__ . '/forms');
+			Form::addFormPath(__DIR__ . '/../forms');
 			$form->loadFile('filter', false);
 
-			$items_model = JModelLegacy::getInstance('Users', 'UsersModel');
-			$ruleUniqID = $items_model->getState('filter.naruleUniqID');
+			$items_model = \Joomla\CMS\MVC\Model\BaseDatabaseModel::getInstance('Users', 'UsersModel');
+			// $ruleUniqID = $items_model->getState('filter.naruleUniqID');
 			/* // ##mygruz20170214152631 DO NOT DELETE.
 				* I tried to make the filters be opened upong a page load
 				* but this didn't work. Not to invest
@@ -2026,7 +2025,7 @@ class NotificationaryCore extends \JPluginGJFields
 		}
 
 		// Add the registration fields to the form.
-		JForm::addFormPath(__DIR__ . '/forms');
+		Form::addFormPath(__DIR__ . '/../forms');
 		$form->loadFile('subscribe', false);
 		$form->setFieldAttribute('subscribe', 'userid', $userID, 'nasubscribe');
 		$form->setFieldAttribute('subscribe', 'isProfile', true, 'nasubscribe');

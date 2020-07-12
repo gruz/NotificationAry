@@ -233,8 +233,7 @@ trait Zoo
         // ~ dump($contentItem->getParams(),'$contentItem getParams');
         // ~ dump($contentItem->getSubmittableElements(),'$contentItem getSubmittableElements');
 
-
-        $path = __DIR__ . '/helpers/components/zoo/tables/';
+        $path = __DIR__ . '/../../../helpers/components/zoo/tables/';
         Table::addIncludePath($path);
         $table = Table::getInstance('Item', 'ZooTable');
         $table->load($contentItem->id);

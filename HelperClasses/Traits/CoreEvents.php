@@ -715,7 +715,7 @@ trait CoreEvents
 		}
 
 		// Block JSON response, like there was an incompatibility with RockSprocket
-		$format = $jinput->get('format', 'html');
+		// $format = $jinput->get('format', 'html');
 
 		$session = Factory::getSession();
 
@@ -1051,8 +1051,7 @@ trait CoreEvents
 			}
 		}
 
-
-		$oldFormat = false;
+		// $oldFormat = false;
 
 		foreach ($possible_tag_ids as $tag) {
 			$attribute_name = isset($tag[2]) ? $tag[2] : 'id';
@@ -1218,7 +1217,7 @@ trait CoreEvents
 	 */
 	public function onContentPrepare($context, &$article, &$params, $page = null)
 	{
-		static $assetsAdded = false;
+		// static $assetsAdded = false;
 		$app = Factory::getApplication();
 
 		// Replace plugin code with the subscribe/unsubscribe form if needed
@@ -1266,8 +1265,7 @@ trait CoreEvents
 	public function onContentPrepareForm($form, $contentItem)
 	{
 		// ~ dump('onContentPrepareForm','onContentPrepareForm');
-		// ~ dumpTrace();
-
+		// dumpTrace();
 		$this->_userProfileFormHandle($form, $contentItem);
 
 		$debug = true;
@@ -1285,7 +1283,7 @@ trait CoreEvents
 			dump($contentItem, '$contentItem');
 		}
 
-		$var = $jinput->get('cid');
+		// $var = $jinput->get('cid');
 
 		if (!NotificationAryHelper::isFirstRun('onContentPrepareForm')) {
 			return;
@@ -1412,41 +1410,36 @@ trait CoreEvents
 			$string .= '<fieldset name="core" label="PLG_SYSTEM_NOTIFICATIONARY_NOTIFY">';
 			$fieldsetOpened = true;
 		}
-		/*
-							if (version_compare(JVERSION, '3.7', '<') == 1 || true)
-							{
-								$string .= '<fieldset name="basic" >';
-							}
-							*/
+		// if (version_compare(JVERSION, '3.7', '<') == 1 || true)
+		// {
+		// 	$string .= '<fieldset name="basic" >';
+		// }
 
 		$string .= '
-								<field
-									label="PLG_SYSTEM_NOTIFICATIONARY_NOTIFY"
-									description="PLG_SYSTEM_NOTIFICATIONARY_NOTIFY_DESC"
-									name="runnotificationary"
-									type="radio"
-									class="btn-group btn-group-yesno nswitch"
-									default="' . $this->runnotificationary . '"
-									>
-									<option value="0">JNO</option>
-									<option value="1">JYES</option>
-								</field>';
+			<field
+				label="PLG_SYSTEM_NOTIFICATIONARY_NOTIFY"
+				description="PLG_SYSTEM_NOTIFICATIONARY_NOTIFY_DESC"
+				name="runnotificationary"
+				type="radio"
+				class="btn-group btn-group-yesno nswitch"
+				default="' . $this->runnotificationary . '"
+				>
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>';
 
 		if ($fieldsetOpened) {
 			$string .= '</fieldset>';
 		}
-		/*
-							if (version_compare(JVERSION, '3.7', '<') == 1 || true)
-							{
-								$string .= '</fieldset>';
-							}
-							*/
+		// if (version_compare(JVERSION, '3.7', '<') == 1 || true)
+		// {
+		// 	$string .= '</fieldset>';
+		// }
 
 		$string .= '
 						</fields>
 					</form>';
 		$form->load((string) $string, true);
-
 
 		$this->attribsField = $attribs;
 		self::$shouldShowSwitchCheckFlag = true;
