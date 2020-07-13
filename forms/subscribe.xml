@@ -10,7 +10,6 @@
 				name="subscribe"
 				type="na.subscribe"
 				label="PLG_SYSTEM_NOTIFICATIONARY_SUBSCRIBE_SELECT_LABEL"
-
 			/>
 		</fieldset>
 	</fields>
