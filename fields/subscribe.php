@@ -307,7 +307,8 @@ class NAFormFieldSubscribe extends \GJFieldsFormField
 
 			// Make layout path in the plugin folder dynamic, don't hardcode it
 			$pluginLayoutPath = str_replace(JPATH_PLUGINS, '', __DIR__);
-			$pluginLayoutPath = explode('/', $pluginLayoutPath);
+
+			$pluginLayoutPath = explode(DIRECTORY_SEPARATOR, $pluginLayoutPath);
 			array_pop($pluginLayoutPath);
 			$pluginLayoutPath = implode('/', $pluginLayoutPath);
 			$pluginLayoutPath = JPATH_PLUGINS . $pluginLayoutPath . '/layouts';
