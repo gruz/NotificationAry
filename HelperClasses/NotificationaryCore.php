@@ -2017,8 +2017,12 @@ class NotificationaryCore extends \JPluginGJFields
 			return true;
 		}
 
-		$jinput = Factory::getApplication()->input;
-		$userID = $jinput->get('id', null);
+		if (Factory::getApplication()->isAdmin()) {
+			$jinput = Factory::getApplication()->input;
+			$userID = $jinput->get('id', null);
+		} else {
+			$userID = Factory::getUser()->id;
+		}
 
 		if (empty($userID)) {
 			return;
