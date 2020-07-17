@@ -15,6 +15,7 @@ namespace NotificationAry\HelperClasses\Traits\Extensions;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Language\Text;
+use Joomla\Utilities\ArrayHelper;
 
 trait ComUsers
 {
@@ -52,13 +53,14 @@ trait ComUsers
         foreach ($fields as $field) {
 
             // Determine the value if it is (un)available from the data
-            if (key_exists($field->name, $data['com_fields'])) {
-                $value = $data['com_fields'][$field->name] === false ? null : $data['com_fields'][$field->name];
-            }
-            // Field not available on form, use stored value
-            else {
-                $value = $field->rawvalue;
-            }
+            $value = ArrayHelper::getValue($data, 'com_fields.' . $field->name, $field->rawvalue);
+            // if (key_exists($field->name, $data['com_fields'])) {
+            //     $value = $data['com_fields'][$field->name] === false ? null : $data['com_fields'][$field->name];
+            // }
+            // // Field not available on form, use stored value
+            // else {
+            //     $value = $field->rawvalue;
+            // }
 
             // If no value set (empty) remove value from database
             if (is_array($value) ? !count($value) : !strlen($value)) {

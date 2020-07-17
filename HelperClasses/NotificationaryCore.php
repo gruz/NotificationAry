@@ -16,17 +16,15 @@ use NotificationAry\HelperClasses\FakeMailerClass;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Table\Table;
 use Joomla\CMS\Form\Form;
+use Joomla\CMS\Language\Text;
+use Joomla\String\StringHelper;
+use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\Filesystem\File;
+use Joomla\CMS\Filesystem\Folder;
+use Joomla\CMS\User\User;
 
 // No direct access
 defined('_JEXEC') or die('Restricted access');
-
-use JText,
-	JString,
-	JURI,
-	JFile,
-	JFolder,
-	JUser
-;
 
 /**
  * Plugin code
@@ -440,7 +438,7 @@ class NotificationaryCore extends \JPluginGJFields
 				$_messageQueue = $appReflection->getProperty('_messageQueue');
 				$_messageQueue->setAccessible(true);
 				$messages = $_messageQueue->getValue($app);
-				$cmpstr = JText::sprintf('JLIB_DATABASE_ERROR_NOT_SUPPORTED_FILE_NOT_FOUND', $type);
+				$cmpstr = Text::sprintf('JLIB_DATABASE_ERROR_NOT_SUPPORTED_FILE_NOT_FOUND', $type);
 
 				foreach ($messages as $key => $message) {
 					if ($message['message'] == $cmpstr) {
@@ -455,7 +453,7 @@ class NotificationaryCore extends \JPluginGJFields
 				}
 
 				Factory::getApplication()->enqueueMessage(
-					JText::_(ucfirst($this->plg_name)) . ' (line ' . __LINE__ . '): ' . $type . ' => ' . $prefix,
+					Text::_(ucfirst($this->plg_name)) . ' (line ' . __LINE__ . '): ' . $type . ' => ' . $prefix,
 					'warning'
 				);
 			}
@@ -516,12 +514,12 @@ class NotificationaryCore extends \JPluginGJFields
 		$session->set('Diffs', null, $this->plg_name);
 
 		// Remove accidently unremoved attachments
-		$files = JFolder::files(Factory::getApplication()->getCfg('tmp_path'), 'diff_id_*', false, true);
-		JFile::delete($files);
-		$files = JFolder::files(Factory::getApplication()->getCfg('tmp_path'), 'prev_version_id_*', false, true);
-		JFile::delete($files);
-		$files = JFolder::files(Factory::getApplication()->getCfg('tmp_path'), $this->plg_name . '_*', false, true);
-		JFile::delete($files);
+		$files = Folder::files(Factory::getApplication()->getCfg('tmp_path'), 'diff_id_*', false, true);
+		File::delete($files);
+		$files = Folder::files(Factory::getApplication()->getCfg('tmp_path'), 'prev_version_id_*', false, true);
+		File::delete($files);
+		$files = Folder::files(Factory::getApplication()->getCfg('tmp_path'), $this->plg_name . '_*', false, true);
+		File::delete($files);
 	}
 
 	/**
@@ -606,9 +604,9 @@ class NotificationaryCore extends \JPluginGJFields
 				}
 			}
 
-			$curr_root = parse_url(JURI::root());
-			$live_site_host = $curr_root['scheme'] . '://' . $curr_root['host'] . '/';
-			$live_site = JURI::root();
+			$curr_root = parse_url(Uri::root());
+			// $live_site_host = $curr_root['scheme'] . '://' . $curr_root['host'] . '/';
+			$live_site = Uri::root();
 
 			$link = $live_site . 'index.php?unsubscribe=' . $this->rule->__ruleUniqID
 				. '&email=' . $user->email . '&hash=' . md5($user->id . $this->rule->__ruleUniqID);
@@ -618,9 +616,9 @@ class NotificationaryCore extends \JPluginGJFields
 
 				if ($includeunsubscribelink) {
 					if ($this->rule->emailformat == 'plaintext') {
-						$mail['body'] .= PHP_EOL . PHP_EOL . JText::_('PLG_SYSTEM_NOTIFICATIONARY_UNSUBSCRIBE') . ': ' . $link;
+						$mail['body'] .= PHP_EOL . PHP_EOL . Text::_('PLG_SYSTEM_NOTIFICATIONARY_UNSUBSCRIBE') . ': ' . $link;
 					} else {
-						$mail['body'] .= '<br/><br/><a href="' . $link . '">' . JText::_('PLG_SYSTEM_NOTIFICATIONARY_UNSUBSCRIBE') . '</a>';
+						$mail['body'] .= '<br/><br/><a href="' . $link . '">' . Text::_('PLG_SYSTEM_NOTIFICATIONARY_UNSUBSCRIBE') . '</a>';
 					}
 				}
 			} else {
@@ -637,7 +635,7 @@ class NotificationaryCore extends \JPluginGJFields
 				$mailer_ser = base64_encode(serialize($mailer));
 				$tmpPath = Factory::getApplication()->getCfg('tmp_path');
 				$filename = $this->plg_name . '_' . $this->ajaxHash . '_' . uniqid();
-				JFile::write($tmpPath . '/' . $filename, $mailer_ser);
+				File::write($tmpPath . '/' . $filename, $mailer_ser);
 
 				continue;
 			}
@@ -1026,7 +1024,7 @@ class NotificationaryCore extends \JPluginGJFields
 		$Users_Add_emails = array_map('trim', $Users_Add_emails);
 
 		foreach ($Users_Add_emails as $cur_email) {
-			$cur_email = JString::trim($cur_email);
+			$cur_email = StringHelper::trim($cur_email);
 
 			if ($cur_email == "") {
 				continue;
@@ -1246,7 +1244,7 @@ class NotificationaryCore extends \JPluginGJFields
 		if (!empty($this->task) && $this->task == 'saveItem') {
 			$this->_debug(' > <b>' . $className . '</b>');
 
-			if (in_array($className, ['JUser', 'Joomla\CMS\User\User'])) {
+			if ($object instanceof User) {
 				$selectionDebugTextGroups = '<i>user groups</i>';
 				$selectionDebugTextSpecific = '<i>specific users</i>';
 			} else {
@@ -1255,7 +1253,7 @@ class NotificationaryCore extends \JPluginGJFields
 			}
 		}
 
-		if (in_array($className, ['JUser', 'Joomla\CMS\User\User']) && !empty($this->rule)) {
+		if (($object instanceof User) && !empty($this->rule)) {
 			foreach ($this->rule->usersAddedByEmail as $user) {
 				if ($user->id == $object->id) {
 					return true;
@@ -1263,7 +1261,7 @@ class NotificationaryCore extends \JPluginGJFields
 			}
 		}
 
-		if (!in_array($className, ['JUser', 'Joomla\CMS\User\User']) && empty($object->id)) {
+		if (!($object instanceof User) && empty($object->id)) {
 			$msg = '';
 
 			if ($debug) {
@@ -1271,7 +1269,7 @@ class NotificationaryCore extends \JPluginGJFields
 			}
 
 			Factory::getApplication()->enqueueMessage(
-				JText::_(ucfirst($this->plg_name))
+				Text::_(ucfirst($this->plg_name))
 					. ' (line ' . __LINE__ . '): '
 					. ' _checkAllowed method cannot be run with an empty object<br/>' . $msg,
 				'error'
@@ -1280,7 +1278,7 @@ class NotificationaryCore extends \JPluginGJFields
 			return false;
 		}
 
-		if (!in_array($className, ['JUser', 'Joomla\CMS\User\User']) && $this->task == 'saveItem') {
+		if (!($object instanceof User) && $this->task == 'saveItem') {
 			$this->rule->content_language = (array) $this->rule->content_language;
 
 			if (empty($this->rule->content_language) || in_array('always', $this->rule->content_language)) {
@@ -1348,27 +1346,22 @@ class NotificationaryCore extends \JPluginGJFields
 			dumpMessage('here 2');
 		}
 		// Get which group the user belongs to, or which category the user belongs to
-		switch ($className) {
-				// If means &object is user, not article
-			case "JUser":
-			case "Joomla\CMS\User\User":
-				$object->temp_gid = $object->get('groups');
+		if ($object instanceof User) {
+			// If means &object is user, not article
+			$object->temp_gid = $object->get('groups');
 
-				if ($object->temp_gid === null) {
-					$table   = JUser::getTable();
-					$table->load($object->id);
-					$object->temp_gid = $table->groups;
-				}
+			if ($object->temp_gid === null) {
+				$table   = User::getTable();
+				$table->load($object->id);
+				$object->temp_gid = $table->groups;
+			}
 
-				if (empty($object->temp_gid)) {
-					$object->temp_gid = array($object->gid);
-				}
-				break;
-
-				// If means &object is article, not user
-			default:
-				$object->temp_gid = (array) $object->catid;
-				break;
+			if (empty($object->temp_gid)) {
+				$object->temp_gid = array($object->gid);
+			}
+		} else {
+			// If means &object is article, not user
+			$object->temp_gid = (array) $object->catid;
 		}
 
 		if (!empty($this->task) && $this->task == 'saveItem') {
@@ -1522,7 +1515,7 @@ class NotificationaryCore extends \JPluginGJFields
 		$Users_Exclude_emails = array_map('trim', $Users_Exclude_emails);
 
 		foreach ($Users_Exclude_emails as $cur_email) {
-			$cur_email = JString::trim($cur_email);
+			$cur_email = StringHelper::trim($cur_email);
 
 			if ($cur_email == "") {
 				continue;
@@ -1590,7 +1583,7 @@ class NotificationaryCore extends \JPluginGJFields
 
 				Factory::getApplication()->enqueueMessage(
 					$this->plg_name . ": "
-						. JText::_('PLG_SYSTEM_NOTIFICATIONARY_COULD_NOT_APPLY_CONFIGURATION_HASH')
+						. Text::_('PLG_SYSTEM_NOTIFICATIONARY_COULD_NOT_APPLY_CONFIGURATION_HASH')
 						. '<i>' . $hash_srip . '</i>',
 					'error'
 				);
@@ -1722,7 +1715,7 @@ class NotificationaryCore extends \JPluginGJFields
 		// $user->load(array('email'=>$email));
 		if ($userObject->id > 0) {
 			if ($md5 != md5($userObject->id . $uniq)) {
-				echo $msg = '<b style="color:red">' . JText::sprintf('PLG_SYSTEM_NOTIFICATIONARY_UNSUBSCRIBE_FAILED', $user) . '</b>';
+				echo $msg = '<b style="color:red">' . Text::sprintf('PLG_SYSTEM_NOTIFICATIONARY_UNSUBSCRIBE_FAILED', $user) . '</b>';
 
 				return;
 			}
@@ -1739,12 +1732,12 @@ class NotificationaryCore extends \JPluginGJFields
 			$excludeUsers = implode(PHP_EOL, $excludeUsers);
 
 			if (!NotificationAryHelper::updateRuleOption('ausers_excludeusers', $excludeUsers, $uniq)) {
-				$msg = '<b style="color:red">' . JText::sprintf('PLG_SYSTEM_NOTIFICATIONARY_UNSUBSCRIBE_FAILED', $user) . '</b>';
+				$msg = '<b style="color:red">' . Text::sprintf('PLG_SYSTEM_NOTIFICATIONARY_UNSUBSCRIBE_FAILED', $user) . '</b>';
 			} else {
-				$msg = '<b style="color:green">' . JText::sprintf('PLG_SYSTEM_NOTIFICATIONARY_UNSUBSCRIBED', $user) . '</b>';
+				$msg = '<b style="color:green">' . Text::sprintf('PLG_SYSTEM_NOTIFICATIONARY_UNSUBSCRIBED', $user) . '</b>';
 			}
 		} else {
-			$msg = '<b style="color:blue">' . JText::sprintf('PLG_SYSTEM_NOTIFICATIONARY_NOT_SUBSCRIBED', $user) . '</b>';
+			$msg = '<b style="color:blue">' . Text::sprintf('PLG_SYSTEM_NOTIFICATIONARY_NOT_SUBSCRIBED', $user) . '</b>';
 		}
 
 		// Mark the rule as unsubscribed in the profile as well

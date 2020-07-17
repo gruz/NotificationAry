@@ -92,8 +92,8 @@ class NAFormFieldCategory extends \JFormFieldList
 
 		// Now $rule contains the needed rule options
 
-		$onGroupLevels = $rule->{$groupName};
-		$GroupLevels = $rule->{$groupName . 'selection'};
+		// $onGroupLevels = $rule->{$groupName};
+		// $GroupLevels = $rule->{$groupName . 'selection'};
 
 		$pluginObject->rule = $rule;
 

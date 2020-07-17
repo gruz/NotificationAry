@@ -227,7 +227,7 @@ trait CoreEvents
 
 		$this->noDiffFound = false;
 
-		foreach ($this->pparams as $rule_number => $rule) {
+		foreach ($this->pparams as /* $rule_number => */ $rule) {
 			// Prepare global list of DIFFs to be generated, stored in $this->DIFFsToBePreparedGlobally {
 			// If all possible DIFFs are already set to be generated, then don't check, else go:
 			if (count($this->availableDIFFTypes) > count($this->DIFFsToBePreparedGlobally)) {
@@ -617,7 +617,7 @@ trait CoreEvents
 
 		$this->isAjax = $this->paramGet('useajax');
 
-		foreach ($rules as $rule_number => $rule) {
+		foreach ($rules as /* $rule_number => */ $rule) {
 			$this->rule = $rule;
 
 			$Users_to_send = $this->_users_to_send();
@@ -1266,7 +1266,16 @@ trait CoreEvents
 	{
 		// ~ dump('onContentPrepareForm','onContentPrepareForm');
 		// dumpTrace();
-		$this->_userProfileFormHandle($form, $contentItem);
+		$allowSubscribe = true;
+		foreach ($this->pparams as $rule) {
+			if('0' === $rule->allow_subscribe) {
+				$allowSubscribe = false;
+				break;
+			}
+		}
+		if ($allowSubscribe) {
+			$this->_userProfileFormHandle($form, $contentItem);
+		}
 
 		$debug = true;
 		$debug = false;

@@ -731,7 +731,7 @@ class NotificationAryHelper
 	public static function pluginCodeReplace($pluginObject, $body, $matches)
 	{
 		// Load NA subscribed options from the user profiles table
-		$user = Factory::getUser();
+		// $user = Factory::getUser();
 
 		$rules = $pluginObject->pparams;
 
@@ -745,8 +745,8 @@ class NotificationAryHelper
 		// Prepare names of plugin settings fields. These strange names are due to the plugin history
 		// when the plugin had admin users settings (ausers) and registred users settings (rusers)
 		$paramName = 'notifyuser';
-		$groupName = 'ausers_' . $paramName . 'groups';
-		$itemName = 'ausers_' . $paramName . 's';
+		// $groupName = 'ausers_' . $paramName . 'groups';
+		// $itemName = 'ausers_' . $paramName . 's';
 
 		JForm::addFieldPath($pluginObject->plg_path . '/fields');
 
@@ -769,7 +769,7 @@ class NotificationAryHelper
 
 			$msg = null;
 
-			foreach ($rules as $ruleNumber => $rule)
+			foreach ($rules as /* $ruleNumber => */ $rule)
 			{
 				if ($rule->__ruleUniqID != $ruleUniqID)
 				{
