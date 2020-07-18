@@ -23,6 +23,7 @@ use Joomla\String\StringHelper;
 use Joomla\CMS\Component\ComponentHelper;
 use NotificationAry\HelperClasses\NotificationAryHelper;
 // use NotificationAry\HelperClasses\FakeMailerClass;
+use Joomla\CMS\HTML\HTMLHelper;
 
 
 // No direct access
@@ -186,7 +187,7 @@ trait CoreEvents
 
 						// Instantiate a new instance of the class. Passing the string
 						// variable automatically loads the HTML for you.
-						$h2t = new \Html2Text\Html2Text($text, array('show_img_link' => 'yes'));
+						$h2t = new \Html2Text\Html2Text($text, ['show_img_link' => 'yes']);
 						$h2t->width = 120;
 
 						// Simply call the get_text() method for the class to convert
@@ -204,7 +205,7 @@ trait CoreEvents
 					// $empty_contentItem = $this->_getContentItemTable($context);
 					$tablename = str_replace('#__', $db->getPrefix(), $empty_contentItem->get('_tbl'));
 					$text = 'UPDATE ' . $tablename . ' SET ';
-					$parts = array();
+					$parts = [];
 
 					foreach ($this->previous_article as $field => $value) {
 						if (is_string($value) && property_exists($empty_contentItem, $field)) {
@@ -260,15 +261,15 @@ trait CoreEvents
 				require_once NotificationAry_DIR . '/helpers/Diff.php';
 			}
 
-			$options = array(
+			$options = [
 				// 'ignoreWhitespace' => true,
 				// 'ignoreCase' => true,
 
 				// Determines how much of not changed text to show, 1 means only close to the change
 				'context' => 1
-			);
+			];
 
-			$old = array();
+			$old = [];
 			$old[] = '<h1>' . $this->previous_article->title . '</h1>';
 			$introtext = preg_split("/\r\n|\n|\r/", StringHelper::trim($this->previous_article->introtext));
 			$old = array_merge($old, $introtext);
@@ -279,7 +280,7 @@ trait CoreEvents
 				$old = array_merge($old, $fulltext);
 			}
 
-			$new = array();
+			$new = [];
 			$new[] = '<h1>' . $this->contentItem->title . '</h1>';
 			$introtext = preg_split("/\r\n|\n|\r/", StringHelper::trim($this->contentItem->introtext));
 
@@ -394,7 +395,7 @@ trait CoreEvents
 		// Show debug information
 		if ($this->paramGet('showContext')) {
 			$jtable_class = get_class($contentItem);
-			$msg = array();
+			$msg = [];
 			$msg[] = '</p><div class="alert-message row-fluid">';
 			$msg[] = '<p><small><b>'
 				. $this->plg_name . '</b> ' . Text::_('JTOOLBAR_DISABLE') . ' ' . Text::_('NOTICE') . '</small></p>';
@@ -634,7 +635,7 @@ trait CoreEvents
 					dumpMessage($debugmsg);
 					dump($Users_to_send, '$Users_to_send');
 				} else {
-					$msg = array();
+					$msg = [];
 					$msg[] = '<div style="color:red;">' . $debugmsg . '</div>';
 					$msg[] = '<pre>$Users_to_send = ';
 					$msg[] = print_r($Users_to_send, true);
@@ -723,12 +724,12 @@ trait CoreEvents
 		$ajaxHash = $session->get('AjaxHash', null, $this->plg_name);
 
 		if (!empty($ajaxHash)) {
-			$paramsToBePassed = array(
+			$paramsToBePassed = [
 				'ajaxHash' => $ajaxHash,
 				'verbose' => $this->paramGet('verbose'),
 				'showNumberOfUsers' => $this->paramGet('successmessagenumberofusers'),
 				'debug' => $this->paramGet('debug'),
-			);
+			];
 
 			$paramsToBePassed = base64_encode(serialize($paramsToBePassed));
 
@@ -751,13 +752,13 @@ trait CoreEvents
 
 			$doc = Factory::getDocument();
 
-			$doc->addScriptOptions($this->plg_name, array('ajax_place' => $this->plg_full_name));
-			$doc->addScriptOptions($this->plg_name, array('ajax_url' => $url_ajax_plugin));
+			$doc->addScriptOptions($this->plg_name, ['ajax_place' => $this->plg_full_name]);
+			$doc->addScriptOptions($this->plg_name, ['ajax_url' => $url_ajax_plugin]);
 
 			//$doc->addScriptOptions($this->plg_name, ['messages' => array('error' => Text::_('Ajax error')) ]);
 
 			if ($this->paramGet('ajax_allow_to_cancel') && $this->paramGet('ajax_delay') > 0) {
-				$doc->addScriptOptions($this->plg_name, array('start_delay' => ($this->paramGet('ajax_delay') + 1)));
+				$doc->addScriptOptions($this->plg_name, ['start_delay' => ($this->paramGet('ajax_delay') + 1)]);
 				Text::script('PLG_SYSTEM_NOTIFICATIONARY_AJAX_TIME_TO_START');
 				// ~ $doc->addScriptOptions($this->plg_name, array('messages' => array('delay_text' => Text::_('PLG_SYSTEM_NOTIFICATIONARY_AJAX_TIME_TO_START')) ));
 			}
@@ -772,14 +773,14 @@ trait CoreEvents
 				$SuccessMessage .= ' ' . Text::_('PLG_SYSTEM_NOTIFICATIONARY_USERS_NOTIFIED');
 			}
 
-			$doc->addScriptOptions($this->plg_name, ['messages' => array('sent' => $SuccessMessage)]);
+			$doc->addScriptOptions($this->plg_name, ['messages' => ['sent' => $SuccessMessage]]);
 
 			self::addJSorCSS('ajax.js', $this->plg_full_name);
 
 			self::addJSorCSS('styles.css', $this->plg_full_name);
 
 			if ($this->paramGet('debug')) {
-				$doc->addScriptOptions($this->plg_name, array('debug' => true));
+				$doc->addScriptOptions($this->plg_name, ['debug' => true]);
 			}
 		}
 	}
@@ -815,7 +816,7 @@ trait CoreEvents
 			// Get extension table class
 			$extensionTable = Table::getInstance('extension');
 
-			$pluginId = $extensionTable->find(array('element' => $this->plg_name, 'type' => 'plugin'));
+			$pluginId = $extensionTable->find(['element' => $this->plg_name, 'type' => 'plugin']);
 
 			$language = Factory::getLanguage();
 
@@ -906,7 +907,7 @@ trait CoreEvents
 
 			jimport('joomla.form.form');
 			$form = Form::getInstance('itemForm', JPATH_ADMINISTRATOR . '/components/com_k2/models/item.xml');
-			$values = array('params' => json_decode($contentItem->params));
+			$values = ['params' => json_decode($contentItem->params)];
 			$form->bind($values);
 
 			// Prepare to imitate onContentPrepareForm }
@@ -1013,33 +1014,33 @@ trait CoreEvents
 			// $oldFieldsFormat = NotificationAryHelper::getHTMLElementById($body,'adminformlist','ul','class');
 
 			// NOTE! NotificationAryHelper::getHTMLElementById doesn't work with non-double tags like <input ... /> .
-			$possible_tag_ids = array(
+			$possible_tag_ids = [
 
 				// ~ array('textarea', 'jform_articletext'),
-				array('select', 'jform_catid'),
-				array('select', 'jform_parent_id'),
-				array('select', 'jform_state'),
-				array('select', 'jform_published'),
-				array('select', 'jform_access'),
-				array('select', 'jform_language'),
+				['select', 'jform_catid'],
+				['select', 'jform_parent_id'],
+				['select', 'jform_state'],
+				['select', 'jform_published'],
+				['select', 'jform_access'],
+				['select', 'jform_language'],
 
 				// Jdownloads
-				array('select', 'jform_file_language'),
+				['select', 'jform_file_language'],
 
 				// Jdownloads
-				array('div', 'k2ExtraFieldsValidationResults'),
+				['div', 'k2ExtraFieldsValidationResults'],
 
 				// Old K2
-				array('select', 'catid'),
-			);
+				['select', 'catid'],
+			];
 
 
 			// JEvents compatibility\
 			if ($this->context['full'] == 'jevents.edit.icalevent') {
-				$possible_tag_ids = array(
-					array('select', 'access'),
-					array('select', 'catid')
-				);
+				$possible_tag_ids = [
+					['select', 'access'],
+					['select', 'catid']
+				];
 				$replacement_fieldset = '
 					<div><fieldset id="jform_' . $this->attribsField . '_runnotificationary" class="radio btn-group btn-group-yesno nswitch" >
 						<input type="radio" ' . $checkedyes . ' value="1" name="custom_runnotificationary" id="jform_' . $this->attribsField . '_runnotificationary1">
@@ -1235,7 +1236,7 @@ trait CoreEvents
 					$this->_prepareParams();
 				}
 
-				$possible_object_parameters = array('text', 'introtext');
+				$possible_object_parameters = ['text', 'introtext'];
 
 				foreach ($possible_object_parameters as $param) {
 					if (isset($article->{$param})) {
@@ -1402,7 +1403,7 @@ trait CoreEvents
 			$this->runnotificationary = $contentItem->{$attribs}['runnotificationary'];
 		} else {
 			// If at lease one active rules has default switch status on
-			foreach ($rules as $rule_number => $rule) {
+			foreach ($rules as /* $rule_number => */ $rule) {
 				if ($rule->notificationswitchdefault == 1) {
 					$this->runnotificationary = 1;
 				}
@@ -1463,7 +1464,7 @@ trait CoreEvents
 			$form_selector = 'adminForm';
 		}
 
-		foreach ($rules as $rule_number => $rule) {
+		foreach ($rules as /* $rule_number => */ $rule) {
 			if ($rule->notificationswitchaddconfirmation) {
 				$doc = Factory::getDocument();
 				$language = Factory::getLanguage();
@@ -1522,7 +1523,7 @@ trait CoreEvents
 		$md5 = $jinput->get('hash', null, 'raw');
 
 		if ($uniq) {
-			$serialize = (base64_encode(serialize(array('unsubscribe' => $email, 'md5' => $md5))));
+			$serialize = (base64_encode(serialize(['unsubscribe' => $email, 'md5' => $md5])));
 			$app	= Factory::getApplication();
 
 			$redirect_url = 'index.php?option=com_ajax&format=raw'
@@ -1558,5 +1559,117 @@ trait CoreEvents
 				break;
 			}
 		}
+	}
+
+
+	/**
+	 * Runs on content preparation
+	 *
+	 * @param   string  $context  The context for the data
+	 * @param   object  $data     An object containing the data for the form.
+	 *
+	 * @return  boolean
+	 *
+	 * @since   1.6
+	 */
+	public function onContentPrepareData($context, $data)
+	{
+		// Check we are manipulating a valid form.
+		if (!in_array($context, ['com_users.profile', 'com_users.user', 'com_users.registration', 'com_admin.profile']))
+		{
+			return true;
+		}
+
+		if (is_object($data))
+		{
+
+			$rules = [];
+			$nasubscribe = [];
+
+			foreach ($this->pparams as $rule) {
+				if('0' === $rule->allow_subscribe) {
+					continue;
+					break;
+				}
+				$rules[$rule->__ruleUniqID] = $rule;
+				$nasubscribe[$rule->__ruleUniqID] = [
+					'subscribeType' => $rule->allow_subscribe,
+					'name' => $rule->{'{notificationgroup'}[0],
+					'text' => $rule->allow_subscribe_default ? 
+							Text::_('PLG_SYSTEM_NOTIFICATIONARY_SUBSCRIBED_TO_ALL') : 
+							Text::_('PLG_SYSTEM_NOTIFICATIONARY_UNSUBSCRIBED_FROM_ALL'),
+				];
+			}
+			if (empty($rules)) {
+				return;
+			}
+
+			$userId = isset($data->id) ? $data->id : 0;
+
+			if (!isset($data->nasubscribe) && $userId > 0)
+			{
+				// Load the profile data from the database.
+				$db = Factory::getDbo();
+				$db->setQuery(
+					'SELECT profile_key, profile_value FROM #__user_profiles'
+						. ' WHERE user_id = ' . (int) $userId . " AND profile_key LIKE 'notificationary.%'"
+						. ' ORDER BY ordering'
+				);
+
+				try
+				{
+					$results = $db->loadRowList();
+				}
+				catch (\RuntimeException $e)
+				{
+					$this->_subject->setError($e->getMessage());
+
+					return false;
+				}
+				// Un$nasubscribe[$rule->__ruleUniqID]
+				// PLG_SYSTEM_NOTIFICATIONARY_UNSUBSCRIBED
+				// PLG_SYSTEM_NOTIFICATIONARY_SUBSCRIBED_TO_ALL
+				$data->nasubscribe = ['subscribe' => ''];
+				foreach ($results as $v)
+				{
+					$k = str_replace('notificationary.', '', $v[0]);
+					list($ruleId, $suff) = explode('.', $k, 2);
+					$rule = $rules[$ruleId];
+					if ('all' === $suff) {
+						switch ($v[1]) {
+							case 'subscribed':
+								$nasubscribe[$ruleId]['text'] = Text::_('PLG_SYSTEM_NOTIFICATIONARY_SUBSCRIBED_TO_ALL');
+								break;
+							case 'unsubscribed':
+								$nasubscribe[$ruleId]['text'] = Text::_('PLG_SYSTEM_NOTIFICATIONARY_UNSUBSCRIBED_FROM_ALL');
+								# code...
+								break;
+						}
+						// $nasubscribe[$ruleId]['text'] = $subscribeTypesTexts[$rules[$ruleId]->allow_subscribe];
+					} else {
+						unset($nasubscribe[$ruleId]['text']);
+						$nasubscribe[$ruleId]['id'][] = $v[1];
+					}
+					// $k = 'subscribe';
+					$value = json_decode($v[1], true);
+
+					if ($value === null)
+					{
+						// $data->nasubscribe[$k] = $v[1];
+						$value = $v[1];
+						// $f = 'users.nasubscribe' . $k;
+					}
+
+				}
+				// $data->nasubscribe['subscribe'] .= $value;
+				$data->nasubscribe['subscribe'] = $nasubscribe;
+				$f = 'users.subscribe';
+				if (!HTMLHelper::isRegistered($f))
+				{
+					HTMLHelper::register($f, [__CLASS__, 'profileHelper']);
+				}
+			}
+		}
+		return true;
 	}
 }

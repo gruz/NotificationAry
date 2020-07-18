@@ -38,6 +38,7 @@ class NotificationaryCore extends \JPluginGJFields
 	use Traits\AjaxEvents;
 	use Traits\BuildMail;
 	use Traits\ParamsHandler;
+	use Traits\Subscribe;
 
 	use Traits\Extensions\JEvents;
 	use Traits\Extensions\ComUsers;
