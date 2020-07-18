@@ -123,7 +123,7 @@ trait CoreEvents
 		$this->contentItem  = $this->_contentItemPrepare($contentItem);
 
 		$session = Factory::getSession();
-		$CustomReplacement = $session->get('CustomReplacement', null, $this->plg_name);
+		$CustomReplacement = $session->get('CustomReplacement', ['context' => 'N0Ne'], $this->plg_name);
 
 		switch ($context) {
 			case $CustomReplacement['context']:

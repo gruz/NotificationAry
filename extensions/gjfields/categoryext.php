@@ -11,6 +11,8 @@ defined('JPATH_PLATFORM') or die;
 
 JFormHelper::loadFieldClass('list');
 
+use Joomla\CMS\Factory;
+
 /**
  * Form Field class for the Joomla Platform.
  * Supports an HTML select list of categories
@@ -83,7 +85,7 @@ class GJFieldsFormFieldCategoryext extends JFormFieldCategory
 				case 'com_k2':
 					try
 					{
-						$db = JFactory::getDBO();
+						$db = Factory::getDBO();
 						$query = 'SELECT m.* FROM #__k2_categories m WHERE trash = 0 ORDER BY parent, ordering';
 						$db->setQuery($query);
 						$mitems = $db->loadObjectList();
@@ -119,7 +121,7 @@ class GJFieldsFormFieldCategoryext extends JFormFieldCategory
 					}
 					catch (Exception $e)
 					{
-						JFactory::getApplication()->enqueueMessage(
+						Factory::getApplication()->enqueueMessage(
 							JText::sprintf('LIB_GJFIELDS_NOT_INSTALLED', $extension) . '<br><pre>' . $e->getMessage() . '</pre>',
 							'error'
 						);
@@ -133,21 +135,21 @@ class GJFieldsFormFieldCategoryext extends JFormFieldCategory
 							$tblName = '#__phocadownload_categories';
 							if (! class_exists('\PhocaDownloadCategory'))
 							{
-								
+
 								require JPATH_ADMINISTRATOR . '/components/com_phocadownload/libraries/phocadownload/category/category.php';
 							}
-							break;						
+							break;
 						case 'com_phocagallery':
 							$tblName = '#__phocagallery_categories';
 							if (! class_exists('\PhocaGalleryCategory'))
 							{
 								require JPATH_ADMINISTRATOR . '/components/com_phocagallery/libraries/phocagallery/html/category.php';
-								
+
 							}
 							break;
 					}
 
-					$db = \JFactory::getDBO();
+					$db = \Factory::getDBO();
 
 					// Build the list of categories
 					$query = 'SELECT a.title AS text, a.id AS value, a.parent_id as parentid'
@@ -165,7 +167,7 @@ class GJFieldsFormFieldCategoryext extends JFormFieldCategory
 					switch ($extension) {
 						case 'com_phocadownload':
 							$tree = \PhocaDownloadCategory::CategoryTreeOption($data, $tree, 0, $text, $catId);
-							break;						
+							break;
 						case 'com_phocagallery':
 							$tree = \PhocaGalleryCategory::CategoryTreeOption($data, $tree, 0, $text, $catId);
 							break;
@@ -181,7 +183,7 @@ class GJFieldsFormFieldCategoryext extends JFormFieldCategory
 
 					if (!file_exists($file))
 					{
-						JFactory::getApplication()->enqueueMessage(
+						Factory::getApplication()->enqueueMessage(
 							JText::sprintf('LIB_GJFIELDS_NOT_INSTALLED', $extension) . '<br>' . JText::_('LIB_GJFIELDS_FILE_NOT_EXISTS') . '<pre>' . $file . '</pre>',
 							'error'
 						);
@@ -193,6 +195,9 @@ class GJFieldsFormFieldCategoryext extends JFormFieldCategory
 					$formfield->setup($this->element, '');
 					$options = $formfield->getOptions();
 
+					if (empty($options) && Factory::getApplication()->isSite()) {
+						$options = $this->getJDownloadsCategories();
+					}
 					break;
 				default :
 					if (strpos($extension, 'com_') !== 0)
@@ -214,7 +219,7 @@ class GJFieldsFormFieldCategoryext extends JFormFieldCategory
 					if ((string) $this->element['action'])
 					{
 						// Get the current user object.
-						$user = JFactory::getUser();
+						$user = Factory::getUser();
 
 						foreach ($options as $i => $option)
 						{
@@ -286,6 +291,116 @@ class GJFieldsFormFieldCategoryext extends JFormFieldCategory
 		}
 
 		return parent::getInput();
+	}
+
+	/**
+	 * This is a copy of file administrator/components/com_jdownloads/models/fields/jdcategoryselect.php:getOptions()
+	 *
+	 * Original code doesn't allow to load categroies on Frontend. So must copy it here.
+	 *
+	 */
+	private function getJDownloadsCategories() {
+		// Include helpers
+		require_once JPATH_SITE.'/administrator/components/com_jdownloads/helpers/jdownloadshelper.php';
+
+		$jd_config = JDownloadsHelper::buildjlistConfig();
+
+		// Initialise variables.
+		$options = array();
+
+		$db		= JFactory::getDbo();
+		$query	= $db->getQuery(true);
+
+		$query->select('a.id AS value, a.title AS text, a.level');
+		$query->from('#__jdownloads_categories AS a');
+		$query->join('LEFT', '`#__jdownloads_categories` AS b ON a.lft > b.lft AND a.rgt < b.rgt');
+
+		// Prevent parenting to children of this item.
+		/* if ($id = $this->form->getValue('id')) {
+			$query->join('LEFT', '`#__jdownloads_categories` AS p ON p.id = '.(int) $id);
+			$query->where('NOT(a.lft >= p.lft AND a.rgt <= p.rgt)');
+
+			$rowQuery	= $db->getQuery(true);
+			$rowQuery->select('a.id AS value, a.title AS text, a.level, a.parent_id');
+			$rowQuery->from('#__jdownloads_categories AS a');
+			$rowQuery->where('a.id = ' . (int) $id);
+			$db->setQuery($rowQuery);
+			$row = $db->loadObject();
+		}  */
+
+		$query->where('a.published IN (0,1)');
+		$query->group('a.id');
+		$query->order('a.lft ASC');
+
+		// Get the options.
+		$db->setQuery($query);
+
+		$options = $db->loadObjectList();
+
+		// Check for a database error.
+		if ($db->getErrorNum()) {
+			JError::raiseWarning(500, $db->getErrorMsg());
+		}
+
+		// Pad the option text with spaces using depth level as a multiplier.
+		for ($i = 0, $n = count($options); $i < $n; $i++)
+		{
+			// Translate ROOT
+			if ($options[$i]->level == 0) {
+				if ($jd_config['show.header.catlist.uncategorised'] == 1){
+					$options[$i]->text = JText::_('COM_JDOWNLOADS_SELECT_UNCATEGORISED');
+				} else {
+					$root = array_shift($options);
+					$i++;
+					$n--;
+				}
+			}
+			if ($options[$i]->level > 1){
+				$options[$i]->text = str_repeat('- ',($options[$i]->level -1)).$options[$i]->text;
+			}
+		}
+
+		// Initialise variables.
+		/** ##mygruz20200718174443 {
+		It was:
+		$user = JFactory::getUser();
+
+		if (empty($id)) {
+			// New item, only have to check core.create.
+			foreach ($options as $i => $option)
+			{
+				// Unset the option if the user isn't authorised for it.
+				if (!$user->authorise('core.create', 'com_jdownloads.category.'.$option->value)) {
+					unset($options[$i]);
+				}
+			}
+		}
+		else {
+			// Existing item is a bit more complex. Need to account for core.edit and core.edit.own.
+			foreach ($options as $i => $option)
+			{
+				// Unset the option if the user isn't authorised for it.
+				if (!$user->authorise('core.edit', 'com_jdownloads.category.'.$option->value)) {
+					// As a backup, check core.edit.own
+					if (!$user->authorise('core.edit.own', 'com_jdownloads.category.'.$option->value)) {
+						// No core.edit nor core.edit.own - bounce this one
+						unset($options[$i]);
+					}
+					else {
+						// TODO I've got a funny feeling we need to check core.create here.
+						// Maybe you can only get the list of categories you are allowed to create in?
+						// Need to think about that. If so, this is the place to do the check.
+					}
+				}
+			}
+		}
+		It became: */
+		/** ##mygruz20200718174443 } */
+
+		// Merge any additional options in the XML definition.
+		$options = array_merge(parent::getOptions(), $options);
+
+		return $options;
 	}
 }
 

@@ -1125,16 +1125,20 @@ trait BuildMail
 	 */
 	protected function _replaceObjectPlaceHolders($text)
 	{
-		/* ##mygruz20160705172743 {
+		/* // ##mygruz20200718185712 {
 		It was:
 		preg_match_all('/##([^#]*)#([^#]*)##([^#]*)/Ui',$text,$matches);
 		preg_match_all('/##([^#]*)#([^#]*)##([^#]*)#{0,2}/Ui', $text, $matches);
-		It became: */
 		preg_match_all('/##([^ \n]*)##/i', $text, $matches);
-		/* ##mygruz20160705172743 } */
+		It became: */
+		preg_match_all('/(["\']{0,1})##([^ \n]*)##(["\']{0,1})/i', $text, $matches);
 
-		if (!empty($matches[1])) {
-			foreach ($matches[1] as $k => $v) {
+		/* ##mygruz20160705172743 } */
+		$varNameBag = $matches[2];
+		$quotesBag = $matches[1];
+
+		if (!empty($varNameBag)) {
+			foreach ($varNameBag as $k => $v) {
 				$path = [];
 				$tmp = explode('##', $v);
 
@@ -1183,7 +1187,13 @@ trait BuildMail
 				if (empty($value)) {
 					$value = '';
 				}
-				$text = str_replace($matches[0][$k], (string) $value, $text);
+
+				$value = (string) $value;
+				if ($quotesBag[$k]) {
+					$value = str_replace($quotesBag[$k], '\\'. $quotesBag[$k], $value);
+					$value = $quotesBag[$k] . $value . $quotesBag[$k];
+				}
+				$text = str_replace($matches[0][$k], $value, $text);
 			}
 		}
 
