@@ -61,7 +61,11 @@ defined('_JEXEC') or die('Restricted access');
 //~ echo '<pre> Line: '.__LINE__.' '.PHP_EOL;
 //~ print_r($array);
 //~ echo PHP_EOL.'</pre>'.PHP_EOL;
-					unset($array[$krule]);
+					if (is_array($array)) {
+						unset($array[$krule]);
+					} else {
+						unset($array->$krule);
+					}
 				}
 
 			} else {
