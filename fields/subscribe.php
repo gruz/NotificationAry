@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package    NotificationAry
  *
@@ -9,14 +10,14 @@
 defined('JPATH_PLATFORM') or die;
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\Form\Form;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Form\FormHelper;
 use Joomla\CMS\Layout\FileLayout;
-use Joomla\CMS\Uri\Uri;
-use Joomla\CMS\Language\Text;
+use NotificationAry\HelperClasses\NotificationAryHelper;
 
-if (!class_exists('\\GJFieldsFormField'))
-{
+if (!class_exists('\\GJFieldsFormField')) {
 	include JPATH_ROOT . '/libraries/gjfields/gjfields.php';
 }
 
@@ -64,27 +65,20 @@ class NAFormFieldSubscribe extends \GJFieldsFormField
 		$userID = $this->element['userid'] ? (string) $this->element['userid'] : null;
 		$isProfile = $this->element['isProfile'] ? (string) $this->element['isProfile'] : null;
 
-		if (!empty($userID))
-		{
+		if (!empty($userID)) {
 			$user = Factory::getUser($userID);
-		}
-		else
-		{
+		} else {
 			$user = Factory::getUser();
 		}
 
 		$rules = $pluginObject->pparams;
 
-		if (!empty($ruleIDs) && is_string($ruleIDs))
-		{
+		if (!empty($ruleIDs) && is_string($ruleIDs)) {
 			$ruleIDs = array_map('trim', explode(',', $ruleIDs));
 			// ~ $rules_tmp = $rules;
-			foreach ($ruleIDs as $k => $ruleUniqID)
-			{
-				foreach ($rules as $j => $rule)
-				{
-					if ($rule->__ruleUniqID == $ruleUniqID)
-					{
+			foreach ($ruleIDs as $k => $ruleUniqID) {
+				foreach ($rules as $j => $rule) {
+					if ($rule->__ruleUniqID == $ruleUniqID) {
 						$rules_tmp[] = $rule;
 					}
 				}
@@ -101,32 +95,18 @@ class NAFormFieldSubscribe extends \GJFieldsFormField
 
 		$output = array();
 
-		foreach ($rules as /* $ruleNumber => */ $rule)
-		{
+		foreach ($rules as /* $ruleNumber => */ $rule) {
 			$form = array();
 
-			$msg = null;
-
-			if (!$rule->allow_subscribe)
-			{
-				if ($app->isSite() && !$isProfile)
-				{
-					$msg = '<span style="color:red;">['
-						. Text::_('PLG_SYSTEM_NOTIFICATIONARY_RULE_DOESNT_ALLOW_TO_SUBSCRIBE')
-						. ': ' . $rule->__ruleUniqID . ' <b>' . $rule->{'{notificationgroup'}[0] . '</b>'
-						. ']</span>';
-					$output[] = $msg;
+			if (!$rule->allow_subscribe) {
+				if ($app->isClient('site') && !$isProfile) {
+					$output[] = NotificationAryHelper::getBadMessage($rule, 'PLG_SYSTEM_NOTIFICATIONARY_RULE_DOESNT_ALLOW_TO_SUBSCRIBE');
 				}
 				continue;
 			}
 
-			if (!$rule->isenabled)
-			{
-				$msg = '<span style="color:red;">['
-					. Text::_('PLG_SYSTEM_NOTIFICATIONARY_RULE_DISABLED')
-					. ': ' . $rule->__ruleUniqID . ' <b>' . $rule->{'{notificationgroup'}[0] . '</b>'
-					. ']</span>';
-				$output[] = $msg;
+			if (!$rule->isenabled) {
+				$output[] = NotificationAryHelper::getBadMessage($rule, 'PLG_SYSTEM_NOTIFICATIONARY_RULE_DISABLED');;
 				continue;
 			}
 
@@ -136,58 +116,39 @@ class NAFormFieldSubscribe extends \GJFieldsFormField
 
 			$pluginObject->rule = $rule;
 
-			if (!$pluginObject->_checkAllowed($user, $paramName = 'notifyuser', $fieldNamePrefix = 'ausers'))
-			{
-				$msg = '<span style="color:red;">['
-				. Text::_('PLG_SYSTEM_NOTIFICATIONARY_RULE_DOESNT_ALLOW_TO_SUBSCRIBE')
-				. ': ' . $rule->__ruleUniqID . ' <b>' . $rule->{'{notificationgroup'}[0] . '</b>'
-				. ']</span>';
-				$output[] = $msg;
-				// Debug line
-				// ~ dump(': User is not allowed to subscribe', $rule->__ruleUniqID);
+			if (!$pluginObject->_checkAllowed($user, $paramName = 'notifyuser', $fieldNamePrefix = 'ausers')) {
+				$output[] = NotificationAryHelper::getBadMessage($rule, 'PLG_SYSTEM_NOTIFICATIONARY_RULE_DOESNT_ALLOW_TO_SUBSCRIBE');
 				continue;
 			}
 
 			$form['title'] = $rule->{'{notificationgroup'}[0];
 
 			// Determine selectbox to subscribe to all/none/selected categories or the rule state
-			switch ($rule->allow_subscribe)
-			{
-				// Per category subscribe
+			switch ($rule->allow_subscribe) {
+					// Per category subscribe
 				case '1':
 
-				// Per rule subscribe
+					// Per rule subscribe
 				case '2':
 					$allowedCategories = (array) \NotificationAry\HelperClasses\NotificationAryHelper::getProfileData($user->id, $rule->__ruleUniqID);
 
-					if (empty($allowedCategories))
-					{
-						if ($rule->allow_subscribe_default)
-						{
+					if (empty($allowedCategories)) {
+						if ($rule->allow_subscribe_default) {
 							$selectAllValue = 'all';
-						}
-						else
-						{
+						} else {
 							$selectAllValue = 'none';
 						}
-					}
-					elseif (in_array('subscribed', $allowedCategories))
-					{
+					} elseif (in_array('subscribed', $allowedCategories)) {
 						$selectAllValue = 'all';
-					}
-					elseif (in_array('unsubscribed', $allowedCategories))
-					{
+					} elseif (in_array('unsubscribed', $allowedCategories)) {
 						$selectAllValue = 'none';
-					}
-					else
-					{
+					} else {
 						$selectAllValue = 'selected';
 					}
 			}
 
-			switch ($rule->allow_subscribe)
-			{
-				// Per category subscribe
+			switch ($rule->allow_subscribe) {
+					// Per category subscribe
 				case '1':
 					/*
 					switch ($rule->context_or_contenttype)
@@ -227,7 +188,8 @@ class NAFormFieldSubscribe extends \GJFieldsFormField
 											description="" class="chzn-custom-value"
 											hint="PLG_SYSTEM_NOTIFICATIONARY_FIELD_CATEGORIES_CUSTOM"/>
 
-						');
+						'
+					);
 
 					$formfield->setup($element, '', $rule->__ruleUniqID);
 
@@ -239,8 +201,7 @@ class NAFormFieldSubscribe extends \GJFieldsFormField
 					$values = array();
 
 					// Iterate categories and and add only needed ones and checked if needed.
-					foreach ($categories as $k => $category)
-					{
+					foreach ($categories as $k => $category) {
 						/*
 								<field name="ausers_articlegroups" maxrepeatlength="1"
 								 		type="gjfields.variablefield" basetype="list" default="0"
@@ -253,35 +214,30 @@ class NAFormFieldSubscribe extends \GJFieldsFormField
 
 						$continue = false;
 
-						switch ($rule->ausers_articlegroups)
-						{
-							// If selected categories to be included
+						switch ($rule->ausers_articlegroups) {
+								// If selected categories to be included
 							case '1':
-								if (!in_array($category->value, $rule->ausers_articlegroupsselection))
-								{
+								if (!in_array($category->value, $rule->ausers_articlegroupsselection)) {
 									$continue = true;
 								}
 								break;
 
-							// If selected categories to be excluded
+								// If selected categories to be excluded
 							case '2':
-								if (in_array($category->value, $rule->ausers_articlegroupsselection))
-								{
+								if (in_array($category->value, $rule->ausers_articlegroupsselection)) {
 									$continue = true;
 								}
 								break;
-							default :
+							default:
 
 								break;
 						}
 
-						if ($continue)
-						{
+						if ($continue) {
 							continue;
 						}
 
-						if (in_array($category->value, $allowedCategories))
-						{
+						if (in_array($category->value, $allowedCategories)) {
 							$values[] = $category->value;
 						}
 
@@ -295,12 +251,12 @@ class NAFormFieldSubscribe extends \GJFieldsFormField
 
 					break;
 
-				// The whole rule subscribe
+					// The whole rule subscribe
 				case '2':
 					$form['selectAllValue'] = $selectAllValue;
 					$form['sublayout'] = 'perrule';
 					break;
-				default :
+				default:
 
 					break;
 			}
@@ -329,33 +285,32 @@ class NAFormFieldSubscribe extends \GJFieldsFormField
 			$form = $layout->render($form);
 
 			$output[] = $form;
-
 		}
 
 		$output = implode(PHP_EOL, $output);
 
 		$doc = Factory::getDocument();
 
-											// It's a must part
+		// It's a must part
 		$url_ajax_plugin = URI::base() . '?option=com_ajax&format=raw'
 
-				// $this->plg_type should contain your plugin group (system, content etc.),
-				// E.g. for a system plugin plg_system_menuary it should be system
-				. '&group=' . 'system'
+			// $this->plg_type should contain your plugin group (system, content etc.),
+			// E.g. for a system plugin plg_system_menuary it should be system
+			. '&group=' . 'system'
 
-				// The function from plugin you want to call
+			// The function from plugin you want to call
 
-				// The PHP functon must start from onAjax e.g. PlgSystemValidationAry::onAjaxValidate,
-				// while here we should use only after onAjax - `validate`
-				. '&plugin=notificationArySubscribeUpdate'
+			// The PHP functon must start from onAjax e.g. PlgSystemValidationAry::onAjaxValidate,
+			// while here we should use only after onAjax - `validate`
+			. '&plugin=notificationArySubscribeUpdate'
 
-				// It's optional to add to the link. Just in case to ignore link result caching.
-				. '&uniq=' . uniqid();
+			// It's optional to add to the link. Just in case to ignore link result caching.
+			. '&uniq=' . uniqid();
 
 		// Add the link to the HTML DOM to let later your ajax JS script get the link to call
 		// You'll be able to get the link in JS like <code>var link = Joomla.optionsStorage.notificationary.ajax_url;</code>
 
-		$doc->addScriptOptions('notificationary', array('ajax_url' => $url_ajax_plugin ));
+		$doc->addScriptOptions('notificationary', array('ajax_url' => $url_ajax_plugin));
 		$doc->addScriptOptions('notificationary', array('task' => 'subscription'));
 
 		\JPluginGJFields::addJSorCSS('ajax_subscribe.js', 'plg_system_notificationary', static::$debug);

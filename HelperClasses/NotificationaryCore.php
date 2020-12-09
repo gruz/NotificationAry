@@ -1228,30 +1228,8 @@ class NotificationaryCore extends \JPluginGJFields
 		*/
 	public function _checkAllowed(&$object, $paramName, $fieldNamePrefix = 'ausers')
 	{
-		$debug = true;
-		$debug = false;
-
 		if (empty($this->task)) {
 			$this->task = '';
-		}
-
-		$className = get_class($object);
-
-		if ($debug) {
-			dumpMessage('<b>' . __FUNCTION__ . '</b>');
-			dumpMessage('<b>' . $className . '</b>');
-		}
-
-		if (!empty($this->task) && $this->task == 'saveItem') {
-			$this->_debug(' > <b>' . $className . '</b>');
-
-			if ($object instanceof User) {
-				$selectionDebugTextGroups = '<i>user groups</i>';
-				$selectionDebugTextSpecific = '<i>specific users</i>';
-			} else {
-				$selectionDebugTextGroups = '<i>categories</i>';
-				$selectionDebugTextSpecific = '<i>specific content items</i>';
-			}
 		}
 
 		if (($object instanceof User) && !empty($this->rule)) {
@@ -1264,11 +1242,7 @@ class NotificationaryCore extends \JPluginGJFields
 
 		if (!($object instanceof User) && empty($object->id)) {
 			$msg = '';
-
-			if ($debug) {
-				$msg = var_dump(debug_backtrace(), true);
-			}
-
+			// $msg = var_dump(debug_backtrace(), true);
 			Factory::getApplication()->enqueueMessage(
 				Text::_(ucfirst($this->plg_name))
 					. ' (line ' . __LINE__ . '): '
@@ -1289,10 +1263,6 @@ class NotificationaryCore extends \JPluginGJFields
 					return false;
 				}
 			}
-		}
-
-		if ($debug) {
-			dumpMessage('here 1');
 		}
 
 		$groupName = $fieldNamePrefix . '_' . $paramName . 'groups';
@@ -1324,28 +1294,11 @@ class NotificationaryCore extends \JPluginGJFields
 				break;
 		}
 
-		if ($debug) {
-			dump($onGroupLevels, $groupName);
-			dump($onItems, $itemName);
-		}
-
-		if (!empty($this->task) && $this->task == 'saveItem') {
-			$this->_debug(' > ' . $selectionDebugTextGroups . ' selection', false, $onGroupLevels);
-			$this->_debug(' > Specific ' . $selectionDebugTextSpecific . ' selection', false, $onItems);
-		}
-
 		// Allowed for all
 		if ($onGroupLevels == 'all' && $onItems == 'all') {
-			if (!empty($this->task) && $this->task == 'saveItem') {
-				$this->_debug(' > Always allowed. PASSED');
-			}
-
 			return true;
 		}
 
-		if ($debug) {
-			dumpMessage('here 2');
-		}
 		// Get which group the user belongs to, or which category the user belongs to
 		if ($object instanceof User) {
 			// If means &object is user, not article
@@ -1365,26 +1318,16 @@ class NotificationaryCore extends \JPluginGJFields
 			$object->temp_gid = (array) $object->catid;
 		}
 
-		if (!empty($this->task) && $this->task == 'saveItem') {
-			$this->_debug(' > Current object ' . $selectionDebugTextGroups . ' (ids)', false, $object->temp_gid);
-		}
-
 		// If not all grouplevels allowed then check if current user is allowed
-		$isOk = false;
-
 		$groupToBeIncluded = false;
 		$groupToBeExcluded = false;
 
-		if ($onGroupLevels != 'all') {
+		if ('all' !== $onGroupLevels) {
 			// Get user groups/categories to be included/excluded
 			$GroupLevels = $this->_getP($groupName . 'selection', $fieldNamePrefix);
 
 			if (!is_array($GroupLevels)) {
 				$GroupLevels = explode(',', $GroupLevels);
-			}
-
-			if (!empty($this->task) && $this->task == 'saveItem') {
-				$this->_debug(' > ' . $selectionDebugTextGroups . ' included/excluded', false, $GroupLevels);
 			}
 
 			// Check only categories, as there are no sections
@@ -1399,22 +1342,12 @@ class NotificationaryCore extends \JPluginGJFields
 
 			if ($onGroupLevels == 'include' && $gid_in_array) {
 				$groupToBeIncluded = true;
-
-				if (!empty($this->task) && $this->task == 'saveItem') {
-					$this->_debug(' > Is allowed based on ' . $selectionDebugTextGroups . ' YES');
-				}
 			} elseif ($onGroupLevels == 'exclude' && $gid_in_array) {
 				$groupToBeExcluded = true;
-
-				if (!empty($this->task) && $this->task == 'saveItem') {
-					$this->_debug(' > Is NOT allowed based on ' . $selectionDebugTextGroups . ' YES');
-				}
+			} else {
+				$onGroupLevels = 'all';
 			}
 		}
-
-		// ~ $isOk = false;
-		$forceInclude = false;
-		$forceExclude = false;
 
 		// If not all user allowed then check if current user is allowed
 		if ($onItems != 'all') {
@@ -1426,77 +1359,25 @@ class NotificationaryCore extends \JPluginGJFields
 
 			$item_in_array = in_array($object->id, $Items);
 
-			if (!empty($this->task) && $this->task == 'saveItem') {
-				$this->_debug(' > ' . $selectionDebugTextSpecific . ' included/excluded', false, $Items);
-			}
-
-			if ($onItems == 'include' && $item_in_array) {
-				$forceInclude = true;
-
-				if (!empty($this->task) && $this->task == 'saveItem') {
-					$this->_debug(' > Is FORCED to be INCLUDED based on ' . $selectionDebugTextSpecific . '');
-				}
-
+			if ('include' === $onItems && $item_in_array) {
 				return true;
-			} elseif ($onItems == 'exclude' && $item_in_array) {
-				$forceExclude = true;
-
-				if (!empty($this->task) && $this->task == 'saveItem') {
-					$this->_debug(' > Is FORCED to be EXCLUDED based on ' . $selectionDebugTextSpecific . '');
-				}
-
+			} elseif ('exclude' === $onItems && $item_in_array) {
 				return false;
 			}
-		}
 
-		if ($debug) {
-			dumpMessage('here 3');
+			$onItems = 'all';
 		}
-
-		if (!empty($this->task) && $this->task == 'saveItem') {
-			$this->_debug(' > Is ALLOWED based on ' . $selectionDebugTextSpecific . ' YES');
-		}
-
-		$itemAllowed = true;
 
 		if ($groupToBeIncluded) {
-			if (!empty($this->task) && $this->task == 'saveItem') {
-				$this->_debug(' > Object belongs to included ' . $selectionDebugTextGroups . '. CHECK PASSED');
-			}
-
 			return true;
-		}
-
-		if ($debug) {
-			dumpMessage('here 4');
 		}
 
 		if ($groupToBeExcluded) {
-			if (!empty($this->task) && $this->task == 'saveItem') {
-				$this->_debug(' > Object belongs to excluded ' . $selectionDebugTextGroups . '. CHECK FAILED');
-			}
-
 			return false;
 		}
 
-		if ($debug) {
-			dumpMessage('here 5');
-		}
-
-		if ($onGroupLevels == 'exclude' && !$groupToBeExcluded) {
-			if (!empty($this->task) && $this->task == 'saveItem') {
-				$this->_debug(' > Object doesn\'t belong to excluded ' . $selectionDebugTextGroups . '. CHECK PASSED');
-			}
-
+		if ('all' === $onGroupLevels && 'all' === $onItems) {
 			return true;
-		}
-
-		if ($debug) {
-			dumpMessage('here 6');
-		}
-
-		if (!empty($this->task) && $this->task == 'saveItem') {
-			$this->_debug(' > Object does not belong to included ' . $selectionDebugTextGroups . '. CHECK FAILED');
 		}
 
 		return false;

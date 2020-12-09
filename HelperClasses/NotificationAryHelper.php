@@ -14,18 +14,23 @@ namespace NotificationAry\HelperClasses;
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Joomla\CMS\Factory;
-use JLoader;
-use JUser;
-use JComponentHelper;
+use JForm;
 use JHTML;
 use JText;
-use JForm;
-use JFormHelper;
+use JUser;
 use JTable;
-use JRegistry;
 use JFolder;
+use JLoader;
+use JRegistry;
+use JFormHelper;
+use JComponentHelper;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Form\Form;
+use Joomla\CMS\User\User;
 use JFile, JLog, JUri, App;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Form\FormHelper;
+use Joomla\CMS\Component\ComponentHelper;
 
 /**
  * Helper class
@@ -35,6 +40,32 @@ use JFile, JLog, JUri, App;
  */
 class NotificationAryHelper
 {
+	public static function getBadMessage($rule, $text) {
+		$msg = '<span style="color:red;">['
+		. Text::_($text)
+		. ': ' . $rule->__ruleUniqID . ' <b>' . $rule->{'{notificationgroup'}[0] . '</b>'
+		. ']</span>';
+
+		return $msg;
+	}
+
+	public static function getNotificationSwicthHtml($attrib = '') {
+		if (!empty($attrib)) {
+			$attrib = '_' . $attrib;
+		}
+
+		$html ='<label title="" data-original-title="<strong>'
+			. Text::_('PLG_SYSTEM_NOTIFICATIONARY_NOTIFY')
+			. '</strong><br />'
+			. Text::_('PLG_SYSTEM_NOTIFICATIONARY_NOTIFY_DESC')
+			. '" class="hasTip hasTooltip required"
+				for="jform' . $attrib .'_runnotificationary"
+				id="jform_attribs_runnotificationary-lbl">'
+			. Text::_('PLG_SYSTEM_NOTIFICATIONARY_NOTIFY')
+			. '</label>';
+		return $html;
+	}
+
 	static function loadPluginDependencies() {
 		defined('NotificationAry_DIR') or define('NotificationAry_DIR', realpath(__DIR__ . '/../'));
 
@@ -70,7 +101,7 @@ class NotificationAryHelper
 	 *
 	 * @return type Description
 	 */
-	static function userGenerator($number = 2, $groups = 'default')
+	static function userGenerator($number = 2, $groups = [])
 	{
 		$jinput = Factory::getApplication()->input;
 
@@ -83,9 +114,9 @@ class NotificationAryHelper
 			return null;
 		}
 
-		$instance = JUser::getInstance();
+		$instance = User::getInstance();
 		jimport('joomla.application.component.helper');
-		$config = JComponentHelper::getParams('com_users');
+		$config = ComponentHelper::getParams('com_users');
 		$db = Factory::getDBO();
 		$query = $db->getQuery(true);
 		$query->select('id , title');
@@ -94,8 +125,8 @@ class NotificationAryHelper
 		$db->setQuery((string) $query);
 
 		$defaultUserGroupNames = $db->loadAssocList();
-		$defaultUserGroup = $db->loadResultArray();
-		$acl = Factory::getACL();
+		// $defaultUserGroup = $db->loadResultArray();
+		// $acl = Factory::getACL();
 
 		// For each group
 		for ($k = 0; $k < count($defaultUserGroupNames); $k++)
@@ -470,7 +501,7 @@ class NotificationAryHelper
 	{
 		if ($value == "0000-00-00 00:00:00")
 		{
-			return JText::_('JNONE');
+			return Text::_('JNONE');
 		}
 
 		$value = JHTML::_('date',  $value, 'Y-m-d H:i:s');
@@ -483,11 +514,11 @@ class NotificationAryHelper
 	 *
 	 * @param   string  $user_id  User id
 	 *
-	 * @return   JUser
+	 * @return   User
 	 */
 	static public function getUser($user_id)
 	{
-		$table   = JUser::getTable();
+		$table   = User::getTable();
 
 		if ($table->load($user_id))
 		{
@@ -744,20 +775,20 @@ class NotificationAryHelper
 
 		// Prepare names of plugin settings fields. These strange names are due to the plugin history
 		// when the plugin had admin users settings (ausers) and registred users settings (rusers)
-		$paramName = 'notifyuser';
+		// $paramName = 'notifyuser';
 		// $groupName = 'ausers_' . $paramName . 'groups';
 		// $itemName = 'ausers_' . $paramName . 's';
 
-		JForm::addFieldPath($pluginObject->plg_path . '/fields');
+		Form::addFieldPath($pluginObject->plg_path . '/fields');
 
-		$formfield = JFormHelper::loadFieldType('na.subscribe');
+		$formfield = FormHelper::loadFieldType('na.subscribe');
 
-		foreach ($matches as $keymatches => $match)
+		foreach ($matches as $match)
 		{
 			$replace_code = $match[0];
 			$ruleUniqID = $match[1];
 
-			$form = array();
+			// $form = array();
 
 			if (Factory::getUser()->guest)
 			{
@@ -767,7 +798,7 @@ class NotificationAryHelper
 				continue;
 			}
 
-			$msg = null;
+			// $msg = null;
 
 			foreach ($rules as /* $ruleNumber => */ $rule)
 			{
@@ -778,17 +809,13 @@ class NotificationAryHelper
 
 				if (!$rule->allow_subscribe)
 				{
-					$replacements[$replace_code] = '<span style="color:red;">['
-						. JText::_('PLG_SYSTEM_NOTIFICATIONARY_RULE_DOESNT_ALLOW_TO_SUBSCRIBE') . ': ' . $ruleUniqID
-						. ']</span>';
+					$replacements[$replace_code] = NotificationAryHelper::getBadMessage($rule, 'PLG_SYSTEM_NOTIFICATIONARY_RULE_DOESNT_ALLOW_TO_SUBSCRIBE');
 					continue;
 				}
 
 				if (!$rule->isenabled)
 				{
-					$replacements[$replace_code] = '<span style="color:red;">['
-						. JText::_('PLG_SYSTEM_NOTIFICATIONARY_RULE_DISABLED') . ': ' . $ruleUniqID
-						. ']</span>';
+					$replacements[$replace_code] = NotificationAryHelper::getBadMessage($rule, 'PLG_SYSTEM_NOTIFICATIONARY_RULE_DISABLED');
 					continue;
 				}
 

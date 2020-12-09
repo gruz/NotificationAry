@@ -18,12 +18,13 @@ use Joomla\CMS\Table\Table;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Filesystem\File;
+use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Session\Session;
 use Joomla\String\StringHelper;
+use Joomla\Utilities\ArrayHelper;
+// use NotificationAry\HelperClasses\FakeMailerClass;
 use Joomla\CMS\Component\ComponentHelper;
 use NotificationAry\HelperClasses\NotificationAryHelper;
-// use NotificationAry\HelperClasses\FakeMailerClass;
-use Joomla\CMS\HTML\HTMLHelper;
 
 
 // No direct access
@@ -37,6 +38,8 @@ defined('_JEXEC') or die('Restricted access');
  */
 trait CoreEvents
 {
+	use onAfterRenderHelper;
+
 	static protected $shouldShowSwitchCheckFlag = false;
 	/**
 	 * Run plugin on change article state from article list.
@@ -124,12 +127,12 @@ trait CoreEvents
 		$this->contentItem  = $this->_contentItemPrepare($contentItem);
 
 		$session = Factory::getSession();
-		$CustomReplacement = $session->get('CustomReplacement', ['context' => 'N0Ne'], $this->plg_name);
+		$customReplacement = $session->get('CustomReplacement', ['context' => 'N0Ne'], $this->plg_name);
 
 		switch ($context) {
-			case $CustomReplacement['context']:
-				$this->previous_article = $CustomReplacement['previous_item'];
-				$this->previous_state = $CustomReplacement['previous_state'];
+			case $customReplacement['context']:
+				$this->previous_article = $customReplacement['previous_item'];
+				$this->previous_state = $customReplacement['previous_state'];
 				break;
 			case 'jevents.edit.icalevent':
 				$dataModel = new \JEventsDataModel;
@@ -792,163 +795,46 @@ trait CoreEvents
 	 */
 	public function onAfterRender()
 	{
+		$app = Factory::getApplication();
 		$jinput = Factory::getApplication()->input;
+		$session = Factory::getSession();
+		$body = $app->getBody();
 
-		if ($jinput->get('option', null) == 'com_dump') {
-			return;
-		}
+		$option = $jinput->get('option', null);
 
-		if ($jinput->get('option', null) == 'com_ajax') {
+		if (in_array($option, ['com_dump', 'com_ajax'])) {
 			return;
 		}
 
 		NotificationAryHelper::addUserlistBadges();
 
-		$app = Factory::getApplication();
-
-		// Block JSON response, like there was an incompatibility with RockSprocket
-		$format = $jinput->get('format', 'html');
-
 		// Add NA menu item to Joomla backend
-		if ($app->isAdmin() && $this->paramGet('add_menu_item') && $format == 'html') {
-			$body = $app->getBody();
+		$this->addMenuItemToBackend();
 
-			// Get extension table class
-			$extensionTable = Table::getInstance('extension');
-
-			$pluginId = $extensionTable->find(['element' => $this->plg_name, 'type' => 'plugin']);
-
-			$language = Factory::getLanguage();
-
-			// Have to load curren logged in language to show the proper menu item language, not the default backend language
-			$language->load($this->plg_full_name, $this->plg_path, $language->get('tag'), true);
-
-			$menu = '<li><a class="menu-'
-				. $this->plg_name . ' " href="index.php?option=com_plugins&task=plugin.edit&extension_id=' . $pluginId . '">'
-				. Text::_($this->plg_full_name . '_MENU')
-				. ' <i class="icon-mail-2"></i></a></li>';
-
-			$js = '
-			<script>
-				jQuery(document).ready(function($){
-					var $menu = $("#menu > li:nth-child(5) > ul ");
-					if ($menu.length)
-					{
-						$menu.append(\'' . $menu . '\')
-					}
-				});
-			</script>';
-
-			$body = explode('</body>', $body, 2);
-
-			// The second check of a non-normal Joomla page
-			// (e.g. JSON format has no body tag). Needed because of problems with RockSprocket
-			if (count($body) == 2) {
-				$body = $body[0] . $js . '</body>' . $body[1];
-				$app->setBody($body);
-			}
-		}
-
-		// Output Ajax placeholder if needed {
-		$session = Factory::getSession();
-
-		// Is set in onAfterContentSave
-		$ajaxHash = $session->get('AjaxHash', null, $this->plg_name);
-
-		$session->clear('AjaxHash', $this->plg_name);
-
-		if (!empty($ajaxHash)) {
-			$place_debug = '';
-			$user = Factory::getUser();
-
-			// Since the _checkAllowed checks the global settings, there is no $this->rule passed and used there
-			if ($this->paramGet('ajax_allow_to_cancel') && $this->_checkAllowed($user, $paramName = 'allowuser', $prefix = 'ajax')) {
-				$place_debug .= '<button type="button" id="' . $this->plg_full_name . '_close">X</button>';
-			}
-
-			if ($this->paramGet('debug')) {
-				// ~ $place_debug .= '<div style="position:fixed">';
-				$place_debug .= '<a id="clear" class="btn btn-error">Clear</a>';
-				$place_debug .= '<a id="continue" class="btn btn-warning">Continue</a>';
-
-				// ~ $place_debug .= '</div>';
-			} else {
-				$place_debug .= '<small>';
-
-				if ($this->paramGet('ajax_allow_to_cancel') && $this->_checkAllowed($user, $paramName = 'allowuser', $prefix = 'ajax')) {
-					$place_debug .= Text::_('PLG_SYSTEM_NOTIFICATIONARY_AJAX_TIME_TO_CANCEL');
-					$place_debug .= '. ';
-				}
-
-				$place_debug .= Text::_('PLG_SYSTEM_NOTIFICATIONARY_AJAX_SENDING_MESSAGES') . '</small>';
-			}
-
-			$ajax_place_holder = '<div class="nasplace" >' . $place_debug . '<div class="nasplaceitself" id="' . $this->plg_full_name . '" ></div>';
-
-			$body = $app->getBody();
-			$body = str_replace('</body>', $ajax_place_holder . '</body>', $body);
-			$body = $app->setBody($body);
-		}
+		// Output Ajax placeholder if needed
+		$this->addAjaxPlaceHolder();
 
 		// K2 doesn't run onContentPrepareForm. So we need to imitate it here.
-		$option = $jinput->get('option', null);
 		$view = $jinput->get('view', null);
 
 		if ($option == 'com_k2' && $view == 'item') {
-			// Prepare to imitate onContentPrepareForm {
-			$this->_prepareParams();
-			$context = 'com_k2.item';
-			$this->allowed_contexts[] = $context;
-			$this->_setContext($context);
-
-			self::$shouldShowSwitchCheckFlag = false;
-			$contentItem = $this->_getContentItemTable($context);
-			$contentItem->load($jinput->get('cid', 0));
-
-			jimport('joomla.form.form');
-			$form = Form::getInstance('itemForm', JPATH_ADMINISTRATOR . '/components/com_k2/models/item.xml');
-			$values = ['params' => json_decode($contentItem->params)];
-			$form->bind($values);
-
-			// Prepare to imitate onContentPrepareForm }
-
-			$this->onContentPrepareForm($form, $contentItem);
-			$rules = $this->_leaveOnlyRulesForCurrentItem($context, $contentItem, 'showSwitch');
-
-			if (empty($rules)) {
+			$result = $this->k2SimulateOnContentPrepareForm();
+			self::$shouldShowSwitchCheckFlag = $result['shouldShowSwitchCheckFlag'];
+			if ($result['return']) {
 				return;
 			}
-
-			self::$shouldShowSwitchCheckFlag = true;
-
-			// Is set for onAfterContentSave as onContentPrepareForm is not run, but this method onAfterRender runs after onContentAfterSave.
-			$session->set('shouldShowSwitchCheckFlagK2Special', true, $this->plg_name);
-
-			// If the NS should be shown but cannot be shown due to HTML layout problems, then we need to know default value
-			$rule = array_pop($rules);
-
-			$session->set('shouldShowSwitchCheckFlagK2SpecialDefaultValue', (bool) $rule->notificationswitchdefault, $this->plg_name);
 		}
 
 		// Can be set in onContentPrepareForm or onContentAfterSave
-		if (empty($this->context)) {
+		if (
+			empty($this->context) ||
+			!$this->_isContentEditPage($this->context['full']) ||
+			!NotificationAryHelper::isFirstRun('onAfterRender') ||
+			!self::$shouldShowSwitchCheckFlag
+		) {
 			return;
 		}
 
-		if (!$this->_isContentEditPage($this->context['full'])) {
-			return;
-		}
-
-		if (!NotificationAryHelper::isFirstRun('onAfterRender')) {
-			return;
-		}
-
-		if (!self::$shouldShowSwitchCheckFlag) {
-			return;
-		}
-
-		$body = $app->getBody();
-		$app = Factory::getApplication();
 		$checkedyes = $checkedno = 'checked="checked"';
 		$selectedyes = $selectedno = 'selected="selected"';
 		$active_no = $active_yes = '';
@@ -956,26 +842,17 @@ trait CoreEvents
 		if ($this->runnotificationary == 1) {
 			$checkedno = '';
 			$selectedno = '';
-
-			// $active_yes='active btn-success';
 		} else {
 			$checkedyes = '';
 			$selectedyes = '';
-
-			// $active_no=' active btn-danger';
 		}
 
-		$CustomReplacement = $session->get('CustomReplacement', null, $this->plg_name);
+		$customReplacement = $session->get('CustomReplacement', null, $this->plg_name);
+		$replacement_label = NotificationAryHelper::getNotificationSwicthHtml();
 
-		$replacement_label = '
-				<label title="" data-original-title="<strong>' . Text::_('PLG_SYSTEM_NOTIFICATIONARY_NOTIFY') . '</strong><br />'
-			. Text::_('PLG_SYSTEM_NOTIFICATIONARY_NOTIFY_DESC')
-			. '" class="hasTip hasTooltip required" for="jform_runnotificationary" id="jform_attribs_runnotificationary-lbl">'
-			. Text::_('PLG_SYSTEM_NOTIFICATIONARY_NOTIFY') . '</label>';
-
-		if (!empty($CustomReplacement) && $CustomReplacement['context'] == $this->context['full']) {
-			$possible_tag_ids = $CustomReplacement['possible_tag_ids'];
-			$replacement_fieldset = $CustomReplacement['replacement_fieldset'];
+		if (ArrayHelper::getValue($customReplacement, 'context', false) === $this->context['full']) {
+			$possible_tag_ids = $customReplacement['possible_tag_ids'];
+			$replacement_fieldset = $customReplacement['replacement_fieldset'];
 
 			$replace = [
 				'{{$this->attribsField}}' => $this->attribsField,
@@ -989,9 +866,9 @@ trait CoreEvents
 			$search = array_keys($replace);
 			$replacement_fieldset = str_replace($search, $replace, $replacement_fieldset);
 		} else {
-			$CustomReplacement = ['option' => false];
+			$customReplacement = ['option' => false];
 
-			if (!$app->isAdmin() && $this->paramGet('replacement_type') === 'simple') {
+			if (!$app->isClient('administrator') && $this->paramGet('replacement_type') === 'simple') {
 				$replacement_fieldset = '
 				<select id="jform_' . $this->attribsField . '_runnotificationary" name="jform[' . $this->attribsField . '][runnotificationary]" class="inputbox">
 				<option value="1" ' . $selectedyes . '>' . Text::_('JYES') . '</option>
@@ -1011,11 +888,7 @@ trait CoreEvents
 				';
 			}
 
-			// $oldFieldsFormat = NotificationAryHelper::getHTMLElementById($body,'adminformlist','ul','class');
-
-			// NOTE! NotificationAryHelper::getHTMLElementById doesn't work with non-double tags like <input ... /> .
 			$possible_tag_ids = [
-
 				// ~ array('textarea', 'jform_articletext'),
 				['select', 'jform_catid'],
 				['select', 'jform_parent_id'],
@@ -1052,8 +925,6 @@ trait CoreEvents
 			}
 		}
 
-		// $oldFormat = false;
-
 		foreach ($possible_tag_ids as $tag) {
 			$attribute_name = isset($tag[2]) ? $tag[2] : 'id';
 			$nswitch_placeholder = NotificationAryHelper::getHTMLElementById($body, $tag[1], $tag[0], $attribute_name);
@@ -1070,88 +941,19 @@ trait CoreEvents
 
 		$this->HTMLtype = 'div';
 
-		if (Factory::getApplication()->isAdmin() && Factory::getApplication()->getTemplate() !== 'isis') {
+		if (Factory::getApplication()->isClient('administrator') && Factory::getApplication()->getTemplate() !== 'isis') {
 			$this->HTMLtype = 'li';
 		}
 
-		// JEvents compatibility\
-		if ($this->context['full'] == 'jevents.edit.icalevent') {
-			$replacement = '
-			<div class="row">
-				<div class="span2">
-					' . $replacement_label . '
-				</div>
-				<div class="span10">
-					' . $replacement_fieldset . '
-				</div>
-			</div>
-			';
-		} else {
-			$replacement = '
-			<div class="control-group ">
-				<div class="control-label">
-					' . $replacement_label . '
-				</div>
-				<div class="controls">
-					' . $replacement_fieldset . '
-				</div>
-			</div>
-			';
-		}
+		$replacement = $this->getReplacementHTML(compact(
+			'replacement_label',
+			'replacement_fieldset',
+			'customReplacement',
+			'selectedyes',
+			'selectedno',
+		));
 
-		switch ($this->context['option']) {
-			case $CustomReplacement['option']:
-				break;
-			case 'com_jdownloads':
-				if ($app->isAdmin()) {
-					$replacement = '</li>' . $replacement . '<li>';
-				} else {
-					$label = '
-						<label title="" data-original-title="<strong>'
-						. Text::_('PLG_SYSTEM_NOTIFICATIONARY_NOTIFY')
-						. '</strong><br />'
-						. Text::_('PLG_SYSTEM_NOTIFICATIONARY_NOTIFY_DESC') . '" class="hasTooltip required" for="="jform_'
-						. $this->attribsField . '_runnotificationary" id="jform_attribs_runnotificationary-lbl">'
-						. Text::_('PLG_SYSTEM_NOTIFICATIONARY_NOTIFY')
-						. '</label>';
-
-					$field = '
-						<select id="jform_'
-						. $this->attribsField . '_runnotificationary" name="jform[' . $this->attribsField . '][runnotificationary]"  size="1" class="inputbox">
-								<option value="0" ' . $selectedno . '>' . Text::_('JNo') . '</option>
-								<option value="1" ' . $selectedyes . '>' . Text::_('JYes') . '</option>
-						</select>';
-
-					$replacement = '</div><div class="formelm">' . $label . $field . '</div><div>';
-				}
-
-				break;
-			case 'com_k2':
-				$replacement = str_replace('jform[params]', 'params', $replacement);
-
-				if (!$app->isAdmin()) {
-					$replacement = str_replace('btn-group', '', $replacement);
-					$replacement = str_replace('class="btn', 'class="', $replacement);
-				}
-				// $replacement = '</div></td></tr><tr><td><div>'.$replacement.'';
-
-				break;
-			default:
-				if (!$app->isAdmin() && $this->paramGet('replacement_type', 'simple') === 'simple') {
-					// Do nothing
-				} elseif ($this->HTMLtype == 'div') {
-					$replacement = '</div></div>' . $replacement . '<div style="display:none;"><div>';
-				} else {
-					$replacement = '</li><li>' . $replacement . '</li><li>';
-				}
-
-				break;
-		}
-
-		// ~ if($this->_shouldShowSwitchCheck() && $this->paramGet('notificationswitchfrontend') == 1 && !$app->isAdmin()) {
-		if (self::$shouldShowSwitchCheckFlag && !$app->isAdmin()) {
-			// $nswitch_placeholder = NotificationAryHelper::getHTMLElementById($body,'jform_catid','select');
-
+		if (self::$shouldShowSwitchCheckFlag && !$app->isClient('administrator')) {
 			// At least at protostar a tab without name appears aboove the article, I assume is generates because of the NS injected into Form.
 			// Let's try to remove it
 			$hiddenTab = NotificationAryHelper::getHTMLElementById($body, 'params-basic', $tagname = 'div', $attributeName = 'id');
@@ -1167,7 +969,7 @@ trait CoreEvents
 			}
 
 			$body = str_replace($nswitch_placeholder, $nswitch_placeholder . $replacement, $body);
-		} elseif (self::$shouldShowSwitchCheckFlag && $app->isAdmin()) {
+		} elseif (self::$shouldShowSwitchCheckFlag && $app->isClient('administrator')) {
 			$AdminSwitch_placeholder_label = NotificationAryHelper::getHTMLElementById(
 				$body,
 				'jform_' . $this->attribsField . '_runnotificationary-lbl',
@@ -1183,7 +985,7 @@ trait CoreEvents
 			$body = str_replace($AdminSwitch_placeholder_label, '', $body);
 			$body = str_replace($AdminSwitch_placeholder_fieldset, '', $body);
 			$body = str_replace($nswitch_placeholder, $nswitch_placeholder . $replacement, $body);
-		} elseif ($app->isAdmin()) {
+		} elseif ($app->isClient('administrator')) {
 			$AdminSwitch_placeholder_label = NotificationAryHelper::getHTMLElementById(
 				$body,
 				'jform_' . $this->attribsField . '_runnotificationary-lbl',
@@ -1413,17 +1215,13 @@ trait CoreEvents
 		$string = '
 			<form>
 				<fields name="' . $attribs . '" >';
-		if ($app->isAdmin()) {
+		if ($app->isClient('administrator')) {
 			$string .= '<fieldset name="basic" >';
 			$fieldsetOpened = true;
 		} elseif ($form->getName() === 'com_users.profile') {
 			$string .= '<fieldset name="core" label="PLG_SYSTEM_NOTIFICATIONARY_NOTIFY">';
 			$fieldsetOpened = true;
 		}
-		// if (version_compare(JVERSION, '3.7', '<') == 1 || true)
-		// {
-		// 	$string .= '<fieldset name="basic" >';
-		// }
 
 		$string .= '
 			<field
@@ -1441,10 +1239,6 @@ trait CoreEvents
 		if ($fieldsetOpened) {
 			$string .= '</fieldset>';
 		}
-		// if (version_compare(JVERSION, '3.7', '<') == 1 || true)
-		// {
-		// 	$string .= '</fieldset>';
-		// }
 
 		$string .= '
 						</fields>
@@ -1454,11 +1248,11 @@ trait CoreEvents
 		$this->attribsField = $attribs;
 		self::$shouldShowSwitchCheckFlag = true;
 
-		$CustomReplacement = $session->get('CustomReplacement', null, $this->plg_name);
+		$customReplacement = $session->get('CustomReplacement', null, $this->plg_name);
 
-		if (!empty($CustomReplacement) && $CustomReplacement['context'] == $this->context['full']) {
-			$switch_selector = $CustomReplacement['switch_selector'];
-			$form_selector = $CustomReplacement['form_selector'];
+		if (!empty($customReplacement) && $customReplacement['context'] == $this->context['full']) {
+			$switch_selector = $customReplacement['switch_selector'];
+			$form_selector = $customReplacement['form_selector'];
 		} else {
 			$switch_selector = "[name=\"jform[" . $attribs . "][runnotificationary]\"]:checked";
 			$form_selector = 'adminForm';
@@ -1595,8 +1389,8 @@ trait CoreEvents
 				$nasubscribe[$rule->__ruleUniqID] = [
 					'subscribeType' => $rule->allow_subscribe,
 					'name' => $rule->{'{notificationgroup'}[0],
-					'text' => $rule->allow_subscribe_default ? 
-							Text::_('PLG_SYSTEM_NOTIFICATIONARY_SUBSCRIBED_TO_ALL') : 
+					'text' => $rule->allow_subscribe_default ?
+							Text::_('PLG_SYSTEM_NOTIFICATIONARY_SUBSCRIBED_TO_ALL') :
 							Text::_('PLG_SYSTEM_NOTIFICATIONARY_UNSUBSCRIBED_FROM_ALL'),
 				];
 			}
@@ -1634,6 +1428,9 @@ trait CoreEvents
 				{
 					$k = str_replace('notificationary.', '', $v[0]);
 					list($ruleId, $suff) = explode('.', $k, 2);
+					if (!array_key_exists($ruleId, $rules)) {
+						continue;
+					}
 					$rule = $rules[$ruleId];
 					if ('all' === $suff) {
 						switch ($v[1]) {
